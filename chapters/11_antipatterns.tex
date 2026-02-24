@@ -29,6 +29,7 @@ Keep core CLAUDE.md under $\sim$300 lines.
 and preference accumulated over months. Claude's attention dilutes
 across all of it, and critical rules get the same weight as minor preferences.
 
+\begin{fullwidth}
 \begin{beforeafter}
 \before
 \begin{minted}{text}
@@ -47,6 +48,7 @@ preferences, historical decisions, aspirational goals...
 # Hooks enforce: formatting, tests, lint
 \end{minted}
 \end{beforeafter}
+\end{fullwidth}
 
 \recovery{Context Overload}{%
 Claude is ignoring rules that are in your CLAUDE.md.
@@ -97,6 +99,10 @@ Two-failure rule (\cref{sec:two-failure}): after two failed corrections,
 \textbf{Root cause:} Each correction adds noise---the original error,
 your correction, Claude's acknowledgment, and its retry.
 After three rounds, the context is dominated by failure patterns.
+
+\marginnote[Cross-Ref]{The hypothesis debugging workflow
+in \cref{ch:thinking-partner} prevents over-correction by
+structuring the problem before the first prompt.}
 
 \recovery{Over-Correcting}{%
 You are on correction round 4. Claude keeps making the same mistake

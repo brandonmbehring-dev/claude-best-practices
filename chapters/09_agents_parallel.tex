@@ -27,15 +27,18 @@ to the parent session.
 # .claude/agents/security-reviewer.md
 ---
 name: security-reviewer
-description: Review code for security vulnerabilities
+description: Review code for security vulns
 tools: [Read, Grep, Glob]
 ---
-You are a security specialist. Review the provided code for:
-1. Injection vulnerabilities (SQL, command, path traversal)
+You are a security specialist.
+Review the provided code for:
+1. Injection vulnerabilities
+   (SQL, command, path traversal)
 2. Authentication/authorization gaps
 3. Sensitive data exposure
 4. Dependency vulnerabilities
-Report findings with severity ratings (Critical/High/Medium/Low).
+Report findings with severity ratings
+(Critical/High/Medium/Low).
 \end{minted}
 
 \margintip{Note the frontmatter key is \code{tools} (not \code{allowed\_tools}).
@@ -116,6 +119,9 @@ agent its own copy.
 
 This pattern catches errors that the writer is blind to because of
 its accumulated context about the ``correct'' approach.
+
+\marginnote[Cross-Ref]{Think together first (\cref{ch:thinking-partner}),
+then separate for independent review.}
 
 \practitioner{Extend to multi-perspective review with subagents:}
 

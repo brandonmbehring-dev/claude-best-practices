@@ -31,6 +31,7 @@ the building blocks. This chapter assembles them into pipelines.
 
 \subsection{Fan-Out Pattern}
 
+\begin{fullwidth}
 \begin{beforeafter}
 \before
 \begin{minted}{text}
@@ -42,18 +43,19 @@ copy result, repeat 47 times.
 \begin{minted}{bash}
 # Test on 3 files first
 for f in $(find src/ -name "*.py" | head -3); do
-  claude -p "Add type hints to all functions in $f" \
+  claude -p "Add type hints to $f" \
     --allowedTools Read,Edit
 done
 
 # Review results, then scale
 find src/ -name "*.py" | while read f; do
-  claude -p "Add type hints to all functions in $f" \
+  claude -p "Add type hints to $f" \
     --allowedTools Read,Edit \
     --output-format json >> results.jsonl
 done
 \end{minted}
 \end{beforeafter}
+\end{fullwidth}
 
 \margintip{Always test on 3--5 files before scaling.
 The prompt that works on your first file may fail on edge cases in file 47.}

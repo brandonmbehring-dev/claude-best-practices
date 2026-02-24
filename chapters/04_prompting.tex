@@ -43,6 +43,9 @@ The pattern for building vocabulary:
   \item Use the precise version in future requests.
 \end{enumerate}
 
+\marginnote[Cross-Ref]{For using precision prompts in collaborative reasoning,
+see \cref{ch:thinking-partner}.}
+
 % -------------------------------------------------------------------
 \section{Structuring Complex Prompts}
 \label{sec:structure}
@@ -54,24 +57,28 @@ The pattern for building vocabulary:
 \begin{minted}{xml}
 <context>
 The payment module handles Stripe webhooks.
-Current code is in src/payments/webhook_handler.py.
+Current code is in
+src/payments/webhook_handler.py.
 </context>
 
 <task>
-Add idempotency checking using the Stripe event ID.
-Store processed event IDs in Redis with 24h TTL.
+Add idempotency checking using the
+Stripe event ID.
+Store processed event IDs in Redis
+with 24h TTL.
 </task>
 
 <constraints>
 - Must not break existing webhook processing
-- Redis connection is available via app.redis
+- Redis connection available via app.redis
 - Include unit tests using fakeredis
 </constraints>
 
 <verification>
 Run: pytest tests/payments/ -v
 All existing tests must still pass.
-New tests must cover: duplicate event, expired event, new event.
+New tests must cover: duplicate event,
+expired event, new event.
 </verification>
 \end{minted}
 
@@ -81,8 +88,10 @@ New tests must cover: duplicate event, expired event, new event.
 pipe data from \code{stdin}.} Real data beats verbal descriptions.
 
 \begin{minted}{text}
-Look at @src/payments/webhook_handler.py and @tests/payments/test_webhooks.py.
-The handler processes events but has no idempotency check.
+Look at @src/payments/webhook_handler.py
+and @tests/payments/test_webhooks.py.
+The handler processes events but has no
+idempotency check.
 Add one following the existing code patterns.
 \end{minted}
 
@@ -112,6 +121,9 @@ decides how much to think based on problem complexity.
 \official{Interleaved thinking}: Claude can think between tool calls,
 enabling nuanced multi-step workflows where each step's reasoning
 informs the next.
+
+\marginnote[Cross-Ref]{Extended thinking is especially valuable during
+collaborative design sessions (\cref{ch:thinking-partner}).}
 
 \subsection{When to Enable vs.\ Disable}
 

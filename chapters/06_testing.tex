@@ -121,10 +121,14 @@ This works because Claude excels at test generation when given
 clear specifications. The tests then constrain the implementation,
 preventing the ``looks correct but is subtly wrong'' failure mode.
 
+\marginnote[Cross-Ref]{For tests as exploration tools---discovering
+requirements, not just verifying them---see \cref{ch:thinking-partner}.}
+
 % -------------------------------------------------------------------
 \section{Verification Criteria in CLAUDE.md}
 \label{sec:verification-criteria}
 
+\begin{fullwidth}
 \begin{beforeafter}
 \before
 \begin{minted}{markdown}
@@ -141,6 +145,7 @@ We use pytest. Tests are important.
 - Coverage target: 80% for src/ modules
 \end{minted}
 \end{beforeafter}
+\end{fullwidth}
 
 \convergence{These lines in CLAUDE.md improve every interaction
 by giving Claude a concrete way to validate its own work.}
@@ -157,11 +162,11 @@ for the full treatment). Three hooks that prevent quality debt:
   "hooks": {
     "PostFileWrite": [{
       "command": "prettier --write \"$FILE\"",
-      "description": "Auto-format every written file"
+      "description": "Auto-format on write"
     }],
     "PreCommit": [{
       "command": "npm run lint && npm test",
-      "description": "Block commits with lint errors or test failures"
+      "description": "Block bad commits"
     }]
   }
 }

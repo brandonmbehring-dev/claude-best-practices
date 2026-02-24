@@ -2,9 +2,10 @@
 # Requires: lualatex, latexmk
 
 MAIN = claude_best_practices
+QUICKSTART = quickstart_guide
 OUTDIR = output
 
-.PHONY: pilot digital clean
+.PHONY: pilot digital quickstart clean
 
 # Quick test build (single pass, no refs/index)
 pilot:
@@ -15,6 +16,11 @@ pilot:
 digital:
 	@mkdir -p $(OUTDIR)
 	latexmk -f -lualatex -shell-escape -interaction=nonstopmode -output-directory=$(OUTDIR) $(MAIN).tex
+
+# Quick start guide (standalone ~6 page PDF)
+quickstart:
+	@mkdir -p $(OUTDIR)
+	latexmk -f -lualatex -shell-escape -interaction=nonstopmode -output-directory=$(OUTDIR) $(QUICKSTART).tex
 
 # Clean build artifacts
 clean:

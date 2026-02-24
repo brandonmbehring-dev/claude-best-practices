@@ -1,0 +1,395 @@
+% Chapter 5: Thinking Together
+\chapter{Thinking Together}
+\label{ch:thinking-partner}
+
+\begin{itshape}
+Your prompts are precise, your CLAUDE.md is configured, and your tests pass.
+But every interaction follows the same pattern: you delegate, Claude executes,
+you verify. Something is missing---you are using Claude as a tool you configure,
+not a collaborator you think with.
+\end{itshape}
+
+The previous chapters answer ``how do I tell Claude what to do?''
+This chapter answers a different question: how do I \emph{think together}
+with Claude?
+
+The core metaphor: Claude is a thinking mirror. It reflects your codebase
+back to you. Where the reflection is clear, your code is clear.
+Where it is distorted---where Claude misunderstands, guesses, or asks
+for clarification---you have found a documentation gap, a hidden assumption,
+or an unclear interface.
+
+\begin{warnbox}[An Honest Caveat]
+Claude is a thinking partner with no memory, a tendency to agree,
+and occasional confident wrongness. The techniques in this chapter
+work \emph{because} they structure the collaboration to counteract
+these weaknesses---not despite them.
+\end{warnbox}
+
+\begin{whybox}[Why This Chapter Exists]
+Every chapter so far answers ``how do I configure Claude to do what I want?''
+This one answers ``how do I use Claude to think more clearly?''
+The shift is from delegation to collaboration---from configure-delegate-verify
+to think-together-discover-build-better.
+\end{whybox}
+
+% -------------------------------------------------------------------
+\section{Hypothesis-Driven Debugging}
+\label{sec:hypothesis-debugging}
+
+When a bug appears, the default instinct is to paste the traceback and say
+``fix this.'' Claude will try---and often succeed on the first attempt.
+But for deeper bugs, this approach produces patches that address symptoms
+rather than root causes.
+
+\practitioner{Structure debugging as hypothesis testing, not error correction.
+Claude is a pair programmer who catches different errors because it has
+no sunk cost in your approach.}
+
+\begin{fullwidth}
+\begin{beforeafter}[Debugging]
+\before
+\begin{minted}{text}
+Fix this error:
+  File "processor.py", line 47
+  TypeError: unsupported operand type(s)
+  for +: 'NoneType' and 'int'
+\end{minted}
+
+\after
+\begin{minted}{text}
+I see a TypeError on line 47 of processor.py:
+None + int. Three hypotheses:
+
+1. get_score() returns None when the user
+   has no history
+2. The database query returns NULL for
+   inactive accounts
+3. A race condition: score is deleted between
+   check and use
+
+For hypothesis 1: write a test that calls
+  get_score() with a new user (no history).
+For hypothesis 2: write a test with an
+  inactive account fixture.
+For hypothesis 3: check if get_score() uses
+  a cache that could be invalidated.
+
+Run hypothesis 1 first---it is the most
+likely given the stack trace.
+\end{minted}
+\end{beforeafter}
+\end{fullwidth}
+
+\margintip{``Three hypotheses for this failure. Design a minimal test
+for each.''}
+
+The second prompt is longer but produces better outcomes: a root-cause
+diagnosis instead of a symptom patch. Each hypothesis becomes a testable
+prediction. When the test confirms one, you fix the cause, not the effect.
+
+\margintip[Tip]{``Run this one test with this one input. Does it pass?''
+Isolation is the fastest path to root cause.}
+
+\keyinsight{Rubber duck debugging works because articulating the problem
+reveals the gap. Claude-as-duck works better because the duck talks back---it
+asks questions you would not ask yourself, because you already ``know''
+the answer. (Sometimes you are wrong about what you know.)}
+
+\begin{trybox}
+Pick a recent bug---ideally one that took more than 10 minutes to resolve.
+Write three hypotheses for what caused it.
+Ask Claude to design a minimal test for each hypothesis.
+Would this approach have found the root cause faster?
+\end{trybox}
+
+% -------------------------------------------------------------------
+\section{Tests as Thinking Tools}
+\label{sec:tests-as-thinking}
+
+In \cref{ch:testing}, tests serve verification: does the code do what it claims?
+Here, tests serve a different purpose---exploration:
+\emph{what should the code do at all?}
+
+\begin{beforeafter}[Tests: Verification vs.\ Exploration]
+\before
+``Write tests for this function.''
+
+\after
+``I am not sure what should happen at the boundary.
+Write 5 test cases exploring: empty input, single element,
+duplicates, negatives, overflow.
+Which behaviors surprise me?''
+\end{beforeafter}
+
+\begin{whybox}[Why Tests Before Requirements]
+Writing test cases forces you to articulate expectations you have not
+stated. When a test case surprises you---the function does something
+you did not expect---you have discovered a requirement that was implicit.
+The test did not verify your code. It interrogated your assumptions.
+\end{whybox}
+
+\margintip{``What invariant should always hold for this function,
+regardless of input?'' This question surfaces design decisions
+hiding as implementation details.}
+
+\subsection{Property-Based Tests as Assumption Detectors}
+
+\practitioner{Property-based tests are particularly powerful as thinking tools.
+Instead of testing specific inputs, they test \emph{invariants}---properties
+that must hold for all inputs.}
+
+\begin{minted}{text}
+Prompt: "What properties should always be true
+for this sort function?
+- Output length == input length
+- Output is ordered
+- Output is a permutation of input
+Write a property-based test for each."
+\end{minted}
+
+When a property-based test fails on a randomly generated input, it has found
+an edge case neither you nor Claude anticipated. That failure is more
+valuable than a passing test---it reveals a boundary in your understanding.
+
+\marginnote[Cross-Ref]{For test infrastructure and verification criteria,
+see \cref{ch:testing}. For characterization tests, see \cref{ch:projects}.}
+
+% -------------------------------------------------------------------
+\section{Surfacing Hidden Assumptions}
+\label{sec:hidden-assumptions}
+
+Every system rests on assumptions---about scale, about usage patterns,
+about what will never change. Most are invisible until they break.
+Claude can surface them, not because it is smarter, but because it has
+no investment in your preferred approach.
+
+\begin{beforeafter}[Architecture Review]
+\before
+``Review my database schema.''
+
+\after
+``Here is my schema. I designed it assuming: (1) reads outnumber
+writes 10:1, (2) we never query across tenants, (3) a single Postgres
+instance is sufficient. Which assumption is most likely wrong
+in 12 months, and what breaks when it does?''
+\end{beforeafter}
+
+The second prompt names the assumptions explicitly, then asks Claude
+to stress-test them. This is not code review---it is assumption review.
+
+\begin{tipbox}[The Pre-Mortem Prompt]
+``Imagine this feature has failed in production six months from now.
+What are the three most likely causes?
+Work backwards from failure to the design flaw that enabled it.''
+
+Pre-mortems are more effective than post-mortems because they cost nothing
+and can change the design. Ask Claude to run one before every
+architecture decision.
+\end{tipbox}
+
+\begin{tipbox}[The Feynman Prompt]
+``Explain my auth flow as if I just joined the team and need to modify it.
+Where did you have to guess because the code does not make intent clear?''
+
+Gaps in Claude's explanation are gaps in your documentation.
+What Claude cannot explain, a new hire cannot understand.
+\end{tipbox}
+
+\margintip{``What am I assuming that I have not written down?''
+The most dangerous assumptions are the ones nobody states.}
+
+% -------------------------------------------------------------------
+\section{Quick Wins That Compound}
+\label{sec:quick-wins}
+
+These five techniques take minutes to apply and improve every subsequent
+Claude interaction. The metaphor: Claude reads your codebase like a
+developer who just joined the team. Good onboarding materials help
+Claude the same way they help humans.
+
+\subsection{Docstrings as Triple-Duty Documentation}
+
+A docstring serves three audiences simultaneously:
+you (in six months), Claude (right now), and your teammates (always).
+
+\begin{fullwidth}
+\begin{beforeafter}[Docstrings]
+\before
+\begin{minted}{python}
+def calculate_risk(portfolio, window):
+    scores = []
+    for asset in portfolio:
+        s = _score(asset, window)
+        if s is not None:
+            scores.append(s)
+    return np.mean(scores) if scores else 0.0
+\end{minted}
+
+\after
+\begin{minted}{python}
+def calculate_risk(
+    portfolio: list[Asset],
+    window: int = 30,
+) -> float:
+    """Average risk score across portfolio.
+
+    Args:
+        portfolio: Assets to evaluate.
+            Empty portfolio returns 0.0.
+        window: Lookback days. Default 30.
+
+    Returns:
+        Mean risk score in [0, 1].
+        Returns 0.0 if no assets scorable.
+
+    Note:
+        Skips assets where _score() returns
+        None (insufficient history).
+        This is intentional, not an error.
+    """
+\end{minted}
+\end{beforeafter}
+\end{fullwidth}
+
+The ``Note'' section is the highest-value addition: it explains a design
+decision that would otherwise look like a bug. Claude will not
+misinterpret the \code{None} handling because the intent is documented.
+
+\subsection{Type Hints as Contracts}
+
+Five seconds to write, five minutes of debugging saved.
+\code{window: int = 30} tells Claude the type, the default,
+and the name---three constraints in five characters.
+Without the hint, Claude may pass a string, a float, or a \code{timedelta}.
+
+\subsection{Error Messages That Debug Themselves}
+
+This connects directly to Principle~4 from \cref{sec:four-principles}:
+fail fast with diagnostics. An error message that includes what went wrong,
+what was expected, and what to do about it saves Claude the same
+investigation time it saves you.
+
+\subsection{Code Archaeology}
+
+For brownfield work, Claude makes an excellent excavation partner:
+
+\begin{minted}{text}
+Prompt: "Why might the original author have
+written this as a nested loop instead of a join?
+What constraint explains this design choice?"
+\end{minted}
+
+Instead of assuming the code is wrong, this prompt assumes the code is
+\emph{explained by something you do not yet see}. Claude often finds the
+constraint---a database limitation, a legacy API, a performance requirement---
+that makes the original design rational.
+
+\subsection{README-Driven Development}
+
+Write the README first. Then ask Claude:
+
+\begin{minted}{text}
+Prompt: "Read this README. What questions does a
+new developer still have after reading it?"
+\end{minted}
+
+\margintip{``Read this function. What would you need to know
+before modifying it?'' Gaps in the answer are gaps in your code.}
+
+\begin{trybox}
+Pick one function Claude frequently reads in your project.
+Add a docstring with Args, Returns, and one Note explaining a non-obvious
+design decision. Compare Claude's output on a task involving that function
+before and after the docstring.
+\end{trybox}
+
+% -------------------------------------------------------------------
+\section{Architecture Decision Records}
+\label{sec:adr}
+
+When you make an architecture decision \emph{with} Claude,
+the conversation captures not just what you decided but why,
+and what alternatives were considered. An Architecture Decision Record
+(ADR) preserves this reasoning for your future self.
+
+\begin{minted}{markdown}
+# ADR-007: Event-Driven Payment Processing
+
+## Context
+Payment processing is synchronous.
+Under load, response times exceed 2s SLA.
+
+## Decision
+Switch to event-driven via RabbitMQ.
+
+## Alternatives Considered
+1. Async HTTP (rejected: still coupled)
+2. Redis pub/sub (rejected: no persistence)
+3. Kafka (rejected: overkill at current scale)
+
+## Consequences
+- Eventual consistency (not immediate)
+- New failure mode: message queue backlog
+- Need dead-letter queue for failed events
+
+## Assumptions to Revisit
+- Message volume < 1000/min
+- Single consumer is sufficient
+- RabbitMQ managed service available
+\end{minted}
+
+\keyinsight{The most valuable ADR section is ``Alternatives Considered.''
+Claude suggests alternatives you would not---not because it is smarter,
+but because it has no investment in your preferred approach.
+A human colleague might hesitate to challenge your solution.
+Claude does not hesitate.}
+
+\margintip{``Draft an ADR for this decision. What alternatives
+should I have considered?'' Enable extended thinking
+(\cref{sec:thinking}) when drafting ADRs.}
+
+\marginnote[Cross-Ref]{For plan documents and large-task workflows,
+see \cref{sec:plans}.}
+
+% -------------------------------------------------------------------
+\section{Quick Reference}
+\label{sec:thinking-reference}
+
+\begin{itemize}
+  \item Claude is a thinking mirror: distortions reveal gaps in your code
+  \item Debugging: three hypotheses, minimal tests, isolate blame
+  \item Tests as exploration: discover requirements, not just verify them
+  \item Assumption surfacing: name your assumptions, then stress-test them
+  \item Pre-mortem: imagine failure, work backwards to design flaw
+  \item Docstrings, type hints, error messages: minutes to add, compound forever
+  \item Code archaeology: assume intent before assuming error
+  \item ADRs: capture alternatives considered, not just the decision
+\end{itemize}
+
+\subsection{Building a Prompt Pattern Library}
+
+The techniques in this chapter can be codified as team-shared resources.
+The hypothesis debugging workflow becomes a custom command.
+The pre-mortem prompt becomes a line in your shared CLAUDE.md.
+The ADR template becomes a skill.
+
+\practitioner{Start personal, then share. Once a prompt pattern saves you
+time three sessions in a row, promote it from your terminal history
+to a command or skill that the whole team can use.}
+
+\marginnote[Cross-Ref]{For team-shared patterns and governance,
+see \cref{ch:team}.}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+Choose one technique from this chapter and apply it today:
+\begin{enumerate}
+  \item \textbf{Easiest}: Add a docstring to one function Claude reads often.
+  \item \textbf{Most impactful}: Use the hypothesis debugging workflow
+    on your next bug.
+  \item \textbf{Most strategic}: Draft an ADR for an upcoming
+    architecture decision.
+\end{enumerate}
+Pick one. Do it now. The techniques compound---but only if you start.
+\end{trybox}

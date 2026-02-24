@@ -42,6 +42,7 @@ this section gives you enough to be productive today.
 
 \subsection{Be Specific About What, Not How}
 
+\begin{fullwidth}
 \begin{beforeafter}
 \before
 \begin{minted}{text}
@@ -56,6 +57,7 @@ on line 42 of test_login.py. The error is:
 Diagnose the root cause and fix it.
 \end{minted}
 \end{beforeafter}
+\end{fullwidth}
 
 The ``before'' makes Claude guess which tests, what kind of failure,
 and what ``fix'' means. The ``after'' gives Claude the information
@@ -70,10 +72,13 @@ For complex tasks, give Claude an explicit reasoning structure:
 
 \begin{minted}{text}
 Refactor the payment module:
-1. First, read the current implementation and list all public methods.
-2. Then, identify methods longer than 30 lines.
-3. For each long method, extract helper functions with clear names.
-4. Run the existing tests after each extraction to verify nothing broke.
+1. Read the current implementation and
+   list all public methods.
+2. Identify methods longer than 30 lines.
+3. For each long method, extract helper
+   functions with clear names.
+4. Run existing tests after each extraction
+   to verify nothing broke.
 \end{minted}
 
 Without this structure, Claude may attempt the entire refactoring

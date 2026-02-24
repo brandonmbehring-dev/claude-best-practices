@@ -165,13 +165,20 @@
 
 \let\pkgmarginnote\marginnote
 
+% Flag: are we currently inside a margin note?
+\newif\ifinmarginnote
+\inmarginnotefalse
+
 % Basic sidenote
 \newcommand{\sidenote}[1]{%
   \pkgmarginnote{%
+    \inmarginnotetrue
     \footnotesize\raggedright%
     \color{PrimaryBlue!70!black}%
     #1%
     \color{DarkText}%
+    \inmarginnotefalse
+    \vspace{2pt}%
   }%
 }
 
@@ -187,7 +194,7 @@
 
 % --- MARGIN CALLOUT BOXES ---
 \newtcolorbox{marginbox}[2][Note]{
-  breakable=true,
+  breakable=false,
   enhanced,
   colframe=#2,
   colback=#2!3,
@@ -205,37 +212,72 @@
   bottom=0.5pt,
   boxsep=0pt,
   width=\marginparwidth,
-  fontupper=\marginfontsize,
+  fontupper=\marginfontsize\raggedright,
   titlerule=0mm
 }
 
 % Margin note with category
 \renewcommand{\marginnote}[2][Note]{%
-  \pkgmarginnote{\begin{marginbox}[#1]{NoteBlue}#2\end{marginbox}}%
+  \pkgmarginnote{%
+    \inmarginnotetrue
+    \begin{marginbox}[#1]{NoteBlue}#2\end{marginbox}%
+    \inmarginnotefalse
+    \vspace{2pt}%
+  }%
 }
 
 \newcommand{\marginwarning}[2][Warning]{%
-  \pkgmarginnote{\begin{marginbox}[#1]{WarningOrange}#2\end{marginbox}}%
+  \pkgmarginnote{%
+    \inmarginnotetrue
+    \begin{marginbox}[#1]{WarningOrange}#2\end{marginbox}%
+    \inmarginnotefalse
+    \vspace{2pt}%
+  }%
 }
 
 \newcommand{\margintip}[2][Tip]{%
-  \pkgmarginnote{\begin{marginbox}[#1]{TipGreen}#2\end{marginbox}}%
+  \pkgmarginnote{%
+    \inmarginnotetrue
+    \begin{marginbox}[#1]{TipGreen}#2\end{marginbox}%
+    \inmarginnotefalse
+    \vspace{2pt}%
+  }%
 }
 
 \newcommand{\marginofficial}[1]{%
-  \pkgmarginnote{\begin{marginbox}[Official]{OfficialPurple}#1\end{marginbox}}%
+  \pkgmarginnote{%
+    \inmarginnotetrue
+    \begin{marginbox}[Official]{OfficialPurple}#1\end{marginbox}%
+    \inmarginnotefalse
+    \vspace{2pt}%
+  }%
 }
 
 \newcommand{\margincost}[1]{%
-  \pkgmarginnote{\begin{marginbox}[Cost]{CostRed}#1\end{marginbox}}%
+  \pkgmarginnote{%
+    \inmarginnotetrue
+    \begin{marginbox}[Cost]{CostRed}#1\end{marginbox}%
+    \inmarginnotefalse
+    \vspace{2pt}%
+  }%
 }
 
 \newcommand{\marginenterprise}[1]{%
-  \pkgmarginnote{\begin{marginbox}[Enterprise]{EnterpriseNavy}#1\end{marginbox}}%
+  \pkgmarginnote{%
+    \inmarginnotetrue
+    \begin{marginbox}[Enterprise]{EnterpriseNavy}#1\end{marginbox}%
+    \inmarginnotefalse
+    \vspace{2pt}%
+  }%
 }
 
 \newcommand{\margintemplate}[1]{%
-  \pkgmarginnote{\begin{marginbox}[Template]{PractitionerTeal}#1\end{marginbox}}%
+  \pkgmarginnote{%
+    \inmarginnotetrue
+    \begin{marginbox}[Template]{PractitionerTeal}#1\end{marginbox}%
+    \inmarginnotefalse
+    \vspace{2pt}%
+  }%
 }
 
 % --- MAIN TEXT CALLOUT BOXES ---
@@ -542,7 +584,15 @@
 }
 
 % Source footnote (for Anthropic URLs)
-\newcommand{\sourceurl}[1]{\footnote{\url{#1}}}
+% In margins: renders as tiny inline URL (footnotes fail inside hboxes)
+% In body text: normal footnote
+\newcommand{\sourceurl}[1]{%
+  \ifinmarginnote
+    \\[-2pt]{\tiny\raggedright\url{#1}\par}%
+  \else
+    \footnote{\url{#1}}%
+  \fi
+}
 
 % =============================================================================
 % END OF STYLE

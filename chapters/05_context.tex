@@ -102,6 +102,7 @@ takes $\sim$200 tokens and produces a better result.
 \practitioner{Maintain a \code{CURRENT\_WORK.md} file at project root.
 It provides 30-second context resume after any interruption.}
 
+\begin{fullwidth}
 \begin{beforeafter}
 \before
 \begin{minted}{text}
@@ -114,17 +115,21 @@ It provides 30-second context resume after any interruption.}
 Refactoring payment processing to async handlers.
 
 ## Why
-Current sync handlers cause 200ms latency spikes under load.
+Current sync handlers cause 200ms latency spikes
+under load.
 
 ## Next Step
-Write integration tests for the new async PaymentProcessor class.
+Write integration tests for the new async
+PaymentProcessor class.
 
 ## Context When I Return
-- PaymentProcessor class is in src/payments/processor.py
+- PaymentProcessor class is in
+  src/payments/processor.py
 - 3 of 5 handler methods converted, 2 remaining
-- Tests in tests/payments/ — existing tests still pass
+- Tests in tests/payments/ — existing tests pass
 \end{minted}
 \end{beforeafter}
+\end{fullwidth}
 
 \margintip{Update CURRENT\_WORK.md at the start and end of every session.
 60 seconds invested saves 10 minutes of re-discovery.}
@@ -189,6 +194,9 @@ documenting: why specific implementations were chosen,
 alternatives considered but rejected, assumptions made,
 and tradeoffs accepted. This section is invaluable for postmortem analysis
 when a decision turns out to be wrong.
+
+\marginnote[Cross-Ref]{For collaborative plan drafting and ADRs,
+see \cref{ch:thinking-partner}.}
 
 % -------------------------------------------------------------------
 \section{Quick Reference}
