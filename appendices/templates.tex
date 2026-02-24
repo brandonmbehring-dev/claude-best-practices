@@ -1,9 +1,10 @@
-% Appendix A: Quick-Start Templates
+% Appendix B: Quick-Start Templates
 \chapter{Quick-Start Templates}
 \label{app:templates}
 
 These templates are available as standalone files in the \code{templates/}
 directory of the repository. Copy them into your project and customize.
+Each template includes WHY comments explaining the purpose of each section.
 
 \section{Minimal CLAUDE.md (10 lines)}
 
@@ -11,15 +12,17 @@ directory of the repository. Copy them into your project and customize.
 # Project Name
 
 ## Build
+# WHY: Claude cannot guess non-standard build commands
 - `npm run build` — compile
 - `npm test` — run tests
 
 ## Code Style
+# WHY: Only include rules that differ from standard conventions
 - TypeScript strict mode
 - Prettier for formatting
-- ESLint with project config
 
 ## Testing
+# WHY: Verification criteria improve every interaction
 - Run tests after every code change
 - Never commit without passing CI
 \end{minted}
@@ -30,25 +33,27 @@ directory of the repository. Copy them into your project and customize.
 # Project Name
 
 ## Build Commands
+# WHY: Every command Claude needs to verify its own work
 - `npm run build` — compile TypeScript
 - `npm test` — run Jest tests
 - `npm run lint` — ESLint + Prettier check
 - `npm run typecheck` — tsc --noEmit
 
 ## Architecture
+# WHY: Tells Claude WHERE things go, not just what they are
 - src/routes/ — API endpoints (one file per resource)
 - src/services/ — Business logic (no HTTP concerns)
 - src/models/ — Database models (Prisma)
-- src/middleware/ — Express middleware
 - tests/ — mirrors src/ structure
 
 ## Code Conventions
+# WHY: Only rules Claude wouldn't infer from the codebase
 - TypeScript strict mode, no `any`
 - Functional style: prefer pure functions, immutable data
 - Error handling: throw typed errors, never swallow exceptions
-- Naming: camelCase variables, PascalCase types, UPPER_SNAKE constants
 
 ## Testing Standards
+# WHY: These lines improve every interaction (Ch 6)
 - Run tests after every code change
 - Never commit without passing lint + tests + typecheck
 - Coverage target: 80% for src/ modules
@@ -59,9 +64,9 @@ directory of the repository. Copy them into your project and customize.
 - PR description includes: Summary, Test Plan, Breaking Changes
 
 ## Security
+# WHY: Defense in depth — CLAUDE.md + deny rules + hooks
 - Never read .env files
 - Never commit secrets, API keys, or credentials
-- Validate all user input at API boundary
 \end{minted}
 
 \section{Settings Template}
@@ -72,9 +77,9 @@ directory of the repository. Copy them into your project and customize.
     "allow": [
       "Read", "Grep", "Glob",
       "Write(**)", "Edit(**)",
-      "Bash(npm:*)", "Bash(npx:*)",
-      "Bash(git status)", "Bash(git diff:*)",
-      "Bash(git log:*)", "Bash(git add:*)"
+      "Bash(npm run *)", "Bash(npx *)",
+      "Bash(git status)", "Bash(git diff *)",
+      "Bash(git log *)", "Bash(git add *)"
     ],
     "deny": [
       "Read(.env*)",
@@ -83,15 +88,18 @@ directory of the repository. Copy them into your project and customize.
       "Read(**/*.key)",
       "Read(**/credentials*)",
       "Bash(rm -rf /)",
-      "Bash(sudo:*)"
+      "Bash(sudo *)"
     ],
     "ask": [
-      "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
 \end{minted}
+
+{\footnotesize \textit{Note: Permission rules use glob syntax (\code{*}),
+not colon syntax. Evaluation order: deny first, then ask, then allow.}}
 
 \section{Hook Configuration}
 
@@ -99,32 +107,17 @@ directory of the repository. Copy them into your project and customize.
 {
   "hooks": {
     "PostFileWrite": [{
+      "type": "command",
       "command": "npx prettier --write \"$FILE\"",
       "description": "Auto-format written files"
     }],
     "PreCommit": [{
+      "type": "command",
       "command": "npm run lint && npm test",
       "description": "Block commits with lint errors or test failures"
     }]
   }
 }
-\end{minted}
-
-\section{Custom Command Template}
-
-\begin{minted}{markdown}
-# .claude/commands/check.md
-Run a comprehensive check of the project:
-
-1. Run the test suite: `npm test`
-2. Run the linter: `npm run lint`
-3. Run the type checker: `npm run typecheck`
-4. Report results as a summary table:
-   | Check | Status | Details |
-   |-------|--------|---------|
-   | Tests | PASS/FAIL | X passed, Y failed |
-   | Lint  | PASS/FAIL | N warnings |
-   | Types | PASS/FAIL | N errors |
 \end{minted}
 
 \section{Skill Template}
@@ -133,9 +126,10 @@ Run a comprehensive check of the project:
 ---
 name: deploy-check
 description: Pre-deployment readiness verification
-allowed_tools: [Bash, Read, Glob, Grep]
+allowed-tools: [Bash, Read, Glob, Grep]
 ---
 # Pre-Deploy Check
+# WHY: Catches deployment blockers before they reach production
 1. Verify all tests pass: `npm test`
 2. Check for uncommitted changes: `git status`
 3. Verify version bump in package.json
@@ -144,6 +138,8 @@ allowed_tools: [Bash, Read, Glob, Grep]
    with specific blockers if NOT READY
 \end{minted}
 
+{\footnotesize \textit{Note: Skills use \code{allowed-tools} (hyphenated).}}
+
 \section{Subagent Definition Template}
 
 \begin{minted}{markdown}
@@ -151,8 +147,9 @@ allowed_tools: [Bash, Read, Glob, Grep]
 ---
 name: code-reviewer
 description: Review code changes for quality issues
-allowed_tools: [Read, Grep, Glob]
+tools: [Read, Grep, Glob]
 ---
+# WHY: Isolated context prevents review bias from accumulated session context
 Review the provided code changes for:
 1. Logic errors and bugs
 2. Missing error handling
@@ -164,6 +161,8 @@ Report findings with severity: Critical / High / Medium / Low.
 Include file:line references for each finding.
 \end{minted}
 
+{\footnotesize \textit{Note: Subagents use \code{tools} (not \code{allowed-tools} or \code{allowed\_tools}).}}
+
 \section{Rules File with Paths}
 
 \begin{minted}{markdown}
@@ -171,9 +170,29 @@ Include file:line references for each finding.
 paths: backend/**/*.py
 ---
 # Backend Python Standards
+# WHY: These rules only load when editing backend Python files,
+# keeping context clean when working on other parts of the project
 - Use async/await for all I/O operations
 - SQLAlchemy 2.0 query syntax (not legacy)
 - Type hints on all function signatures
 - Docstrings on all public functions
 - Run `pytest backend/tests/` after changes
+\end{minted}
+
+\section{Custom Command Template}
+
+\begin{minted}{markdown}
+# .claude/commands/check.md
+# WHY: Encodes a decision workflow, not just a shortcut
+Run a comprehensive check of the project:
+
+1. Run the test suite: `npm test`
+2. Run the linter: `npm run lint`
+3. Run the type checker: `npm run typecheck`
+4. Report results as a summary table:
+   | Check | Status | Details |
+   |-------|--------|---------|
+   | Tests | PASS/FAIL | X passed, Y failed |
+   | Lint  | PASS/FAIL | N warnings |
+   | Types | PASS/FAIL | N errors |
 \end{minted}

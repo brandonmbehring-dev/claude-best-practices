@@ -1,0 +1,178 @@
+% Chapter 2: Your First CLAUDE.md
+\chapter{Your First CLAUDE.md}
+\label{ch:first-claude-md}
+
+\begin{itshape}
+Claude keeps asking you the same questions about your project.
+It does not know your build command, your test runner, or your architecture.
+Every session starts with you re-explaining context that should be obvious.
+The fix takes five minutes.
+\end{itshape}
+
+\section{What CLAUDE.md Does}
+\label{sec:what-claude-md}
+
+\marginnote[Official]{Run \code{/init} to auto-generate a starter CLAUDE.md
+from your project structure.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/best-practices}}
+
+\official{The \code{CLAUDE.md} file is the single most important configuration artifact.}
+Claude reads it at session start and uses it to understand your project's conventions,
+build commands, architecture decisions, and rules of engagement.
+
+Think of it as a briefing document for a new team member who is fast,
+capable, and amnesiac---they forget everything between sessions
+unless you write it down.
+
+\subsection{Hierarchical Loading}
+
+Claude loads \code{CLAUDE.md} files from multiple locations, merging them in order:
+
+\begin{enumerate}
+  \item \code{\textasciitilde/.claude/CLAUDE.md} --- global defaults (applies to all projects)
+  \item Project root \code{CLAUDE.md} or \code{.claude/CLAUDE.md} --- project-level instructions
+  \item Parent and child directory \code{CLAUDE.md} files --- subdirectory overrides
+\end{enumerate}
+
+For now, you only need the project-level file. The global file and
+advanced architecture come later (\cref{ch:architecture}).
+
+% -------------------------------------------------------------------
+\section{Generate It: \texttt{/init}}
+\label{sec:init}
+
+The fastest path to a useful CLAUDE.md:
+
+\begin{enumerate}
+  \item Open your project in Claude Code.
+  \item Type \code{/init}.
+  \item Claude examines your project structure and proposes a starter CLAUDE.md.
+  \item Review, edit, commit.
+\end{enumerate}
+
+The auto-generated version is a solid starting point.
+What follows are the refinements that make it effective.
+
+% -------------------------------------------------------------------
+\section{What to Include}
+\label{sec:what-to-include}
+
+\convergence{Include what Claude cannot infer. Exclude what it can.}
+
+\begin{description}
+  \item[Build and test commands] \code{make pilot}, \code{pytest tests/},
+    \code{npm run build}---anything non-standard or project-specific.
+  \item[Code style rules] Only those that differ from standard conventions.
+    Do not restate PEP~8 or Prettier defaults.
+  \item[Architecture decisions] Where things go and why.
+    ``API routes in \code{src/routes/}. Each route has a test in \code{tests/routes/}.''
+  \item[Verification criteria] The single highest-leverage inclusion.
+    ``Always run tests after code changes. Never commit without passing CI.''
+\end{description}
+
+\begin{beforeafter}
+\before
+\begin{minted}{markdown}
+# My Project
+This is a web app built with React and Express.
+We use TypeScript and try to follow best practices.
+Tests are important to us.
+\end{minted}
+
+\after
+\begin{minted}{markdown}
+# My Project
+
+## Build
+- `npm run build` — compile TypeScript
+- `npm test` — run Jest tests
+- `npm run lint` — ESLint + Prettier
+
+## Architecture
+- src/routes/ — API endpoints (one file per resource)
+- src/services/ — Business logic (no HTTP concerns)
+- tests/ — mirrors src/ structure
+
+## Standards
+- TypeScript strict mode, no `any`
+- Run tests after every code change
+- Never commit without passing lint + tests
+\end{minted}
+\end{beforeafter}
+
+\margintip{The ``before'' tells Claude about your project.
+The ``after'' tells Claude how to \emph{work} on your project.
+Commands, locations, and rules---not descriptions.}
+
+% -------------------------------------------------------------------
+\section{What to Exclude}
+\label{sec:what-to-exclude}
+
+\begin{itemize}
+  \item What Claude can infer from the codebase (standard language conventions)
+  \item Long explanations---keep instructions terse and actionable
+  \item Aspirational rules nobody follows---document what IS, not what you wish
+  \item Information that changes frequently (put it in memory instead---see \cref{ch:context})
+\end{itemize}
+
+\begin{tipbox}[Quality Test]
+If Claude keeps violating a rule, one of three things is true:
+(1) the CLAUDE.md is too long and the rule is getting lost,
+(2) the rule contradicts another rule, or
+(3) the rule should be a hook instead of an instruction (see \cref{ch:extending}).
+\end{tipbox}
+
+% -------------------------------------------------------------------
+\section{Your First Deny Rules}
+\label{sec:first-deny}
+
+\marginnote[Official]{Settings documentation:\sourceurl{https://docs.anthropic.com/en/docs/claude-code/settings}}
+
+Before Claude touches any code, protect your secrets.
+Create \code{.claude/settings.json}:
+
+\begin{minted}{json}
+{
+  "permissions": {
+    "deny": [
+      "Read(.env*)",
+      "Read(secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/credentials*)"
+    ]
+  }
+}
+\end{minted}
+
+\margintip{Deny rules are absolute. Unlike CLAUDE.md instructions (which are advisory),
+deny rules cannot be overridden by conversation or prompt injection.}
+
+Deny rules are the one configuration that is never wrong to add on day one.
+They cost nothing in context, they never cause false negatives in normal work,
+and they prevent the one class of mistake that is truly irreversible:
+leaking secrets into a commit, a log, or a conversation.
+
+% -------------------------------------------------------------------
+\section{Quick Reference}
+
+\begin{itemize}
+  \item Run \code{/init} to generate a starter CLAUDE.md
+  \item Include: build commands, architecture, code style, verification criteria
+  \item Exclude: what Claude can infer, long prose, aspirational rules
+  \item Add deny rules for secrets in \code{.claude/settings.json} on day one
+  \item Commit both files to version control
+\end{itemize}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+\begin{enumerate}
+  \item Run \code{/init} on your current project.
+  \item Compare the generated CLAUDE.md to what you actually need.
+    Add build/test commands if missing.
+  \item Create \code{.claude/settings.json} with deny rules for \code{.env*}
+    and any secrets directories.
+  \item Start a new session and verify Claude reads your CLAUDE.md
+    (ask: ``What are my build commands?'').
+\end{enumerate}
+Time: $\sim$5 minutes.
+\end{trybox}

@@ -1,0 +1,239 @@
+% Chapter 7: Extending Claude — Commands, Skills, Hooks, MCP
+\chapter{Extending Claude: Commands, Skills, Hooks, and MCP}
+\label{ch:extending}
+
+\begin{itshape}
+You keep running the same four commands manually: format, lint, test, commit.
+You explain the same deployment procedure every session.
+There must be a better way to encode these workflows so Claude executes them
+without being told each time.
+\end{itshape}
+
+Claude Code ships with four extension mechanisms---commands, skills, hooks,
+and MCP servers---forming a hierarchy of increasing autonomy.
+Understanding when to use each is the difference between a tool and a workflow.
+
+\section{Custom Slash Commands}
+\label{sec:commands}
+
+\marginnote[Official]{Place in \code{\textasciitilde/.claude/commands/} (global)
+or \code{.claude/commands/} (project).
+Invoked as \code{/command-name}.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/best-practices}}
+
+\official{Commands are Markdown files that expand into prompts when invoked.}
+They accept arguments via \code{\$ARGUMENTS} and can reference files with \code{@path}.
+
+\begin{minted}{markdown}
+# .claude/commands/check.md
+Run a comprehensive check of the project:
+1. Run the test suite: `npm test`
+2. Run the linter: `npm run lint`
+3. Run the type checker: `npm run typecheck`
+4. Report results as a summary table
+\end{minted}
+
+\practitioner{The best commands are not shortcuts---they encode decisions.}
+Instead of a command that runs a test, create a command that decides
+\emph{what to do next} based on project state.
+
+\begin{minted}{markdown}
+# .claude/commands/next.md
+Check the current project state:
+1. Read CURRENT_WORK.md for context
+2. Run `git status` and `git diff --stat`
+3. Check for failing tests
+4. Recommend the single highest-priority next action
+\end{minted}
+
+% -------------------------------------------------------------------
+\section{Skills: Domain Knowledge and Workflows}
+\label{sec:skills}
+
+\marginnote[Official]{Place in \code{.claude/skills/}.
+Markdown with YAML frontmatter.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/skills}}
+
+\official{Skills combine domain knowledge with executable workflows.}
+Unlike commands (which are prompt templates), skills can:
+
+\begin{itemize}
+  \item Be applied automatically when Claude detects a relevant context
+  \item Include file globs for automatic triggering
+  \item Define multi-step procedures with validation gates
+  \item Restrict available tools via \code{allowed-tools} frontmatter
+\end{itemize}
+
+\begin{minted}{yaml}
+---
+name: qa-health
+description: Run quality dashboard across all volumes
+allowed-tools: [Bash, Read, Glob]
+---
+# QA Health Check
+1. Run `python scripts/audits/health_dashboard.py`
+2. Parse output for RED/YELLOW/GREEN status
+3. Report findings with actionable recommendations
+4. If any RED items, create TODO list for fixes
+\end{minted}
+
+\margintip{A skill that saves 5 minutes per use and runs 3 times per week
+saves 13 hours per year. Measure value by frequency $\times$ savings.}
+
+% -------------------------------------------------------------------
+\section{Hooks: Deterministic Automation}
+\label{sec:hooks}
+
+\marginnote[Official]{Configure via \code{/hooks} or in
+\code{settings.json}.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/hooks-guide}}
+
+\convergence{Hooks are the enforcement layer.
+Unlike CLAUDE.md instructions (which are advisory),
+hooks \textbf{always execute}.}
+
+\subsection{Available Lifecycle Events}
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Event} & \textbf{Use Case} \\
+\midrule
+\code{PreToolUse} & Validate or transform tool inputs before execution \\
+\code{PostToolUse} & React to tool outputs (logging, metrics) \\
+\code{PreFileWrite} & Block writes to protected files; enforce formatting \\
+\code{PostFileWrite} & Auto-format, lint, or validate written files \\
+\code{PreBashRun} & Validate commands before execution; block dangerous ops \\
+\code{PostBashRun} & Capture output for logging or metrics \\
+\code{PreCommit} & Run test suite; block commits with failing tests \\
+\code{PostCommit} & Trigger CI, update dashboards, send notifications \\
+\code{UserPromptSubmit} & Transform or validate user input \\
+\code{Notification} & Route notifications to Slack, email, or dashboard \\
+\code{Stop} & Run cleanup when Claude finishes a task \\
+\code{SubagentStart} & Initialize subagent-specific configuration \\
+\code{SubagentStop} & Process subagent results \\
+\code{PreCompact} & Save state before context compaction \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\practitioner{The golden rule: if a standard is non-negotiable, make it a hook.
+If it is advisory, put it in CLAUDE.md.}
+
+% -------------------------------------------------------------------
+\section{MCP: External Tool Integration}
+\label{sec:mcp}
+
+\marginnote[Official]{MCP provides a standardized way to connect Claude to external
+tools and data sources.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/mcp}}
+
+\official{The Model Context Protocol (MCP) connects Claude to
+external services, databases, APIs, and custom tools.}
+
+\begin{minted}{bash}
+# Add an MCP server
+claude mcp add github --transport stdio -- gh-mcp
+
+# Scopes
+# Local: current machine only (default)
+# Project: .mcp.json committed to git (team-wide)
+# User: ~/.claude/mcp.json (personal global)
+\end{minted}
+
+Key concepts:
+\begin{description}
+  \item[Servers] Provide tools, resources, and prompts via a standard protocol.
+  \item[Tools] Functions Claude can call (query a database, create a ticket).
+  \item[Resources] Data Claude can reference via \code{@server:resource/path}.
+  \item[Dynamic loading] When tools exceed 10\% of context
+    (see \cref{sec:context-degradation} for why this matters),
+    Claude uses on-demand search to keep context efficient.
+\end{description}
+
+\begin{warnbox}[MCP Security]
+Verify server provenance before installation.
+Prefer servers from the official registry.
+Review permissions each server requires.
+Use Managed MCP for enterprise policy enforcement.
+\end{warnbox}
+
+% -------------------------------------------------------------------
+\section{The Delegation Hierarchy}
+\label{sec:delegation-hierarchy}
+
+\begin{decisionbox}[Which Extension Mechanism?]
+\textbf{Command} --- Simple prompt template, inline context.
+Use for: shortcuts, common prompts, decision-point commands.
+
+\textbf{Skill} --- Multi-step workflow with domain knowledge and tool restrictions.
+Use for: repeated procedures, quality dashboards, pre-release checks.
+
+\textbf{Hook} --- Deterministic automation on lifecycle events.
+Use for: non-negotiable standards, auto-formatting, test gates.
+
+\textbf{MCP} --- External service integration.
+Use for: databases, APIs, third-party tools, cross-project knowledge bases.
+
+\textbf{Rule of thumb}: use the simplest mechanism that solves the problem.
+\end{decisionbox}
+
+% -------------------------------------------------------------------
+\section{Visual: The Delegation Hierarchy}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=PrimaryBlue, fill=PrimaryBlue!8, rounded corners=3pt,
+    minimum width=3cm, minimum height=0.9cm, font=\small, align=center},
+  desc/.style={font=\footnotesize, text=DarkText, align=left},
+  arr/.style={->, thick, PrimaryBlue!60},
+  >=Stealth
+]
+  % Boxes arranged vertically
+  \node[box] (cmd) at (0,0) {\textbf{Commands}};
+  \node[box] (skill) at (0,1.8) {\textbf{Skills}};
+  \node[box, fill=PrimaryBlue!12] (hook) at (0,3.6) {\textbf{Hooks}};
+  \node[box, fill=PrimaryBlue!16] (mcp) at (0,5.4) {\textbf{MCP Servers}};
+
+  % Descriptions
+  \node[desc, anchor=west] at (2.2,0) {Prompt template, inline context\\
+    \textit{Use for: simple shortcuts}};
+  \node[desc, anchor=west] at (2.2,1.8) {Multi-step workflow, domain knowledge\\
+    \textit{Use for: repeated procedures}};
+  \node[desc, anchor=west] at (2.2,3.6) {Deterministic lifecycle automation\\
+    \textit{Use for: non-negotiable standards}};
+  \node[desc, anchor=west] at (2.2,5.4) {External service integration\\
+    \textit{Use for: databases, APIs, tools}};
+
+  % Arrows
+  \draw[arr] (cmd) -- (skill);
+  \draw[arr] (skill) -- (hook);
+  \draw[arr] (hook) -- (mcp);
+
+  % Side labels
+  \node[font=\footnotesize\itshape, text=PrimaryBlue!70, rotate=90, anchor=south]
+    at (-2.2,2.7) {Increasing capability $\rightarrow$};
+  \node[font=\footnotesize\itshape, text=WarningOrange!80, rotate=90, anchor=north]
+    at (-2.8,2.7) {$\leftarrow$ Increasing setup};
+\end{tikzpicture}
+\caption{Match extension mechanism to task requirements.
+The simplest mechanism that solves the problem is the best choice.}
+\label{fig:delegation-hierarchy}
+\end{figure}
+
+\begin{keyinsight}
+Most developers jump to complex solutions when a simple one would suffice.
+A command handles 80\% of workflow needs. Add skills, hooks, and MCP
+only when the simpler mechanism is genuinely insufficient.
+\cref{ch:agents} explores subagents and parallel delegation patterns
+for when even MCP is not enough.
+\end{keyinsight}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+Create a \code{/check} command for your project:
+\begin{enumerate}
+  \item Create \code{.claude/commands/check.md}.
+  \item Include: run lint, run tests, run type checker (if applicable).
+  \item Format output as a summary table: Check $|$ Status $|$ Details.
+  \item Test it: type \code{/check} in your next session.
+\end{enumerate}
+Bonus: add a PostFileWrite hook that auto-formats written files.
+\end{trybox}

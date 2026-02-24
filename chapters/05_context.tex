@@ -1,0 +1,216 @@
+% Chapter 5: Context as Currency
+\chapter{Context as Currency}
+\label{ch:context}
+
+\begin{itshape}
+Three hours into a session, Claude starts repeating itself.
+It forgets a rule you stated 20 minutes ago.
+It suggests an approach you already rejected.
+The code quality has noticeably dropped since the session started.
+\end{itshape}
+
+In \cref{ch:first-session}, you learned two context commands: \code{/clear}
+and \code{/compact}. This chapter explains \emph{why} context degrades,
+gives you a full toolkit for managing it, and introduces patterns
+for cross-session persistence.
+
+\section{Why Context Degrades}
+\label{sec:context-degradation}
+
+\marginnote[Official]{Performance degrades as context fills.
+Use \code{/clear} between unrelated tasks. Use \code{/compact}
+for selective summarization.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/best-practices}}
+
+\begin{whybox}[The Non-Linear Cost of Context]
+Context degradation is not gradual---there is a noticeable threshold
+where Claude begins to lose track of earlier instructions.
+Every token of context spent on irrelevant information
+(old errors, abandoned approaches, unrelated tasks)
+is a token unavailable for the task at hand.
+
+The mechanism: as the context window fills, Claude's attention
+distributes across more tokens. Critical instructions
+(your CLAUDE.md rules, the current task description) compete
+for attention with accumulated noise. Past a threshold,
+signal-to-noise drops sharply.
+\end{whybox}
+
+% -------------------------------------------------------------------
+\section{The Full Context Toolkit}
+\label{sec:context-toolkit}
+
+\begin{description}
+  \item[\code{/clear}] Wipe context and start fresh. Use between unrelated tasks.
+    Cost: 30 seconds. Benefit: full attention on the next task.
+
+  \item[\code{/compact}] Summarize conversation while preserving key decisions.
+    Less aggressive than \code{/clear}; retains important context.
+    Use when a long task genuinely needs accumulated context but the
+    window is getting large.
+
+  \item[\code{/rewind}] Checkpoint and roll back to a previous state.
+    Use when Claude went down a wrong path and you want to revert
+    without losing earlier good work.
+
+  \item[\code{/context}] Visualize current context usage.
+    Shows how much of the window is consumed and by what.
+
+  \item[Subagents] Delegate context-heavy research to isolated agents.
+    Results return to your session; the research context does not.
+    See \cref{ch:agents} for the full treatment.
+\end{description}
+
+\margintip{Watch the token counter. When it approaches 60--70\% of the window,
+proactively \code{/compact} or \code{/clear}.}
+
+% -------------------------------------------------------------------
+\section{The Two-Failure Rule (Revisited)}
+\label{sec:two-failure}
+
+This rule was introduced in \cref{ch:first-session}.
+Now you understand \emph{why} it works:
+
+\practitioner{After two failed corrections, the context contains:
+the original error ($\sim$500 tokens), your first correction ($\sim$200 tokens),
+Claude's apology and retry ($\sim$800 tokens), your second correction ($\sim$200 tokens),
+and Claude's second attempt ($\sim$800 tokens).
+That is $\sim$2,500 tokens of noise---nearly all of it encoding
+failure patterns rather than the actual task.}
+
+\code{/clear} discards 2,500 tokens of noise.
+A better initial prompt (informed by what went wrong)
+takes $\sim$200 tokens and produces a better result.
+
+% -------------------------------------------------------------------
+\section{Session Management}
+\label{sec:sessions}
+
+\marginnote[Official]{Named sessions: \code{/rename}, \code{--continue},
+\code{--resume}, \code{--from-pr}.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/overview}}
+
+\official{Sessions persist across terminal restarts.} Key commands:
+
+\begin{description}
+  \item[\code{claude --continue}] Resume the most recent session.
+  \item[\code{claude --resume}] Pick from a list of previous sessions.
+  \item[\code{claude --from-pr 123}] Start a session with PR context pre-loaded.
+  \item[\code{/rename "feature-auth"}] Give descriptive names for later retrieval.
+\end{description}
+
+\subsection{The CURRENT\_WORK.md Pattern}
+
+\practitioner{Maintain a \code{CURRENT\_WORK.md} file at project root.
+It provides 30-second context resume after any interruption.}
+
+\begin{beforeafter}
+\before
+\begin{minted}{text}
+[No file. Developer spends 10 minutes re-discovering context.]
+\end{minted}
+
+\after
+\begin{minted}{markdown}
+## Right Now
+Refactoring payment processing to async handlers.
+
+## Why
+Current sync handlers cause 200ms latency spikes under load.
+
+## Next Step
+Write integration tests for the new async PaymentProcessor class.
+
+## Context When I Return
+- PaymentProcessor class is in src/payments/processor.py
+- 3 of 5 handler methods converted, 2 remaining
+- Tests in tests/payments/ — existing tests still pass
+\end{minted}
+\end{beforeafter}
+
+\margintip{Update CURRENT\_WORK.md at the start and end of every session.
+60 seconds invested saves 10 minutes of re-discovery.}
+
+% -------------------------------------------------------------------
+\section{Auto-Memory and Cross-Session Persistence}
+\label{sec:memory}
+
+\marginnote[Official]{Claude records and recalls memories across sessions
+automatically. Memory files persist in \code{\textasciitilde/.claude/projects/*/memory/}.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/memory}}
+
+\official{Claude maintains auto-memory that persists across conversations.}
+It records patterns, decisions, and lessons learned, making them available
+in future sessions without explicit re-prompting.
+
+\subsection{What to Store in Memory}
+
+\begin{description}
+  \item[Stable patterns] Confirmed conventions that apply across sessions
+  \item[Architecture decisions] Why you chose X over Y (not just what)
+  \item[Hard-won lessons] Bugs, workarounds, gotchas that took time to discover
+  \item[Known issues] Pre-existing problems to avoid re-investigating
+\end{description}
+
+\subsection{What NOT to Store}
+
+\begin{description}
+  \item[Transient state] Current task details, in-progress work
+  \item[Unverified conclusions] Patterns seen once, not confirmed
+  \item[Duplicates of CLAUDE.md] Memory supplements configuration, does not replace it
+\end{description}
+
+\practitioner{The test for whether something belongs in memory:
+``Will this still be true and useful in three months?''
+If yes, store it. If uncertain, wait for confirmation.}
+
+% -------------------------------------------------------------------
+\section{Plan Documents for Large Tasks}
+\label{sec:plans}
+
+\marginnote[Official]{Use Plan Mode (Shift+Tab) for read-only analysis
+before implementation.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/overview}}
+
+\official{The recommended workflow for complex tasks:
+Explore $\rightarrow$ Plan $\rightarrow$ Implement $\rightarrow$ Commit.}
+
+Plan Mode lets Claude analyze your codebase without modifying anything.
+Use it for architecture discussions, impact analysis, and strategy decisions.
+
+\practitioner{For tasks exceeding one hour or 500 lines of changes,
+create a plan document:}
+
+\begin{enumerate}
+  \item \textbf{Active} --- currently being planned, open questions remain
+  \item \textbf{Ready} --- plan approved, implementation can begin
+  \item \textbf{Implemented} --- all phases complete
+  \item \textbf{Archived} --- moved to \code{docs/plans/archived/}
+\end{enumerate}
+
+Every plan document should include a ``Decisions Made'' section
+documenting: why specific implementations were chosen,
+alternatives considered but rejected, assumptions made,
+and tradeoffs accepted. This section is invaluable for postmortem analysis
+when a decision turns out to be wrong.
+
+% -------------------------------------------------------------------
+\section{Quick Reference}
+
+\begin{itemize}
+  \item Context degrades non-linearly---manage it actively
+  \item \code{/clear} between tasks, \code{/compact} within long tasks
+  \item \code{/context} to visualize usage, \code{/rewind} to undo missteps
+  \item Two-failure rule: \code{/clear} + better prompt beats a third correction
+  \item CURRENT\_WORK.md for cross-session context at project root
+  \item Auto-memory for cross-session patterns
+  \item Plan Mode (Shift+Tab) before complex implementations
+\end{itemize}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+\begin{enumerate}
+  \item Create a \code{CURRENT\_WORK.md} for your active project
+    with Right Now, Why, Next Step, and Context sections.
+  \item In your next session, check \code{/context} after 30 minutes.
+    How much of the window is consumed?
+  \item Track correction rounds for one day. If any task exceeds two,
+    note what a better initial prompt would have been.
+\end{enumerate}
+\end{trybox}

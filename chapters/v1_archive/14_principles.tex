@@ -1,0 +1,78 @@
+% Chapter 14: Foundational Principles
+\chapter{Foundational Principles}
+\label{ch:principles}
+
+These four principles underlie every recommendation in this handbook.
+They apply to code written by AI, code written by humans,
+and code written by both together.
+
+\section{Never Fail Silently}
+
+Every error must be explicitly reported with recovery options.
+Silent failures are the most expensive kind of bug:
+they produce incorrect results that look correct,
+propagate through downstream systems undetected,
+and surface only when the damage is difficult to reverse.
+
+In AI-assisted development, this principle has an additional dimension:
+Claude must be configured to surface problems rather than work around them.
+A CLAUDE.md that says ``if you encounter an error, report it immediately
+with the error message and your analysis'' produces better outcomes than
+one that says ``handle errors gracefully.''
+
+\section{Simplicity Over Complexity}
+
+Short functions. Flat structure. Self-documenting code.
+A 20-line function with a clear name is superior to a 5-line function
+with three levels of abstraction.
+
+The corollary for AI-assisted work: simple code is easier for Claude to
+reason about, test, and modify correctly. Complex abstractions increase
+the probability of subtle bugs in AI-generated code because each layer
+of indirection is another opportunity for misunderstanding.
+
+\section{Immutability by Default}
+
+Return new data structures; mark mutations explicitly.
+Pure functions are easier to test, easier to parallelize,
+and easier for Claude to reason about.
+
+When mutation is necessary (performance, I/O, state management),
+make it explicit: name the function \code{update\_}, use mutable types,
+and document the side effects. The reader should never be surprised
+by what a function modifies.
+
+\section{Fail Fast with Diagnostics}
+
+Stop immediately on problems with full context:
+what failed, what was expected, what was received,
+and what the caller can do about it.
+
+\begin{minted}{python}
+def process_data(df: pd.DataFrame, min_rows: int) -> pd.DataFrame:
+    if len(df) < min_rows:
+        raise ValueError(
+            f"Need {min_rows} rows, got {len(df)}. "
+            f"Check data source or reduce min_rows parameter."
+        )
+    # ... process
+\end{minted}
+
+\margintip{Error messages that include both the violation and a suggested fix reduce debugging time by 80\%.}
+
+The error message includes: what went wrong (\code{Need N, got M}),
+where to look (\code{data source}), and what to do about it
+(\code{reduce min\_rows}). This is the difference between a
+10-second fix and a 30-minute investigation.
+
+\vspace{1\baselineskip}
+
+\begin{keyinsight}
+These principles are not Claude-specific---they are engineering principles
+that happen to become even more important when AI is generating code.
+AI amplifies both good and bad patterns. If your codebase follows
+these principles, Claude's contributions will follow them too.
+If your codebase is silent about errors, full of mutable state,
+and deeply abstracted, Claude's contributions will be the same.
+The codebase is the curriculum. Make it teach the right lessons.
+\end{keyinsight}

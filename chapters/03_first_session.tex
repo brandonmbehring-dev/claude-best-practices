@@ -1,0 +1,192 @@
+% Chapter 3: Your First Working Session
+\chapter{Your First Working Session}
+\label{ch:first-session}
+
+\begin{itshape}
+Your CLAUDE.md is set up and your secrets are protected.
+You open Claude Code, type a prompt, and\ldots where do you start?
+How do you structure a request so Claude does what you mean?
+How do you know when to start fresh versus keep going?
+\end{itshape}
+
+\section{The Session Loop}
+\label{sec:session-loop}
+
+A productive session with Claude follows a repeating cycle:
+
+\begin{enumerate}
+  \item \textbf{Prompt} --- describe what you want, with enough context
+    for Claude to act without guessing.
+  \item \textbf{Observe} --- read what Claude did. Check the diff, run the tests,
+    examine the output.
+  \item \textbf{Refine} --- if the result is close but not right, give specific
+    feedback. If it is wrong, start fresh (\code{/clear}).
+  \item \textbf{Commit} --- when the change is verified, commit it.
+    One logical change per commit.
+\end{enumerate}
+
+\margintip{This is the same loop experienced developers use
+when pair programming---just faster.}
+
+The rest of this chapter teaches three essential skills for the prompt
+and refine steps: how to write clear requests, how to provide useful feedback,
+and how to manage the conversation so it stays productive.
+
+% -------------------------------------------------------------------
+\section{Three Prompting Basics}
+\label{sec:prompting-basics}
+
+These three techniques handle 80\% of daily interactions.
+\cref{ch:prompting} covers advanced prompting in depth;
+this section gives you enough to be productive today.
+
+\subsection{Be Specific About What, Not How}
+
+\begin{beforeafter}
+\before
+\begin{minted}{text}
+Fix the broken tests.
+\end{minted}
+
+\after
+\begin{minted}{text}
+The tests in tests/auth/ are failing with a TypeError
+on line 42 of test_login.py. The error is:
+"NoneType has no attribute 'email'".
+Diagnose the root cause and fix it.
+\end{minted}
+\end{beforeafter}
+
+The ``before'' makes Claude guess which tests, what kind of failure,
+and what ``fix'' means. The ``after'' gives Claude the information
+it needs to act precisely.
+
+\subsection{Tell Claude to Think Step by Step}
+
+\marginnote[Official]{Step-by-step prompting is consistently identified as one of the
+three highest-leverage techniques.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview}}
+
+For complex tasks, give Claude an explicit reasoning structure:
+
+\begin{minted}{text}
+Refactor the payment module:
+1. First, read the current implementation and list all public methods.
+2. Then, identify methods longer than 30 lines.
+3. For each long method, extract helper functions with clear names.
+4. Run the existing tests after each extraction to verify nothing broke.
+\end{minted}
+
+Without this structure, Claude may attempt the entire refactoring
+in one pass, increasing the risk of subtle regressions.
+
+\subsection{Include Verification Criteria}
+
+\convergence{``Give Claude a way to verify its own work'' is Anthropic's stated
+single highest-leverage practice.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/best-practices}}
+
+Always include how to check the result:
+
+\begin{minted}{text}
+Add input validation to the create_user endpoint.
+Verify: pytest tests/routes/test_users.py passes,
+and manually test with: curl -X POST localhost:8000/users -d '{}'
+(should return 400, not 500).
+\end{minted}
+
+When Claude knows the success criteria, it can self-correct
+before you ever see the result.
+
+% -------------------------------------------------------------------
+\section{Context Hygiene: The Basics}
+\label{sec:context-basics}
+
+\marginnote[Official]{Use \code{/clear} between unrelated tasks.
+Use \code{/compact} for selective summarization.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/best-practices}}
+
+The context window (introduced in \cref{sec:mental-model}) is your
+workspace. Like a physical desk, it becomes less effective as it
+fills with unrelated materials.
+
+\subsection{Two Commands to Know Now}
+
+\begin{description}
+  \item[\code{/clear}] Wipe context and start fresh.
+    Use between unrelated tasks: after fixing a bug, before writing a feature.
+  \item[\code{/compact}] Summarize the conversation while preserving
+    key decisions. Less aggressive than \code{/clear};
+    use when you need to continue a long task but context is getting large.
+\end{description}
+
+\subsection{The Two-Failure Rule}
+
+\practitioner{After two failed corrections on the same issue,
+\code{/clear} and write a better initial prompt.}
+
+Each correction attempt adds noise: the original error, your correction,
+Claude's apology, and its retry. After two rounds, the context is
+dominated by failure patterns rather than the actual task.
+Starting fresh with a better prompt costs 30 seconds and produces
+better results than a third correction round.
+
+\begin{warnbox}[When to Clear]
+If you find yourself typing ``no, that's not what I meant'' for the
+third time, stop. \code{/clear}. Write the prompt you wish you had
+written the first time. The cost of accumulated correction context
+exceeds the cost of starting fresh.
+\end{warnbox}
+
+% -------------------------------------------------------------------
+\section{A Complete Example}
+\label{sec:session-example}
+
+Here is a realistic mini-session showing the loop in practice:
+
+\begin{minted}{text}
+You: Add a rate limiter to the /api/upload endpoint.
+     Token bucket algorithm, 10 requests/minute per user.
+     Write tests first, then implementation.
+     Verify: pytest tests/middleware/test_rate_limiter.py passes.
+
+Claude: [writes tests, then implementation, runs tests — 2 pass, 1 fails]
+  "Test test_burst_limit is failing because..."
+
+You: The burst size should be 3, not 10. Fix the test expectation.
+
+Claude: [fixes test, reruns — all pass]
+  "All 3 tests pass. Ready to commit?"
+
+You: Yes, commit with message "feat: Add token bucket rate limiter"
+\end{minted}
+
+Notice the structure:
+\begin{itemize}
+  \item The initial prompt included what, how (algorithm), and verification criteria.
+  \item The refinement was specific (which test, what to change).
+  \item One logical change, one commit.
+\end{itemize}
+
+% -------------------------------------------------------------------
+\section{Quick Reference}
+
+\begin{itemize}
+  \item Session loop: prompt $\rightarrow$ observe $\rightarrow$ refine $\rightarrow$ commit
+  \item Be specific about \emph{what} you want, not \emph{how} to do it
+  \item Include verification criteria in every prompt
+  \item Use \code{/clear} between unrelated tasks
+  \item Two-failure rule: after two corrections, start fresh
+\end{itemize}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+Start a session with Claude Code on your current project.
+Implement one small feature or fix one bug using this loop:
+\begin{enumerate}
+  \item Write a prompt that includes: what you want, relevant context,
+    and how to verify the result.
+  \item Let Claude work. Observe the result.
+  \item If refinement is needed, give specific feedback (file, line, what to change).
+  \item When satisfied, commit the change.
+\end{enumerate}
+Track how many refinement rounds it takes.
+If it exceeds two, try \code{/clear} and a better initial prompt.
+\end{trybox}

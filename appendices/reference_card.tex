@@ -1,4 +1,4 @@
-% Appendix B: Command and Hook Reference
+% Appendix C: Command and Hook Reference
 \chapter{Command and Hook Reference}
 \label{app:reference}
 
@@ -13,11 +13,13 @@
 \code{/clear} & Clear context, start fresh \\
 \code{/compact} & Summarize conversation, preserve key decisions \\
 \code{/rewind} & Roll back to a previous checkpoint \\
+\code{/context} & Visualize current context usage \\
 \code{/rename "name"} & Give current session a descriptive name \\
 \code{/hooks} & Configure lifecycle hooks interactively \\
 \code{/mcp} & Manage MCP server connections \\
+\code{/memory} & View and manage auto-memory \\
 \code{/permissions} & View and modify permission rules \\
-\code{/status} & Show current session status (model, context, tools) \\
+\code{/status} & Show version, model, and account info \\
 \code{/help} & Show available commands \\
 \bottomrule
 \end{tabular}
@@ -53,44 +55,62 @@
 \code{Shift+Tab} & Toggle Plan Mode (read-only analysis) \\
 \code{Alt+T} & Toggle extended thinking \\
 \code{Ctrl+C} & Cancel current generation \\
+\code{Ctrl+B} & Background a running task \\
+\code{Ctrl+O} & Toggle verbose mode (show hook output) \\
 \code{Esc} & Cancel current input \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
 
-\section{Hook Events}
+\section{Hook Events (17 Total)}
 
 \begin{fullwidth}
 \begin{tabular}{@{}lp{3cm}p{5cm}@{}}
 \toprule
 \textbf{Event} & \textbf{Timing} & \textbf{Typical Use} \\
 \midrule
-\code{PreToolUse} & Before any tool & Validate inputs, block operations \\
-\code{PostToolUse} & After any tool & Log results, trigger follow-up \\
-\code{PreFileWrite} & Before file write & Block sensitive paths, validate content \\
+\code{SessionStart} & Session begins & Load context, run health check \\
+\code{UserPromptSubmit} & User sends prompt & Transform or validate input \\
+\code{PreToolUse} & Before tool call & Validate inputs, block operations \\
+\code{PermissionRequest} & Permission dialog & Auto-allow/deny by rule \\
+\code{PostToolUse} & After tool succeeds & Log results, trigger follow-up \\
+\code{PostToolUseFailure} & After tool fails & Error handling, retry logic \\
+\code{PreFileWrite} & Before file write & Block sensitive paths \\
 \code{PostFileWrite} & After file write & Auto-format, lint, validate \\
 \code{PreBashRun} & Before shell command & Block dangerous commands \\
 \code{PostBashRun} & After shell command & Capture output, log \\
 \code{PreCommit} & Before git commit & Run tests, lint, type check \\
 \code{PostCommit} & After git commit & Trigger CI, update dashboards \\
-\code{UserPromptSubmit} & User sends prompt & Transform or validate input \\
-\code{Notification} & Notification event & Route to Slack, email, dashboard \\
-\code{SessionStart} & Session begins & Load context, run health check \\
-\code{SessionEnd} & Session ends & Save state, update logs \\
-\code{WorktreeCreate} & Worktree created & Initialize worktree-specific config \\
-\code{WorktreeRemove} & Worktree removed & Clean up temporary resources \\
+\code{Notification} & Notification event & Route to Slack, email \\
+\code{Stop} & Claude finishes responding & Run cleanup tasks \\
+\code{SubagentStart} & Subagent spawned & Initialize agent config \\
+\code{SubagentStop} & Subagent finishes & Process agent results \\
+\code{PreCompact} & Before compaction & Save state before summarization \\
+\code{SessionEnd} & Session terminates & Save state, update logs \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
 
-\section{Settings Precedence}
+{\footnotesize \textit{Additional events include \code{TeammateIdle}, \code{TaskCompleted},
+\code{ConfigChange}, \code{WorktreeCreate}, and \code{WorktreeRemove}.}}
+
+\section{Hook Types}
+
+\begin{description}
+  \item[\code{command}] Runs a shell command (most common). Exit 0 = proceed, exit 2 = block.
+  \item[\code{prompt}] Single-turn LLM evaluation (Haiku by default). Returns \code{\{"ok": true/false\}}.
+  \item[\code{agent}] Multi-turn subagent with tool access (up to 50 turns, 60s default timeout).
+\end{description}
+
+\section{Settings Precedence (5 Levels)}
 
 \begin{enumerate}
-  \item \textbf{Managed} (\code{.managed-settings.json}) --- IT-deployed, highest priority
+  \item \textbf{Managed} (\code{managed-settings.json}) --- IT-deployed, highest priority
+  \item \textbf{CLI arguments} --- temporary session overrides
   \item \textbf{Local} (\code{.claude/settings.local.json}) --- personal, auto-gitignored
   \item \textbf{Project} (\code{.claude/settings.json}) --- team standards, committed
   \item \textbf{User} (\code{\textasciitilde/.claude/settings.json}) --- global personal defaults
 \end{enumerate}
 
-Higher levels override lower. Within each level, \code{deny} rules are absolute
+Higher levels override lower. Deny rules are absolute
 and cannot be overridden by lower levels.

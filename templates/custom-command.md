@@ -1,5 +1,9 @@
 # .claude/commands/check.md
 
+<!-- WHY: Commands that encode decision workflows produce more value
+     than commands that simply run a script. This command gathers
+     information and presents a summary, letting you decide next steps. -->
+
 Run a comprehensive check of the project:
 
 1. Run the test suite: `npm test`

@@ -1,0 +1,138 @@
+% Appendix A: The Claude Maturity Model
+\chapter{The Claude Maturity Model}
+\label{app:maturity}
+
+This model provides concrete milestones for Claude Code adoption.
+Use it to assess where you are and what to invest in next.
+Each Part introduction in this handbook references the levels below.
+
+\section{Five Levels of Claude Adoption}
+\label{sec:maturity-levels}
+
+\begin{fullwidth}
+\begin{tabular}{@{}clp{4cm}p{5cm}@{}}
+\toprule
+\textbf{Level} & \textbf{Name} & \textbf{Key Capabilities} & \textbf{Milestone} \\
+\midrule
+\maturitylevel{1} & Conversational & Default Claude, chat-style usage, no configuration &
+  Create first CLAUDE.md (\code{/init}) \\[6pt]
+\maturitylevel{2} & Configured & CLAUDE.md, custom commands, permissions, basic hooks &
+  5+ commands in a workflow chain \\[6pt]
+\maturitylevel{3} & Systematic & Hub-and-spoke, conditional rules, sessions, memory, plans &
+  Hub repo with 3+ spoke projects \\[6pt]
+\maturitylevel{4} & Autonomous & Skills, MCP servers, subagents, parallel workflows, dashboards &
+  Autonomous quality pipeline \\[6pt]
+\maturitylevel{5} & Enterprise & Agent SDK, agent teams, CI/CD, team-wide standards, SSO &
+  Team-wide deployment with metrics \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+% -------------------------------------------------------------------
+\section{Upgrade Checklists}
+
+\subsection{L1 $\rightarrow$ L2: From Conversational to Configured}
+
+\begin{itemize}
+  \item[$\square$] Create CLAUDE.md with build commands and code conventions
+  \item[$\square$] Add \code{.claude/settings.json} with deny rules for secrets
+  \item[$\square$] Create 3+ custom commands for common workflows
+  \item[$\square$] Add PostFileWrite hook for auto-formatting
+  \item[$\square$] Add PreCommit hook for test suite
+\end{itemize}
+
+Reference: \cref{ch:first-claude-md}, \cref{ch:first-session}
+
+\subsection{L2 $\rightarrow$ L3: From Configured to Systematic}
+
+\begin{itemize}
+  \item[$\square$] Create hub directory for shared patterns
+  \item[$\square$] Convert 3+ projects to hub-and-spoke imports
+  \item[$\square$] Add conditional rules (\code{paths:} frontmatter) for distinct modules
+  \item[$\square$] Use sessions with named checkpoints (\code{/rename})
+  \item[$\square$] Maintain CURRENT\_WORK.md for cross-session context
+  \item[$\square$] Create first plan document for a large task
+\end{itemize}
+
+Reference: \cref{ch:architecture}, \cref{ch:context}
+
+\subsection{L3 $\rightarrow$ L4: From Systematic to Autonomous}
+
+\begin{itemize}
+  \item[$\square$] Create skills for repeated multi-step workflows
+  \item[$\square$] Add MCP server for external tool access
+  \item[$\square$] Define custom subagents for specialized tasks
+  \item[$\square$] Implement writer/reviewer pattern for code review
+  \item[$\square$] Build traffic-light quality dashboard
+  \item[$\square$] Run parallel workflows with git worktrees
+\end{itemize}
+
+Reference: \cref{ch:extending}, \cref{ch:agents}
+
+\subsection{L4 $\rightarrow$ L5: From Autonomous to Enterprise}
+
+\begin{itemize}
+  \item[$\square$] Deploy managed-settings.json for organization-wide policy
+  \item[$\square$] Implement headless mode in CI/CD pipeline
+  \item[$\square$] Establish team CLAUDE.md standards committed to VCS
+  \item[$\square$] Set up SSO and audit logging
+  \item[$\square$] Build fan-out automation for bulk operations
+  \item[$\square$] Track usage metrics and cost optimization
+\end{itemize}
+
+Reference: \cref{ch:automation}, \cref{ch:team}, \cref{ch:enterprise}
+
+% -------------------------------------------------------------------
+\section{Progression Strategy}
+
+\practitioner{Promote when friction justifies it, not on a schedule.}
+
+\begin{enumerate}
+  \item \textbf{Stay at L1} until you find yourself repeating the same
+    context to Claude across sessions.
+  \item \textbf{Move to L2} when CLAUDE.md and 3--5 commands would
+    eliminate daily repetition.
+  \item \textbf{Move to L3} when 3+ projects share patterns
+    or when plans would prevent wasted effort on large tasks.
+  \item \textbf{Move to L4} when multi-step workflows consume
+    significant time or external tools would unlock new capabilities.
+  \item \textbf{Move to L5} when team adoption, compliance, or production
+    automation requires enterprise infrastructure.
+\end{enumerate}
+
+\begin{warnbox}[Premature Promotion]
+Jumping from L1 to L4 is a common mistake.
+Each level builds on the habits and infrastructure of the previous one.
+Skills without CLAUDE.md produce inconsistent results;
+MCP servers without permissions create security risks;
+agent teams without plan documents produce uncoordinated work.
+\end{warnbox}
+
+% -------------------------------------------------------------------
+\section{Visual: Maturity Pyramid}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  level/.style={draw=PrimaryBlue, fill=PrimaryBlue!#1, trapezium, trapezium angle=80,
+    minimum height=0.8cm, font=\small, align=center, inner sep=2pt},
+  >=Stealth
+]
+  \node[level=5, minimum width=11cm] (l1) at (0,0) {\textbf{L1 Conversational} --- Default usage, no config};
+  \node[level=8, minimum width=9cm] (l2) at (0,1.1) {\textbf{L2 Configured} --- CLAUDE.md, commands, permissions};
+  \node[level=12, minimum width=7cm] (l3) at (0,2.2) {\textbf{L3 Systematic} --- Hub-and-spoke, rules, memory};
+  \node[level=16, minimum width=5cm] (l4) at (0,3.3) {\textbf{L4 Autonomous} --- Skills, MCP, subagents};
+  \node[level=22, minimum width=3.2cm, text=white] (l5) at (0,4.4) {\textbf{L5 Enterprise}};
+
+  \node[font=\scriptsize\itshape, text=PrimaryBlue!70, anchor=west] at (5.8,0) {Week 1};
+  \node[font=\scriptsize\itshape, text=PrimaryBlue!70, anchor=west] at (4.8,1.1) {Weeks 2--4};
+  \node[font=\scriptsize\itshape, text=PrimaryBlue!70, anchor=west] at (3.8,2.2) {Months 2--3};
+  \node[font=\scriptsize\itshape, text=PrimaryBlue!70, anchor=west] at (2.8,3.3) {Months 3--6};
+  \node[font=\scriptsize\itshape, text=PrimaryBlue!70, anchor=west] at (1.9,4.4) {Month 6+};
+
+  \draw[dashed, thick, TipGreen!70!black] (-5.5,2.7) -- (5.5,2.7);
+  \node[font=\scriptsize\bfseries, text=TipGreen!70!black, anchor=east] at (-5.5,2.7) {Most solo devs};
+\end{tikzpicture}
+\caption{The maturity pyramid. Most solo developers stabilize at L3.}
+\label{fig:maturity-pyramid}
+\end{figure}

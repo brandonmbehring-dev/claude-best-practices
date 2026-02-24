@@ -1,5 +1,5 @@
 % claude_best_practices.tex
-% Main document: Best Practices for Using Claude
+% Main document: Best Practices for Using Claude v2.0
 % Build: make pilot (quick) or make digital (full)
 
 \documentclass[10pt,oneside,open=any]{scrbook}
@@ -17,50 +17,106 @@
 % Preamble
 \input{chapters/00_preamble}
 
-% Section 1: Configuration Hierarchy
-\input{chapters/01_configuration}
+% =====================================================================
+% PART I: FOUNDATIONS — What Everyone Needs (L1 → L2)
+% =====================================================================
+\part{Foundations}
+\label{part:foundations}
 
-% Section 2: Commands, Skills, Hooks, Agents
-\input{chapters/02_extensions}
+\begin{partintro}
+You are at Level 1 (Conversational)---using Claude Code as a chatbot with file access.
+By the end of this part, you will be at Level 2 (Configured):
+Claude will know your project, respect your boundaries, and follow your conventions
+without being told twice.
+\end{partintro}
 
-% Section 3: Context Management + Memory
-\input{chapters/03_context}
+% Chapter 1: Principles & Mental Model
+\input{chapters/01_principles}
 
-% Section 4: Prompt Engineering
+% Chapter 2: Your First CLAUDE.md
+\input{chapters/02_first_claude_md}
+
+% Chapter 3: Your First Working Session
+\input{chapters/03_first_session}
+
+% =====================================================================
+% PART II: PERSONAL PRACTICE — Daily Workflows (L2 → L3)
+% =====================================================================
+\part{Personal Practice}
+\label{part:practice}
+
+\begin{partintro}
+You are at Level 2 (Configured)---Claude knows your project and follows basic rules.
+This part takes you to Level 3 (Systematic): you will manage context deliberately,
+test AI-generated code rigorously, and extend Claude with custom capabilities
+that encode your team's workflows.
+\end{partintro}
+
+% Chapter 4: Prompting That Works
 \input{chapters/04_prompting}
 
-% Section 5: Testing + Quality
-\input{chapters/05_testing}
+% Chapter 5: Context as Currency
+\input{chapters/05_context}
 
-% Section 6: Starting New Projects
-\input{chapters/06_greenfield}
+% Chapter 6: The Edit-Test-Commit Loop
+\input{chapters/06_testing}
 
-% Section 7: Refactoring Legacy Projects
-\input{chapters/07_refactoring}
+% Chapter 7: Extending Claude
+\input{chapters/07_extending}
 
-% Section 8: Automation Pipelines
-\input{chapters/08_automation}
+% =====================================================================
+% PART III: ADVANCED CRAFT — Mastery Patterns (L3 → L4)
+% =====================================================================
+\part{Advanced Craft}
+\label{part:advanced}
 
-% Section 9: MCP + Tool Integration
-\input{chapters/09_mcp}
+\begin{partintro}
+You are at Level 3 (Systematic)---you manage context, test rigorously, and use
+commands and hooks. Advanced patterns take you toward Level 4 (Autonomous):
+architecting configurations that scale across projects, delegating work to agents,
+and managing entire project lifecycles with Claude.
+\end{partintro}
 
-% Section 10: Parallel Workflows
-\input{chapters/10_parallel}
+% Chapter 8: CLAUDE.md Architecture
+\input{chapters/08_claude_md_architecture}
 
-% Section 11: Anti-Patterns
+% Chapter 9: Agents, Delegation & Parallel Work
+\input{chapters/09_agents_parallel}
+
+% Chapter 10: Starting & Refactoring Projects
+\input{chapters/10_projects}
+
+% Chapter 11: Anti-Patterns & Recovery
 \input{chapters/11_antipatterns}
 
-% Section 12: Maturity Model
-\input{chapters/12_maturity}
+% =====================================================================
+% PART IV: TEAM & ENTERPRISE — Scaling Up (L4 → L5)
+% =====================================================================
+\part{Team \& Enterprise}
+\label{part:enterprise}
 
-% Section 13: Enterprise Deployment
-\input{chapters/13_enterprise}
+\begin{partintro}
+Ready for Level 4--5. Individual mastery is established; now the challenge
+is scaling it. This part covers automation pipelines, team governance,
+and enterprise deployment---the infrastructure that turns personal
+productivity into organizational capability.
+\end{partintro}
 
-% Section 14: Foundational Principles
-\input{chapters/14_principles}
+% Chapter 12: Automation & Pipelines
+\input{chapters/12_automation}
 
-% Appendices
+% Chapter 13: Team Patterns & Governance
+\input{chapters/13_team}
+
+% Chapter 14: Enterprise Deployment
+\input{chapters/14_enterprise}
+
+% =====================================================================
+% APPENDICES
+% =====================================================================
 \appendix
+
+\input{appendices/maturity}
 \input{appendices/templates}
 \input{appendices/reference_card}
 \input{appendices/sources}

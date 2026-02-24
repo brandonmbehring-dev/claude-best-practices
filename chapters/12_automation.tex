@@ -1,0 +1,141 @@
+% Chapter 12: Automation & Pipelines
+\chapter{Automation and Pipelines}
+\label{ch:automation}
+
+\begin{itshape}
+Your team merges 20 PRs per week. Each needs type checking, test runs,
+and documentation updates. Manual review is not scaling.
+Claude can do this work---but not through interactive sessions.
+\end{itshape}
+
+Claude Code is not limited to interactive use.
+Its headless mode, fan-out capabilities, and the Claude Agent SDK
+enable production automation pipelines that run without human interaction.
+The extension mechanisms from \cref{ch:extending}---especially hooks---provide
+the building blocks. This chapter assembles them into pipelines.
+
+\section{Headless Mode}
+\label{sec:headless}
+
+\marginnote[Official]{\code{claude -p "prompt"} for non-interactive use.
+\code{--output-format json|stream-json|text}.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/overview}}
+
+\official{Use \code{claude -p} for non-interactive automation.}
+
+\begin{description}
+  \item[\code{-p "prompt"}] Single prompt, no interaction.
+  \item[\code{--output-format json}] Structured output for pipeline consumption.
+  \item[\code{--allowedTools}] Restrict to specific tools for safety.
+  \item[\code{--model}] Override model per invocation.
+\end{description}
+
+\subsection{Fan-Out Pattern}
+
+\begin{beforeafter}
+\before
+\begin{minted}{text}
+Manual: open Claude, paste file, ask for type hints,
+copy result, repeat 47 times.
+\end{minted}
+
+\after
+\begin{minted}{bash}
+# Test on 3 files first
+for f in $(find src/ -name "*.py" | head -3); do
+  claude -p "Add type hints to all functions in $f" \
+    --allowedTools Read,Edit
+done
+
+# Review results, then scale
+find src/ -name "*.py" | while read f; do
+  claude -p "Add type hints to all functions in $f" \
+    --allowedTools Read,Edit \
+    --output-format json >> results.jsonl
+done
+\end{minted}
+\end{beforeafter}
+
+\margintip{Always test on 3--5 files before scaling.
+The prompt that works on your first file may fail on edge cases in file 47.}
+
+\subsection{Permissions in Headless Mode}
+
+\begin{warnbox}[Headless Permissions]
+In headless mode, Claude still respects permission rules.
+For trusted CI/CD environments, use \code{--dangerously-skip-permissions}
+to bypass interactive prompts.
+This flag should \textbf{only} be used in environments you fully control
+(CI runners, Docker containers). Never expose it in user-facing scripts.
+\end{warnbox}
+
+% -------------------------------------------------------------------
+\section{Claude Agent SDK}
+\label{sec:agent-sdk}
+
+\marginnote[Official]{Same agent loop as Claude Code, programmable in
+Python and TypeScript.\sourceurl{https://platform.claude.com/docs/en/agent-sdk/overview}}
+
+\begin{decisionbox}[Headless Mode vs.\ Agent SDK]
+\textbf{Headless mode} (\code{claude -p}): quick automation, scripting,
+CI/CD integration. Uses Claude Code's existing configuration.
+Best for: fan-out, batch operations, simple pipelines.
+
+\textbf{Agent SDK}: programmatic control, custom tools, production deployment.
+Best for: custom applications, complex orchestration, SaaS integration.
+
+\textbf{Rule}: Start with headless mode. Move to Agent SDK when you need
+custom tool definitions or programmatic control flow.
+\end{decisionbox}
+
+\official{The Agent SDK provides:}
+\begin{itemize}
+  \item Filesystem-based configuration (CLAUDE.md per \cref{ch:architecture}, skills, memory)
+  \item Custom tool definitions and MCP server integration
+  \item Streaming responses and structured output
+  \item Production deployment with error handling and retry logic
+\end{itemize}
+
+% -------------------------------------------------------------------
+\section{Pipeline Design Patterns}
+\label{sec:pipeline-patterns}
+
+\subsection{Traffic-Light Dashboards}
+
+\practitioner{Replace pass/fail with traffic-light thresholds (GREEN/YELLOW/RED).}
+This provides nuance: 78\% coverage is not ``failing''---it is
+YELLOW, meaning ``acceptable but track for improvement.''
+
+\begin{minted}{text}
+=== Project Health Dashboard ===
+Test Coverage:    82% [GREEN]
+Lint Warnings:     3  [YELLOW]
+Documentation:   91% [GREEN]
+Card Quality:    97% [GREEN]
+Overall:         HEALTHY (3 GREEN, 1 YELLOW)
+\end{minted}
+
+\subsection{Pipeline Directionality}
+
+\begin{warnbox}[Pipeline Direction]
+Never re-run upstream steps after editing downstream artifacts.
+Mark generated files with \code{\# GENERATED --- do not edit manually}.
+This is anti-pattern \#5 from \cref{ch:antipatterns}.
+\end{warnbox}
+
+% -------------------------------------------------------------------
+\begin{keyinsight}
+Automation with Claude follows the same principle as automation without it:
+build the pipeline for the common case, handle exceptions manually.
+The difference is that Claude can handle a much wider ``common case''
+than traditional scripts, reducing the exception rate dramatically.
+\end{keyinsight}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+\begin{enumerate}
+  \item Write a \code{claude -p} command that adds type hints to one file in your project.
+  \item Test it. Does the output compile? Do tests pass?
+  \item If yes: scale to 3 files. Review the results.
+  \item If no: refine the prompt. What did you need to specify that you assumed?
+\end{enumerate}
+\end{trybox}

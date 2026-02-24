@@ -3,8 +3,11 @@
 ---
 name: code-reviewer
 description: Review code changes for quality issues
-allowed_tools: [Read, Grep, Glob]
+tools: [Read, Grep, Glob]
 ---
+
+<!-- WHY: Isolated context prevents review bias from accumulated session context.
+     The reviewer sees only the code, not the intent behind the changes. -->
 
 Review the provided code changes for:
 

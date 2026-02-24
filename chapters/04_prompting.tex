@@ -1,82 +1,23 @@
-% Chapter 4: Prompt Engineering That Scales
-\chapter{Prompt Engineering That Scales}
+% Chapter 4: Prompting That Works
+\chapter{Prompting That Works}
 \label{ch:prompting}
 
-Prompt engineering for Claude Code differs from chatbot prompting
-in a fundamental way: you are not crafting one-off queries but building
-\emph{reusable systems} that run reliably across hundreds of sessions.
-The techniques in this chapter optimize for repeatability, not cleverness.
+\begin{itshape}
+Your prompts work, but they are inconsistent.
+Sometimes Claude nails it on the first try; sometimes you spend three rounds
+correcting misunderstandings. The gap is not randomness---it is precision.
+\end{itshape}
 
-\section{Three Highest-Leverage Techniques}
-\label{sec:three-techniques}
+In \cref{ch:first-session}, you learned three prompting basics:
+be specific, think step by step, include verification criteria.
+This chapter goes deeper: building a precision vocabulary,
+structuring complex prompts, managing cost, and using extended thinking.
 
-\marginnote[Official]{Anthropic's prompt engineering guide identifies these as the techniques with the largest impact on output quality.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview}}
-
-\official{Anthropic's research consistently identifies three techniques that produce
-the largest quality improvements:}
-
-\begin{enumerate}
-  \item \textbf{Tell Claude to think step by step.}
-    Not just ``think carefully''---give explicit reasoning structure.
-    ``First, identify the root cause. Then, list possible fixes.
-    Finally, recommend the fix with the best tradeoff of effort vs.\ impact.''
-
-  \item \textbf{Provide concrete examples (3--5 diverse).}
-    Examples anchor Claude's understanding better than abstract descriptions.
-    Include edge cases in your examples to demonstrate boundary handling.
-
-  \item \textbf{Use structured output formats.}
-    Specify the exact format you want: JSON schema, table structure,
-    section headers. Claude follows explicit format instructions precisely.
-\end{enumerate}
-
-\subsection{Additional High-Value Techniques}
-
-\begin{description}
-  \item[XML tags] For multi-component prompts, use \code{<context>}, \code{<task>},
-    \code{<constraints>} to separate concerns.
-  \item[Rich inputs] Use \code{@file} to include files, paste screenshots,
-    pipe data from \code{stdin}. Real data beats verbal descriptions.
-  \item[Verification criteria] ``The single highest-leverage thing you can do
-    is give Claude a way to verify its own work.''\sourceurl{https://code.claude.com/docs/en/best-practices}
-\end{description}
-
-\margintip{Verification criteria in CLAUDE.md: ``Always run tests after code changes. Never commit without passing CI.'' This one line improves every session.}
-
-% -------------------------------------------------------------------
-\section{Long Context Strategy}
-\label{sec:long-context}
-
-\marginnote[Official]{Claude Opus 4.6 supports 1M tokens (beta). Place documents at top, queries at bottom.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices}}
-
-\official{For multi-document inputs, structure matters:}
-
-\begin{enumerate}
-  \item Place all reference documents at the \textbf{top} of the prompt.
-  \item Place your question or task at the \textbf{bottom}.
-  \item Ask Claude to \textbf{quote relevant passages first} before answering.
-    This grounding technique can improve accuracy by 30\% on complex multi-document reasoning.
-\end{enumerate}
-
-\official{System prompts set the role; user prompts give the task.}
-Claude follows user-turn instructions more reliably than system prompt instructions.
-Use the system prompt for persona and constraints; use the user turn for
-specific task instructions.
-
-% -------------------------------------------------------------------
 \section{Building a Precision Vocabulary}
 \label{sec:precision}
 
 \practitioner{Track how your requests could be stated more precisely.
 Over time, develop a shared vocabulary between you and Claude.}
-
-The pattern:
-\begin{enumerate}
-  \item After each interaction, note how the request could have been clearer.
-  \item Identify recurring request patterns (create, diagnose, refactor, validate).
-  \item Document these patterns in a project nomenclature.
-  \item Use the precise version in future requests.
-\end{enumerate}
 
 \begin{fullwidth}
 \begin{tabular}{@{}p{5cm}p{7cm}@{}}
@@ -86,17 +27,74 @@ The pattern:
 ``Fix the broken tests'' & \code{diagnose test failures in tests/auth/ \&\& fix root cause} \\
 ``Make this code better'' & \code{refactor process\_payment() to <20 lines, extract validation} \\
 ``Check if this works'' & \code{validate: run pytest, check coverage >80\%, verify edge cases} \\
+``Add error handling'' & \code{add try/except to api\_call(), raise ValueError with context on 4xx, retry on 5xx} \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
 
-\margintip{Precision compounds. A team that develops shared vocabulary communicates 3x more efficiently with Claude after one month.}
+\margintip{Precision compounds. A team that develops shared vocabulary communicates
+3$\times$ more efficiently with Claude after one month.}
+
+The pattern for building vocabulary:
+\begin{enumerate}
+  \item After each interaction, note how the request could have been clearer.
+  \item Identify recurring request patterns (create, diagnose, refactor, validate).
+  \item Document these patterns in your project nomenclature.
+  \item Use the precise version in future requests.
+\end{enumerate}
+
+% -------------------------------------------------------------------
+\section{Structuring Complex Prompts}
+\label{sec:structure}
+
+\subsection{XML Tags for Multi-Component Prompts}
+
+\official{For complex prompts, use XML tags to separate concerns:\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview}}
+
+\begin{minted}{xml}
+<context>
+The payment module handles Stripe webhooks.
+Current code is in src/payments/webhook_handler.py.
+</context>
+
+<task>
+Add idempotency checking using the Stripe event ID.
+Store processed event IDs in Redis with 24h TTL.
+</task>
+
+<constraints>
+- Must not break existing webhook processing
+- Redis connection is available via app.redis
+- Include unit tests using fakeredis
+</constraints>
+
+<verification>
+Run: pytest tests/payments/ -v
+All existing tests must still pass.
+New tests must cover: duplicate event, expired event, new event.
+</verification>
+\end{minted}
+
+\subsection{Rich Inputs}
+
+\official{Use \code{@file} to include files, paste screenshots,
+pipe data from \code{stdin}.} Real data beats verbal descriptions.
+
+\begin{minted}{text}
+Look at @src/payments/webhook_handler.py and @tests/payments/test_webhooks.py.
+The handler processes events but has no idempotency check.
+Add one following the existing code patterns.
+\end{minted}
+
+\margintip{Including the actual files is always better than describing them.
+Claude reads code more accurately than it interprets descriptions of code.}
 
 % -------------------------------------------------------------------
 \section{Extended Thinking}
 \label{sec:thinking}
 
-\marginnote[Official]{On by default. Toggle: Alt+T. Opus 4.6: adaptive thinking with effort controls.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/extended-thinking}}
+\marginnote[Official]{On by default. Toggle: Alt+T. Opus 4.6: adaptive thinking
+with effort controls.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/extended-thinking}}
 
 \official{Extended thinking lets Claude reason through complex problems
 before responding.} On Opus 4.6, thinking is \textbf{adaptive}---the model
@@ -106,7 +104,7 @@ decides how much to think based on problem complexity.
 
 \begin{description}
   \item[\code{low}] Minimal thinking. Best for: simple lookups, formatting, boilerplate.
-  \item[\code{medium}] Moderate analysis. Best for: standard coding tasks, reviews.
+  \item[\code{medium}] Moderate analysis. Best for: standard coding tasks, code reviews.
   \item[\code{high}] Deep reasoning. Best for: architecture decisions, complex debugging.
   \item[\code{max}] Maximum effort. Best for: strategic decisions, novel problems.
 \end{description}
@@ -117,37 +115,38 @@ informs the next.
 
 \subsection{When to Enable vs.\ Disable}
 
-\begin{itemize}
-  \item \textbf{Enable} for: complex multi-step reasoning, strategic decisions,
-    code review where you want to see the thought process.
-  \item \textbf{Disable} for: simple tasks, real-time applications,
-    when latency matters more than depth.
-\end{itemize}
+\begin{decisionbox}[Extended Thinking]
+\textbf{Enable} when: the task requires multi-step reasoning, architectural
+decisions, debugging where the root cause is unclear, or code review
+where you want to see the thought process.
+
+\textbf{Disable} when: the task is simple (formatting, boilerplate),
+latency matters more than depth, or you are running bulk operations
+where speed dominates.
+\end{decisionbox}
 
 % -------------------------------------------------------------------
 \section{Cost Optimization}
 \label{sec:cost}
 
-\margincost{Prompt caching: 90\% savings on cached reads. Batch API: 50\% discount. Combined: 70\%+ savings.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-caching}}
+\margincost{Prompt caching: 90\% savings on cached reads. Batch API: 50\% discount.
+Combined: 70\%+ savings.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-caching}}
 
 \subsection{Prompt Caching}
 
 \official{Prompt caching reduces input costs by 90\% for repeated content.}
 
 \begin{description}
-  \item[Ephemeral (5-minute TTL)] Automatic for any content appearing in
+  \item[Ephemeral (5-minute TTL)] Automatic for content appearing in
     multiple requests within a short window.
   \item[Persistent (1-hour TTL)] Explicit cache breakpoints for content you know
-    will be reused. Best for: tool definitions, system prompts, reference documents.
+    will be reused: tool definitions, system prompts, reference documents.
 \end{description}
-
-Cacheable content: tool definitions, system messages, examples, documentation,
-images, PDFs.
 
 \subsection{Batch API}
 
-\official{50\% discount for asynchronous processing.} Submit up to 10,000
-requests per batch. Results returned within 24 hours.
+\official{50\% discount for asynchronous processing.} Submit up to 100,000
+requests per batch (256~MB max). Results returned within 24 hours.
 Combinable with caching for 70\%+ total savings.
 
 Best for: bulk migrations, code review across many files, documentation generation.
@@ -159,14 +158,14 @@ Best for: bulk migrations, code review across many files, documentation generati
 \toprule
 \textbf{Model Class} & \textbf{Strength} & \textbf{Best For} \\
 \midrule
-Haiku & Speed, lowest cost & Simple tasks, high volume, formatting \\
-Sonnet & Balance of speed and capability & Most coding tasks, daily development \\
-Opus & Frontier reasoning & Complex architecture, multi-file refactoring \\
+Haiku 4.5 & Speed, lowest cost & Simple tasks, high volume, formatting \\
+Sonnet 4.6 & Balance of speed and capability & Most coding tasks, daily development \\
+Opus 4.6 & Frontier reasoning & Complex architecture, multi-file refactoring \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
 
-\margincost{Pricing changes frequently. Check \url{https://platform.claude.com/docs/en/about-claude/pricing} for current rates.}
+\margincost{Pricing changes frequently. Check current rates before planning budgets.\sourceurl{https://platform.claude.com/docs/en/about-claude/pricing}}
 
 \practitioner{Default to Sonnet for development work. Escalate to Opus for
 architecture decisions, complex debugging, and multi-file refactoring.
@@ -221,3 +220,15 @@ structuring your workflow to maximize cache hits. A well-organized CLAUDE.md
 with stable tool definitions can reduce per-session costs by 60--80\%
 through caching alone.
 \end{keyinsight}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+Take your last three prompts to Claude (check terminal history).
+Rewrite each using the precision vocabulary table:
+\begin{enumerate}
+  \item Replace vague verbs (``fix,'' ``improve,'' ``check'')
+    with precise ones (``diagnose,'' ``refactor to <N lines,'' ``validate: run X'').
+  \item Add verification criteria to any prompt that lacked them.
+  \item Estimate: how many correction rounds would each rewrite have saved?
+\end{enumerate}
+\end{trybox}

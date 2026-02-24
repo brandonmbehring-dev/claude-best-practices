@@ -1,0 +1,191 @@
+% Chapter 14: Enterprise Deployment
+\chapter{Enterprise Deployment}
+\label{ch:enterprise}
+
+\begin{itshape}
+Your VP asks: ``Is Claude secure enough for our regulated environment?
+What certifications does it have? What will it cost at 200 engineers?''
+This chapter is designed to be shared with decision-makers.
+\end{itshape}
+
+\section{Security and Compliance}
+\label{sec:security}
+
+\marginnote[Enterprise]{Certifications verified Feb 2026.\sourceurl{https://trust.anthropic.com/}}
+
+\official{Anthropic holds industry-leading certifications:}
+
+\begin{description}
+  \item[SOC 2 Type II] Verified controls for security, availability, and confidentiality.
+  \item[ISO 27001] Information security management system.
+  \item[ISO 42001] AI management system.
+  \item[FedRAMP High] US government cloud security baseline.
+  \item[HIPAA BAA] Healthcare data protection agreements available.
+\end{description}
+
+\subsection{Identity and Access Management}
+
+\official{Enterprise-grade IAM:}
+\begin{itemize}
+  \item SSO via SAML 2.0 and OIDC
+  \item SCIM provisioning for automated user lifecycle
+  \item Role-based access control (RBAC)
+  \item Audit logs for all interactions
+  \item Compliance API and Analytics API for programmatic access
+\end{itemize}
+
+\subsection{Data Protection}
+
+\official{Key data protection features:}
+\begin{itemize}
+  \item \textbf{Encryption}: TLS 1.2+ in transit, AES-256 at rest.
+  \item \textbf{Zero Data Retention (ZDR)}: Available for API and Enterprise plans.
+  \item \textbf{No training on enterprise data}: Enterprise and API data is not
+    used for model training by default. Explicit opt-in required.
+\end{itemize}
+
+\marginenterprise{Enterprise/API data is never used for training by default.
+This is a contractual guarantee.\sourceurl{https://privacy.claude.com/en/articles/7996885-how-do-you-use-personal-data-in-model-training}}
+
+% -------------------------------------------------------------------
+\section{Deployment Scenario: 50-Person Rollout}
+\label{sec:deployment-scenario}
+
+\practitioner{A realistic 4-week enterprise adoption timeline:}
+
+\begin{fullwidth}
+\begin{tabular}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Week} & \textbf{Phase} & \textbf{Activities} \\
+\midrule
+1 & Pilot (5 developers) & Install Claude Code. Create shared CLAUDE.md.
+  Establish deny rules. Identify 3 high-value workflows. \\
+2 & Expand (15 developers) & Deploy managed-settings.json. Add PreCommit hooks.
+  Create team commands. Measure baseline productivity. \\
+3 & Scale (50 developers) & SSO integration. Shared MCP configurations.
+  Training sessions using this handbook. Monitor usage. \\
+4 & Optimize & Analyze usage patterns. Tune model selection for cost.
+  Implement caching strategy. Set spending caps. \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+% -------------------------------------------------------------------
+\section{Cost Optimization at Scale}
+\label{sec:cost-scale}
+
+\margincost{Prompt caching (90\%) + Batch API (50\%) = 70\%+ combined savings.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-caching}}
+
+\begin{enumerate}
+  \item \textbf{Optimize CLAUDE.md for caching.}
+    Stable tool definitions and system prompts cache automatically.
+    Restructure to put stable content first.
+  \item \textbf{Use Batch API for bulk operations.}
+    Code review, documentation generation, test scaffolding---all benefit
+    from 50\% batch discounts.
+  \item \textbf{Right-size models.}
+    Sonnet handles 80\% of coding tasks. Opus for architecture and complex reasoning.
+    Haiku for formatting and simple lookups.
+  \item \textbf{Set spending caps.}
+    Admin controls prevent runaway costs from long-running agent sessions.
+\end{enumerate}
+
+\begin{whybox}[Caching Beats Model Downgrading]
+The instinct to save money by using a cheaper model
+sacrifices quality across every interaction.
+Optimizing for cache hits preserves quality while reducing costs
+by a larger margin. A stable CLAUDE.md that caches well
+saves more than switching from Opus to Sonnet.
+\end{whybox}
+
+% -------------------------------------------------------------------
+\section{Enterprise Deployments at Scale}
+\label{sec:enterprise-deployments}
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{3cm}p{6cm}@{}}
+\toprule
+\textbf{Organization} & \textbf{Scale} & \textbf{Use Case} \\
+\midrule
+Deloitte\sourceurl{https://www.anthropic.com/news/deloitte-anthropic-partnership} &
+  470K employees & Role-customized Claude ``personas'' for consulting \\
+Accenture\sourceurl{https://www.anthropic.com/news/anthropic-accenture-partnership} &
+  30K trained & CIO-focused ROI measurement \\
+Snowflake\sourceurl{https://www.anthropic.com/news/snowflake-anthropic-expanded-partnership} &
+  12.6K customers & Text-to-SQL integration \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+% -------------------------------------------------------------------
+\section{Competitive Positioning}
+\label{sec:competitive}
+
+\begin{decisionbox}[Claude vs.\ GPT by Task Profile]
+\textbf{Choose Claude when}: long-document analysis, agentic coding workflows,
+enterprise compliance requirements (FedRAMP High, ISO 42001),
+API-first development.
+
+\textbf{Choose GPT when}: consumer-facing features, multimodal applications
+requiring image generation, existing GitHub Copilot integration.
+
+\textbf{Reality}: most serious enterprise deployments use both,
+choosing by task profile. The question is not ``which is better''
+but ``which is better for this specific use case.''
+\end{decisionbox}
+
+% -------------------------------------------------------------------
+\section{Government and Regulated Industries}
+\label{sec:government}
+
+\official{Government deployment options include:}
+
+\begin{description}
+  \item[FedRAMP High] Available via Palantir FedStart integration.
+  \item[AWS GovCloud] Cloud-native deployment for IL6+ requirements.
+  \item[Google Vertex Assured] Alternative cloud deployment for regulated workloads.
+\end{description}
+
+\marginnote[Enterprise]{Check \url{https://claude.com/solutions/government}
+for current government offering details, as program terms change frequently.}
+
+% -------------------------------------------------------------------
+\section{When to Deploy: Decision Matrix}
+
+\begin{fullwidth}
+\begin{tabular}{@{}p{3cm}p{3cm}p{3cm}p{3cm}@{}}
+\toprule
+\textbf{Need} & \textbf{Claude Code} & \textbf{Claude Chat} & \textbf{API / SDK} \\
+\midrule
+Interactive dev & Primary tool & Quick questions & --- \\
+Automation & Headless mode (\cref{ch:automation}) & --- & Primary tool \\
+Team standards & Settings + hooks (\cref{ch:team}) & --- & --- \\
+Compliance & Enterprise plan & Enterprise plan & API + ZDR \\
+Custom apps & --- & --- & Agent SDK \\
+Bulk operations & Fan-out & --- & Batch API \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\begin{keyinsight}
+Enterprise deployment is not about buying seats---it is about
+building organizational capability. The technology is the easy part.
+The hard part is establishing shared conventions (CLAUDE.md standards),
+training teams on effective patterns (\cref{ch:team}),
+and measuring ROI (usage analytics + quality metrics).
+See \cref{app:maturity} for a framework to measure organizational adoption.
+\end{keyinsight}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+Estimate your team's monthly Claude cost:
+\begin{enumerate}
+  \item Count developers $\times$ estimated sessions per day
+    $\times$ average tokens per session.
+  \item Identify your top caching opportunity (what content
+    is repeated in every session?).
+  \item Calculate: what would a 60\% cache hit rate save monthly?
+  \item Present the estimate to your manager with the deployment
+    scenario timeline from this chapter.
+\end{enumerate}
+\end{trybox}

@@ -1,0 +1,207 @@
+% Chapter 8: CLAUDE.md Architecture
+\chapter{CLAUDE.md Architecture}
+\label{ch:architecture}
+
+\begin{itshape}
+You have five projects. Each has its own CLAUDE.md with 80\% identical content.
+One project's CLAUDE.md has grown to 600 lines and Claude ignores half the rules.
+You need architecture, not just configuration.
+\end{itshape}
+
+In \cref{ch:first-claude-md}, you created your first CLAUDE.md.
+Now that you have experience with multiple projects, we will explore
+the architecture behind configurations that scale.
+
+\section{The Hub-and-Spoke Pattern}
+\label{sec:hub-and-spoke}
+
+\practitioner{For developers managing multiple repositories,
+maintain a central ``hub'' with shared patterns referenced from each project.}
+
+\begin{beforeafter}
+\before
+Five CLAUDE.md files, each 200 lines, 80\% identical.
+Updating git conventions means editing five files.
+Three of them are out of date.
+
+\after
+One hub with shared patterns. Five spokes, each 40 lines.
+Update once, all projects inherit.
+
+\begin{minted}{markdown}
+# Project CLAUDE.md (spoke — 40 lines)
+@~/shared-patterns/git.md
+@~/shared-patterns/testing.md
+
+## Project-Specific
+- Build: `make digital`
+- Test: `pytest tests/`
+- Architecture: Tufte-style LaTeX, one chapter per file
+\end{minted}
+\end{beforeafter}
+
+\official{Use the \code{@path/to/file.md} import syntax to reference
+external files without duplicating content.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/memory}}
+
+\begin{whybox}[Why Hub-and-Spoke]
+Duplication across CLAUDE.md files is not just inconvenient---it is
+actively harmful. When the git convention changes in one file but not others,
+Claude learns different conventions depending on which project it is in.
+Inconsistency accumulates until you cannot trust that any project's
+instructions are current.
+\end{whybox}
+
+% -------------------------------------------------------------------
+\section{Tier Classification}
+\label{sec:tiers}
+
+Not every project needs the same level of configuration.
+Classify by complexity:
+
+\begin{fullwidth}
+\begin{tabular}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Tier} & \textbf{Components} & \textbf{When to Use} \\
+\midrule
+T0 & None & Prototypes, learning repos \\
+T1 & CLAUDE.md only & Small scripts, documentation projects \\
+T2 & CLAUDE.md + settings & Standard development projects \\
+T3 & + skills, commands, rules & Multi-module projects with workflows \\
+T4 & + hooks, MCP & Projects requiring automation and quality gates \\
+T5 & + agent teams, pipelines & Enterprise-scale projects with CI/CD \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\margintip{Start at T1. Promote when friction justifies it.
+Most solo projects stabilize at T2--T3.}
+
+% -------------------------------------------------------------------
+\section{Conditional Rules}
+\label{sec:conditional-rules}
+
+\official{Place \code{.md} files in \code{.claude/rules/} with \code{paths:}
+frontmatter to control when they load.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/best-practices}}
+
+Rules without \code{paths:} frontmatter load on \emph{every} session.
+For monorepos and multi-module projects, this bloats context with
+irrelevant instructions.
+
+\begin{minted}{markdown}
+---
+paths: backend/**/*.py
+---
+# Backend Python Rules
+- Use SQLAlchemy 2.0 async syntax
+- All endpoints need OpenAPI docstrings
+- Run `pytest backend/tests/` after changes
+\end{minted}
+
+\begin{warnbox}[Common Mistake]
+Forgetting \code{paths:} frontmatter. The rule loads globally,
+Claude's context fills with irrelevant instructions, and important
+rules from CLAUDE.md get deprioritized.
+\end{warnbox}
+
+% -------------------------------------------------------------------
+\section{Settings: 5-Level Precedence}
+\label{sec:settings}
+
+\marginnote[Official]{Settings documentation:\sourceurl{https://docs.anthropic.com/en/docs/claude-code/settings}}
+
+Claude Code uses a 5-level settings hierarchy.
+Higher levels override lower:
+
+\begin{enumerate}
+  \item \textbf{Managed} (\code{managed-settings.json}) --- IT-deployed, highest priority
+  \item \textbf{CLI arguments} --- temporary session overrides
+  \item \textbf{Local} (\code{.claude/settings.local.json}) --- personal, auto-gitignored
+  \item \textbf{Project} (\code{.claude/settings.json}) --- team standards, committed to git
+  \item \textbf{User} (\code{\textasciitilde/.claude/settings.json}) --- global personal defaults
+\end{enumerate}
+
+\practitioner{Convention: commit \code{settings.json} for team-wide standards.
+Keep \code{settings.local.json} for personal preferences (model choice, output style).}
+
+% -------------------------------------------------------------------
+\section{CLAUDE.md Length and Attention}
+\label{sec:length}
+
+\marginwarning{Beyond $\sim$300--500 lines, attention per rule tends to decrease.
+This is heuristic, not a hard threshold---but the effect is real.}
+
+\practitioner{When CLAUDE.md grows long:}
+
+\begin{enumerate}
+  \item Move module-specific rules to \code{.claude/rules/} with \code{paths:}
+  \item Move shared patterns to a hub via \code{@path} imports
+  \item Move enforcement rules to hooks (they cannot be ignored)
+  \item Keep core CLAUDE.md to project-wide essentials: build commands,
+    architecture, verification criteria
+\end{enumerate}
+
+% -------------------------------------------------------------------
+\section{Output Styles}
+\label{sec:output-styles}
+
+\marginnote[Official]{Configure via \code{outputStyle} in settings
+or \code{--output-style} flag.}
+
+\official{Output styles customize how Claude structures its responses:
+tone, verbosity, formatting conventions, and problem-solving protocols.}
+
+\practitioner{Custom styles are most valuable when they encode
+\emph{decision protocols}, not just formatting preferences.}
+A style that says ``use bullets'' saves minimal effort.
+A style that says ``classify the issue type before searching for solutions''
+changes the quality of every interaction.
+
+% -------------------------------------------------------------------
+\section{Visual: The Configuration Hierarchy}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  layer/.style={draw=PrimaryBlue, fill=PrimaryBlue!8, rounded corners=3pt,
+    minimum width=10cm, minimum height=1.1cm, font=\small, align=center},
+  label/.style={font=\footnotesize\itshape, text=PrimaryBlue!70!black},
+  >=Stealth
+]
+  \node[layer] (output) at (0,0) {\textbf{Output Styles} --- Communication patterns, tone, protocols};
+  \node[layer] (settings) at (0,1.5) {\textbf{Settings} --- Permissions, model, hooks, env vars};
+  \node[layer] (rules) at (0,3.0) {\textbf{Rules} --- Conditional context (paths: frontmatter)};
+  \node[layer] (claude) at (0,4.5) {\textbf{CLAUDE.md} --- Project knowledge, build commands, architecture};
+
+  \draw[->, thick, PrimaryBlue!60] (5.5,0) -- (5.5,4.5)
+    node[midway, right, label] {Higher priority};
+
+  \node[label, anchor=east] at (-5.3,4.5) {Global + Project};
+  \node[label, anchor=east] at (-5.3,3.0) {Per-module};
+  \node[label, anchor=east] at (-5.3,1.5) {5-level cascade};
+  \node[label, anchor=east] at (-5.3,0) {Per-user};
+\end{tikzpicture}
+\caption{The four configuration layers, each handling a distinct concern.}
+\label{fig:config-hierarchy}
+\end{figure}
+
+\begin{keyinsight}
+The configuration hierarchy separates concerns:
+CLAUDE.md for project knowledge, rules for conditional context,
+settings for permissions and behavior, output styles for communication.
+Mixing these concerns (e.g., putting permission rules in CLAUDE.md)
+reduces their effectiveness.
+\end{keyinsight}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+If you have 3+ projects:
+\begin{enumerate}
+  \item Create a shared patterns directory (\code{\textasciitilde/shared-patterns/}).
+  \item Move your git commit conventions and testing standards there.
+  \item Replace the duplicated content in each project's CLAUDE.md
+    with \code{@\textasciitilde/shared-patterns/git.md} imports.
+  \item Verify: each project's CLAUDE.md should be under 100 lines.
+\end{enumerate}
+If you have one project: count the lines in your CLAUDE.md.
+If over 300, identify 3 sections that should be conditional rules.
+\end{trybox}

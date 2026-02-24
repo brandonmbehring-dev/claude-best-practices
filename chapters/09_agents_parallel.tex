@@ -1,0 +1,186 @@
+% Chapter 9: Agents, Delegation & Parallel Work
+\chapter{Agents, Delegation, and Parallel Work}
+\label{ch:agents}
+
+\begin{itshape}
+A code review needs four perspectives: correctness, security, performance,
+and style. Running them sequentially takes 20 minutes.
+Running them in parallel takes 5.
+But when should you delegate, and when should you just do it yourself?
+\end{itshape}
+
+In \cref{ch:extending}, you met subagents briefly as part of the extension
+hierarchy. This chapter covers the full delegation system: when to use it,
+how to design agent workflows, and how to run work in parallel.
+
+\section{Subagents: Isolated Context Workers}
+\label{sec:subagents}
+
+\marginnote[Official]{Define in \code{.claude/agents/}. Each agent runs with its
+own context, isolated from the main session.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/sub-agents}}
+
+\official{Subagents are purpose-built Claude instances that run in isolated context.}
+They receive a task, execute it with their own tool set, and return results
+to the parent session.
+
+\begin{minted}{markdown}
+# .claude/agents/security-reviewer.md
+---
+name: security-reviewer
+description: Review code for security vulnerabilities
+tools: [Read, Grep, Glob]
+---
+You are a security specialist. Review the provided code for:
+1. Injection vulnerabilities (SQL, command, path traversal)
+2. Authentication/authorization gaps
+3. Sensitive data exposure
+4. Dependency vulnerabilities
+Report findings with severity ratings (Critical/High/Medium/Low).
+\end{minted}
+
+\margintip{Note the frontmatter key is \code{tools} (not \code{allowed\_tools}).
+Skills use \code{allowed-tools} (hyphenated). The inconsistency is intentional---they
+follow different specification standards.}
+
+\subsection{Built-In Subagents}
+
+Claude Code ships with several built-in subagent types that can be invoked
+via the Task tool without custom definitions:
+
+\begin{description}
+  \item[Explore] Fast codebase exploration---find files, search code, answer questions.
+  \item[Plan] Read-only analysis for implementation planning.
+  \item[Bash] Command execution specialist.
+  \item[General-purpose] Multi-tool agent for complex tasks.
+\end{description}
+
+% -------------------------------------------------------------------
+\section{When to Delegate}
+\label{sec:delegation-decision}
+
+\begin{decisionbox}[Delegate or Do Directly?]
+\textbf{Delegate when:}
+\begin{itemize}
+  \item The task is independent of your current work
+  \item It requires heavy context that would pollute your main session
+  \item Multiple tasks can run in parallel for wall-clock savings
+  \item You need an unbiased second opinion (writer/reviewer pattern)
+\end{itemize}
+
+\textbf{Do directly when:}
+\begin{itemize}
+  \item The task takes under 2 minutes
+  \item It depends on your current session's context
+  \item Sequential reasoning is required (step B needs step A's result)
+  \item The task is too simple to justify the overhead
+\end{itemize}
+\end{decisionbox}
+
+\margincost{Each subagent consumes its own context tokens.
+4 parallel agents = 4$\times$ tokens, but only 1$\times$ wall-clock time.
+Parallelism trades cost for speed.}
+
+% -------------------------------------------------------------------
+\section{Git Worktrees: Isolated File Systems}
+\label{sec:worktrees}
+
+\marginnote[Official]{The \code{--worktree} flag creates an isolated copy
+of your repository for parallel work.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/overview}}
+
+\begin{minted}{bash}
+# Start parallel work on two features
+claude --worktree "Implement caching layer"
+claude --worktree "Add rate limiting"
+\end{minted}
+
+Each worktree gets its own git branch, a complete isolated copy of the
+repository, can be merged independently, and is cleaned up automatically
+if no changes are made.
+
+Worktrees solve the fundamental problem of parallel file modifications:
+two agents editing the same files will conflict. Worktrees give each
+agent its own copy.
+
+% -------------------------------------------------------------------
+\section{The Writer/Reviewer Pattern}
+\label{sec:writer-reviewer}
+
+\official{Use separate sessions to avoid confirmation bias:}
+
+\begin{enumerate}
+  \item \textbf{Writer session}: Makes changes based on requirements.
+  \item \textbf{Reviewer session}: Reviews the diff without knowledge of intent.
+    ``Review this diff for bugs, regressions, and missed edge cases.
+    You have no context about why these changes were made.''
+\end{enumerate}
+
+This pattern catches errors that the writer is blind to because of
+its accumulated context about the ``correct'' approach.
+
+\practitioner{Extend to multi-perspective review with subagents:}
+
+\begin{enumerate}
+  \item \textbf{Correctness agent}: ``Does this code do what it claims?''
+  \item \textbf{Security agent}: ``Are there vulnerabilities?''
+  \item \textbf{Performance agent}: ``Are there efficiency concerns?''
+  \item \textbf{Style agent}: ``Does this match project conventions?''
+\end{enumerate}
+
+Running four agents in parallel takes the same wall-clock time as one.
+
+% -------------------------------------------------------------------
+\section{Agent Teams (Research Preview)}
+\label{sec:agent-teams}
+
+\marginnote[Official]{Research preview. Multiple agents share a task list
+and can message each other.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/agent-teams}}
+
+\official{Agent Teams extend subagents with collaboration:
+shared task lists, direct messaging between agents,
+and team lead orchestration.}
+
+Best suited for:
+\begin{itemize}
+  \item Research tasks requiring multiple perspectives
+  \item Cross-functional coordination (frontend + backend + database)
+  \item Complex multi-module changes that need coordination
+\end{itemize}
+
+\begin{warnbox}[Research Preview]
+Agent Teams are a research preview feature. The API and behavior
+may change. Use for exploration, not production workflows.
+\end{warnbox}
+
+% -------------------------------------------------------------------
+\section{Quick Reference}
+
+\begin{itemize}
+  \item Subagents: isolated context, independent tools, return results to parent
+  \item Subagent frontmatter key: \code{tools} (not \code{allowed\_tools})
+  \item Worktrees: isolated file systems for parallel file modifications
+  \item Writer/Reviewer: separate sessions prevent confirmation bias
+  \item Delegate when: independent, context-heavy, parallelizable, needs fresh perspective
+  \item Do directly when: quick, context-dependent, sequential, simple
+  \item Agent Teams: research preview for multi-agent collaboration
+\end{itemize}
+
+% -------------------------------------------------------------------
+\begin{keyinsight}
+Parallelism in Claude Code is not about speed alone---it is about
+\emph{perspective isolation}. A reviewer who cannot see the writer's
+reasoning catches different bugs. A security agent that only sees code
+(not intent) finds different vulnerabilities. The diversity of perspectives
+is the value, not just the time savings.
+\end{keyinsight}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+Identify one task that currently takes you more than 10 minutes sequentially.
+Design a 2-agent parallel split:
+\begin{enumerate}
+  \item What does Agent 1 do? What tools does it need?
+  \item What does Agent 2 do? What tools does it need?
+  \item Are the tasks truly independent? (If Agent 2 needs Agent 1's output, they cannot run in parallel.)
+  \item Write the agent definition file for one of them.
+\end{enumerate}
+\end{trybox}

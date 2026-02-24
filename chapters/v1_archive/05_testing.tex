@@ -1,0 +1,123 @@
+% Chapter 5: Testing and Quality with AI-Generated Code
+\chapter{Testing and Quality with AI-Generated Code}
+\label{ch:testing}
+
+AI-generated code has a specific failure mode that human-written code does not:
+it looks correct. The syntax is clean, the variable names are reasonable,
+the logic reads well. And yet it may be subtly wrong in ways that only
+manifest at runtime, under load, or at edge cases.
+
+Testing is the antidote.
+
+\section{Verification Is King}
+\label{sec:verification}
+
+\convergence{``Give Claude a way to verify its work'' is Anthropic's stated
+single highest-leverage practice.\sourceurl{https://code.claude.com/docs/en/best-practices}
+This aligns exactly with what practitioners discover independently:
+the projects that succeed are the ones with verification at every layer.}
+
+\subsection{The 6-Layer Validation Architecture}
+
+Layer defenses so that no single failure mode goes undetected:
+
+\begin{enumerate}
+  \item \textbf{Type Safety} --- Catch type errors at compile/lint time,
+    not runtime. TypeScript strict mode, Python type hints with mypy,
+    Rust's borrow checker.
+
+  \item \textbf{Input Validation} --- Check preconditions at function entry.
+    Fail fast with explicit errors. Never let invalid data propagate silently.
+
+  \item \textbf{Unit Tests} --- Test each function in isolation.
+    Happy path + error cases + edge cases.
+    Target: 80\%+ coverage for modules.
+
+  \item \textbf{Integration Tests} --- Test multi-function workflows.
+    Verify components work together with realistic data.
+
+  \item \textbf{End-to-End Tests} --- Test complete user workflows
+    from input to output. Verify the system meets requirements.
+
+  \item \textbf{Property-Based Tests} --- Test invariants that should always hold.
+    Generate random inputs. Catch edge cases you did not think of.
+\end{enumerate}
+
+\margintip{Layers 1--2 are cheap to add to any project today. Layers 3--4 are the baseline for production. Layers 5--6 are for critical systems.}
+
+\subsection{The Pattern to Avoid}
+
+\begin{warnbox}[Cautionary Tale]
+A common failure mode: a developer generates four modules totaling 1,500+
+lines of code with zero tests. The code looks clean. It compiles. It appears to work.
+
+Result: zero confidence in functionality, impossible to refactor,
+and months of accumulated technical debt.
+
+This pattern is common enough to have a name: the Verification Gap
+(see \cref{ch:antipatterns}).
+\end{warnbox}
+
+% -------------------------------------------------------------------
+\section{Phase-Appropriate Standards}
+\label{sec:phases}
+
+\practitioner{Not all code needs the same rigor.
+Applying production standards to a prototype kills velocity.
+Applying prototype standards to production kills reliability.}
+
+\subsection{Three Development Phases}
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{3cm}p{3cm}p{4cm}@{}}
+\toprule
+\textbf{Phase} & \textbf{Testing} & \textbf{Code Quality} & \textbf{Transition Criteria} \\
+\midrule
+Exploration & Manual verification OK & Long functions OK, mutable state OK & Hypothesis validated; proceeding to build \\
+Development & Unit + integration tests required & Style enforcement, type hints & Tests pass, coverage >60\%, code review \\
+Production & Full 6-layer validation & Strict linting, immutability default & Coverage >80\%, zero critical warnings \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\subsection{Phase Transitions}
+
+\practitioner{Make phase transitions explicit.} Write them in CLAUDE.md:
+
+\begin{minted}{markdown}
+## Development Phase: EXPLORATION
+- Tests: manual OK for now
+- Coverage target: none
+- Graduation criteria:
+  - [ ] Core algorithm validated on real data
+  - [ ] API surface finalized
+  - [ ] Dependencies locked
+  When all checked: switch to DEVELOPMENT phase
+\end{minted}
+
+The key insight: premature rigor kills exploration,
+but sloppy production kills credibility.
+The solution is not to choose one standard---it is to be explicit about
+which standard applies \emph{right now} and when to transition.
+
+\subsection{Verification Criteria in CLAUDE.md}
+
+\convergence{Set verification expectations from day one.}
+Even in the exploration phase, CLAUDE.md should contain:
+
+\begin{minted}{markdown}
+## Verification
+- Always run tests after code changes
+- Never commit without passing CI
+- Include test plan in PR description
+\end{minted}
+
+These three lines improve every interaction by giving Claude
+a concrete way to validate its own work.
+
+\begin{keyinsight}
+Testing AI-generated code is not about distrust---it is about
+leveraging the AI's own capabilities. Claude writes excellent tests
+when given clear instructions. The developer's job is to define
+\emph{what} to test; Claude handles the \emph{how}.
+\end{keyinsight}

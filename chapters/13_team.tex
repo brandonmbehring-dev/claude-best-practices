@@ -1,0 +1,140 @@
+% Chapter 13: Team Patterns & Governance
+\chapter{Team Patterns and Governance}
+\label{ch:team}
+
+\begin{itshape}
+You have been using Claude effectively for months.
+Your team lead asks: ``Can we standardize this across our 8-person team?''
+The answer is yes---but individual mastery does not automatically
+translate to team productivity. Shared conventions require infrastructure.
+\end{itshape}
+
+\section{Shared CLAUDE.md in Version Control}
+\label{sec:shared-claude-md}
+
+\marginnote[Official]{Claude Code included with Team plan seats.
+Shared CLAUDE.md in VCS.\sourceurl{https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan}}
+
+The project-level \code{CLAUDE.md} (structured per \cref{ch:architecture})
+and \code{.claude/settings.json} are committed to version control. Every team member gets the same
+project context, the same permissions, and the same hooks.
+
+\practitioner{Three files form the team standard:}
+
+\begin{description}
+  \item[\code{CLAUDE.md}] Project knowledge: build commands, architecture, conventions.
+    Reviewed in PRs like any other code.
+  \item[\code{.claude/settings.json}] Team permissions: deny rules, required hooks.
+    Committed to git.
+  \item[\code{.claude/settings.local.json}] Personal preferences: model choice,
+    output style, personal API tokens. Auto-gitignored.
+\end{description}
+
+\begin{whybox}[Why Separate Committed and Local Settings]
+If model choice is in \code{settings.json}, developers who need Opus
+for complex tasks must override team settings.
+If it is in \code{settings.local.json}, each developer chooses their own
+model without affecting others.
+
+The principle: team standards (deny rules, hooks) are committed.
+Personal preferences (model, style) are local.
+\end{whybox}
+
+% -------------------------------------------------------------------
+\section{Managed Settings for IT}
+\label{sec:managed-settings}
+
+\official{IT administrators can deploy \code{managed-settings.json}
+files that override all other settings.} This enables:
+
+\begin{itemize}
+  \item Organization-wide deny rules (sensitive file access)
+  \item Mandatory hooks (security scanning, compliance checks)
+  \item Approved MCP server lists
+  \item Model restrictions (e.g., Sonnet only for cost control)
+\end{itemize}
+
+Managed settings deploy to system-level paths and cannot be overridden
+by project or user settings (see \cref{sec:settings} for the full 5-level
+precedence hierarchy). They are the IT equivalent of hooks---non-negotiable.
+
+% -------------------------------------------------------------------
+\section{Onboarding New Team Members}
+\label{sec:onboarding}
+
+\practitioner{Day 1 with Claude for a new team member:}
+
+\begin{enumerate}
+  \item Clone the repo. CLAUDE.md and settings load automatically.
+  \item Run \code{/init} to verify Claude understands the project.
+    Compare output to the existing CLAUDE.md---they should align.
+  \item Create \code{.claude/settings.local.json} for personal preferences.
+  \item Run the team's \code{/check} command to verify the environment works.
+  \item Review the team's hook configuration:
+    what runs on file write? On commit? Why?
+\end{enumerate}
+
+The goal: a new developer should be productive with Claude
+within their first day, without reading a setup guide.
+The configuration in version control should be self-documenting.
+
+% -------------------------------------------------------------------
+\section{Code Review Patterns with Claude}
+\label{sec:code-review}
+
+\practitioner{Two patterns for team code review with Claude
+(see also the Writer/Reviewer pattern in \cref{sec:writer-reviewer}):}
+
+\subsection{Pre-PR Self-Review}
+
+Before creating a PR, have Claude review your own changes:
+
+\begin{minted}{text}
+Review the diff in `git diff main...HEAD` for:
+1. Logic errors and bugs
+2. Missing test coverage
+3. Style violations per our CLAUDE.md
+4. Security concerns
+Report issues with file:line references and severity.
+\end{minted}
+
+This catches obvious issues before reviewers see the code,
+reducing review cycles.
+
+\subsection{Reviewer-Assist}
+
+During review, use Claude to investigate specific concerns:
+
+\begin{minted}{text}
+In PR #234, the author changed the caching strategy
+in src/cache/redis_client.py.
+What are the implications for cache invalidation?
+Check if any callers depend on the old TTL behavior.
+\end{minted}
+
+\margintip{The reviewer still makes the decision.
+Claude provides the analysis.
+AI augments review; it does not replace it.}
+
+% -------------------------------------------------------------------
+\section{Quick Reference}
+
+\begin{itemize}
+  \item Commit \code{CLAUDE.md} and \code{settings.json} for team standards
+  \item Keep \code{settings.local.json} for personal preferences (auto-gitignored)
+  \item Managed settings for IT policy enforcement (highest precedence)
+  \item New team members productive on day 1 via committed configuration
+  \item Pre-PR self-review catches issues before human reviewers see them
+\end{itemize}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+Draft a team \code{settings.json} with:
+\begin{enumerate}
+  \item 3 deny rules protecting sensitive files (\code{.env*}, \code{secrets/}, credentials)
+  \item 1 ask rule for destructive operations (\code{git push})
+  \item 1 PostFileWrite hook for auto-formatting
+  \item 1 PreCommit hook for your test suite
+\end{enumerate}
+Have a teammate review it. Does it match their expectations?
+\end{trybox}

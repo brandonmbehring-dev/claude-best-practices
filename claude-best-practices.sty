@@ -6,7 +6,7 @@
 % Requires: LuaLaTeX with -shell-escape flag
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{claude-best-practices}[2026/02/24 Claude Best Practices Style v1.0]
+\ProvidesPackage{claude-best-practices}[2026/02/24 Claude Best Practices Style v2.0]
 
 % =============================================================================
 % ENGINE DETECTION
@@ -113,6 +113,8 @@
 \definecolor{ConvergenceGold}{HTML}{B8860B}
 \definecolor{EnterpriseNavy}{HTML}{003366}
 \definecolor{CostRed}{HTML}{CC3333}
+\definecolor{ExerciseIndigo}{HTML}{5B2C6F}
+\definecolor{WhyAmber}{HTML}{D4AC0D}
 
 % =============================================================================
 % CODE LISTINGS (minted)
@@ -285,6 +287,69 @@
   title=#1
 }
 
+% --- PEDAGOGICAL ENVIRONMENTS (v2.0) ---
+
+% Before/After contrast box
+\newtcolorbox{beforeafter}[1][Before \& After]{
+  callout-compact,
+  colframe=PrimaryBlue,
+  colback=PrimaryBlue!3,
+  title=#1
+}
+\newcommand{\before}{\par\textbf{Before:}\par}
+\newcommand{\after}{\par\textbf{After:}\par}
+
+% Try This — practice exercises (<10 min, reader's own project)
+\newtcolorbox{trybox}[1][Try This]{
+  callout-compact,
+  colframe=ExerciseIndigo,
+  colback=ExerciseIndigo!3,
+  title=#1
+}
+
+% Why Box — reasoning/rationale (answers "why", not "what")
+\newtcolorbox{whybox}[1][Why This Matters]{
+  callout-compact,
+  colframe=WhyAmber,
+  colback=WhyAmber!3,
+  title=#1
+}
+
+% Decision Box — decision framework (when to choose X over Y)
+\newtcolorbox{decisionbox}[1][Decision Framework]{
+  callout-compact,
+  colframe=PractitionerTeal,
+  colback=PractitionerTeal!3,
+  title=#1
+}
+
+% Recovery — escape route from anti-pattern (pairs with \antipattern)
+\newcommand{\recovery}[3]{%
+  \begin{warnbox}[Recovery: #1]
+    \textbf{You are here:} #2\par
+    \textbf{Escape route:} #3
+  \end{warnbox}
+}
+
+% Part Introduction — maturity context for each Part
+\newtcolorbox{partintro}{
+  breakable,
+  enhanced,
+  colframe=PrimaryBlue!50,
+  colback=PrimaryBlue!3,
+  arc=3pt,
+  leftrule=0pt,
+  rightrule=0pt,
+  toprule=1pt,
+  bottomrule=1pt,
+  left=6pt,
+  right=6pt,
+  top=4pt,
+  bottom=4pt,
+  boxsep=0pt,
+  fontupper=\itshape
+}
+
 % =============================================================================
 % PRACTICE LABEL COMMANDS
 % =============================================================================
@@ -418,7 +483,7 @@
 \providecommand{\guidetitle}{Best Practices for Using Claude}
 \providecommand{\guidesubtitle}{From Personal Mastery to Enterprise Scale}
 \providecommand{\guideauthor}{Brandon Behring}
-\providecommand{\guideversion}{1.0}
+\providecommand{\guideversion}{2.0}
 \providecommand{\guidedate}{February 2026}
 
 % =============================================================================

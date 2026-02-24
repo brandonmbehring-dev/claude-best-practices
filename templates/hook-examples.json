@@ -2,26 +2,30 @@
   "hooks": {
     "PostFileWrite": [
       {
+        "type": "command",
         "command": "npx prettier --write \"$FILE\"",
         "description": "Auto-format written files with Prettier"
       }
     ],
     "PreCommit": [
       {
+        "type": "command",
         "command": "npm run lint && npm test",
         "description": "Block commits if linting fails or tests fail"
       }
     ],
     "PostCommit": [
       {
+        "type": "command",
         "command": "npx coverage-diff",
         "description": "Report test coverage change after each commit"
       }
     ],
-    "PreBashRun": [
+    "Stop": [
       {
-        "command": "echo \"Running: $COMMAND\"",
-        "description": "Log all shell commands for audit trail"
+        "type": "command",
+        "command": "echo \"Task completed at $(date)\" >> .claude/session.log",
+        "description": "Log task completion timestamp"
       }
     ]
   }

@@ -1,0 +1,209 @@
+% Chapter 10: Starting & Refactoring Projects
+\chapter{Starting and Refactoring Projects}
+\label{ch:projects}
+
+\begin{itshape}
+Two situations: a blank directory for a new project,
+and a 50,000-line legacy codebase with zero tests.
+Both need Claude's help. Both need different protocols.
+\end{itshape}
+
+This chapter unifies two project lifecycle phases:
+greenfield (starting from scratch) and brownfield (introducing Claude
+to existing code). Both follow the same principle:
+incremental investment, with each step independently valuable.
+The testing patterns from \cref{ch:testing} and the extension mechanisms
+from \cref{ch:extending} both play central roles.
+
+\section{Greenfield: From Zero to Production}
+\label{sec:greenfield}
+
+\subsection{Day 1: Foundation}
+
+\convergence{Three investments on day one compound into dramatically
+better outcomes over the project's lifetime:}
+
+\begin{enumerate}
+  \item \textbf{Run \code{/init}} to generate a starter CLAUDE.md.
+    Claude examines your project structure and proposes conventions.
+  \item \textbf{Set up permissions} in \code{.claude/settings.json}.
+    Deny access to \code{.env*} and \code{secrets/}.
+  \item \textbf{Add one hook}: \code{PostFileWrite $\rightarrow$ auto-format}.
+    This prevents style drift from the first file onward.
+\end{enumerate}
+
+\subsection{Week 1: Patterns Emerge}
+
+\begin{enumerate}
+  \item \textbf{Add testing infrastructure.}
+    Configure test runner in CLAUDE.md.
+  \item \textbf{Add your first custom command} for the most common workflow.
+  \item \textbf{Configure PreCommit hook} $\rightarrow$ run tests.
+    The single most valuable hook for new projects.
+\end{enumerate}
+
+\subsection{Month 1: Stabilization}
+
+\begin{enumerate}
+  \item \textbf{Review and trim CLAUDE.md.}
+    Remove instructions Claude consistently follows without being told.
+    Add instructions for rules Claude keeps violating.
+  \item \textbf{Add skills} for repeated multi-step workflows.
+  \item \textbf{Set up memory} for cross-session persistence.
+  \item \textbf{Document architecture} as actionable instructions, not prose.
+\end{enumerate}
+
+\margintip{Most solo projects stabilize at Tier 2--3 within one month.
+Resist the urge to jump to Tier 5.}
+
+% -------------------------------------------------------------------
+\section{Brownfield: Introducing Claude to Existing Code}
+\label{sec:brownfield}
+
+\marginnote[Official]{Use Plan Mode first---let Claude read and understand
+the codebase without modifying anything.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/overview}}
+
+\subsection{Start with Understanding, Not Action}
+
+\official{Before any changes, use Plan Mode (Shift+Tab) to let Claude explore.}
+Ask:
+\begin{itemize}
+  \item ``Explain the architecture of this project.''
+  \item ``What patterns does this codebase use?''
+  \item ``Where are the tests? What is the coverage?''
+\end{itemize}
+
+\official{Document existing conventions in CLAUDE.md, not aspirational ones.}
+A CLAUDE.md that says ``we use strict TypeScript'' when the codebase has
+\code{any} everywhere will cause inconsistent code---some files strict, some loose.
+
+\subsection{Incremental Adoption}
+
+\practitioner{Adopt Claude configuration in four steps,
+each independently valuable:}
+
+\begin{enumerate}
+  \item \textbf{CLAUDE.md} documenting current state (conventions as they are)
+  \item \textbf{Permissions} restricting Claude to safe operations
+  \item \textbf{Hooks} enforcing existing standards (not new ones)
+  \item \textbf{Skills} emerging organically as patterns stabilize
+\end{enumerate}
+
+% -------------------------------------------------------------------
+\section{The Incremental Refactoring Protocol}
+\label{sec:refactoring-protocol}
+
+\practitioner{Never attempt a big-bang rewrite
+(this is anti-pattern \#7 from \cref{ch:antipatterns}).}
+Use four-step increments, each independently shippable:
+
+\begin{description}
+  \item[1. Extract] Isolate the function or module to refactor.
+    Create a clear boundary between ``changing'' and ``not changing.''
+
+  \item[2. Test] Write characterization tests capturing current behavior.
+    Claude excels here---prompt: ``Write tests that document exactly
+    what this function does today, including edge cases.''
+
+  \item[3. Harden] Refactor with tests as safety net.
+    Each change verified against the characterization tests.
+
+  \item[4. Promote] Move refactored code into production.
+    Run full regression suite. Verify no downstream breakage.
+\end{description}
+
+\begin{tipbox}[Session Sizing]
+Each step fits in a 25-minute focused session.
+Commit after each step.
+If interrupted, the project is always in a working state.
+\end{tipbox}
+
+\subsection{Characterization Tests}
+
+\convergence{Before changing any code, have Claude write tests that capture
+existing behavior.}
+
+\begin{minted}{text}
+Prompt: "Read src/payments/legacy_processor.py.
+Write pytest tests that document its exact current behavior:
+- What inputs does it accept?
+- What does it return for each input type?
+- What errors does it raise and when?
+Do NOT write tests for how it SHOULD work.
+Write tests for how it DOES work."
+\end{minted}
+
+\margintip{Characterization tests are temporary---they may test buggy behavior.
+That is intentional. They exist to detect \emph{changes}, not to assert \emph{correctness}.}
+
+% -------------------------------------------------------------------
+\section{Visual: The Incremental Refactoring Cycle}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  step/.style={draw=PrimaryBlue, fill=PrimaryBlue!8, rounded corners=6pt,
+    minimum width=2.5cm, minimum height=1.2cm, font=\small\bfseries, align=center},
+  note/.style={font=\scriptsize, text=DarkText, align=center},
+  arr/.style={->, very thick, PrimaryBlue!60},
+  >=Stealth
+]
+  \node[step] (extract) at (0,2.5) {1. Extract\\[-2pt]\normalfont\scriptsize Isolate target};
+  \node[step] (test) at (3.5,2.5) {2. Test\\[-2pt]\normalfont\scriptsize Characterize};
+  \node[step] (harden) at (3.5,0) {3. Harden\\[-2pt]\normalfont\scriptsize Refactor};
+  \node[step] (promote) at (0,0) {4. Promote\\[-2pt]\normalfont\scriptsize Ship};
+
+  \draw[arr] (extract) -- (test);
+  \draw[arr] (test) -- (harden);
+  \draw[arr] (harden) -- (promote);
+  \draw[arr] (promote) -- (extract) node[midway, left, note] {Next\\module};
+
+  \node[font=\footnotesize\itshape, text=TipGreen!80!black, align=center] at (1.75,1.25)
+    {Commit after\\each step};
+
+  \node[font=\scriptsize, text=PrimaryBlue!70] at (1.75,-0.8)
+    {Each step $\approx$ 25 min $\cdot$ Always shippable};
+\end{tikzpicture}
+\caption{The incremental refactoring cycle. Each step is independently shippable.}
+\label{fig:refactoring-cycle}
+\end{figure}
+
+% -------------------------------------------------------------------
+\section{The Quality Flywheel}
+\label{sec:flywheel}
+
+\practitioner{After each refactoring sprint:}
+
+\begin{enumerate}
+  \item Update CLAUDE.md with lessons learned
+  \item Add new hooks for discovered gotchas
+  \item Refine skills based on what worked
+  \item Update metrics baselines
+\end{enumerate}
+
+Each sprint improves not just the code but the tooling around the code.
+After three sprints, the refactoring process itself is significantly faster.
+For large codebases, consider parallel refactoring across independent
+modules using git worktrees (\cref{sec:worktrees}).
+
+% -------------------------------------------------------------------
+\begin{keyinsight}
+Refactoring with Claude follows the same principle as refactoring without it:
+small, verifiable increments. The difference is that Claude can write
+characterization tests in minutes instead of hours, making the
+Extract $\rightarrow$ Test $\rightarrow$ Harden $\rightarrow$ Promote cycle
+dramatically faster.
+\end{keyinsight}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+Pick the messiest function in your project (under 100 lines).
+\begin{enumerate}
+  \item Have Claude write characterization tests without telling it
+    what the function \emph{should} do. Just: ``Document what it does today.''
+  \item Run the tests. Do they pass?
+  \item If yes: you now have a safety net for refactoring.
+    If no: you have discovered undocumented behavior.
+    Either way, you have learned something valuable.
+\end{enumerate}
+\end{trybox}

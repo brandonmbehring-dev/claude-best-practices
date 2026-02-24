@@ -3,57 +3,86 @@
 \addcontentsline{toc}{chapter}{Preamble}
 \label{ch:preamble}
 
-This guide synthesizes two sources of knowledge about using Claude effectively.
+This handbook teaches you to use Claude Code effectively---not by listing
+features, but by walking through the workflows where each feature earns its value.
 
-\textbf{Official guidance} from Anthropic: documentation, blog posts,
-engineering reports, and enterprise case studies---researched and verified
-as of February 2026.
+\subsection*{Two Sources of Knowledge}
 
-\textbf{Practitioner patterns} abstracted from extensive daily use of
-Claude Code across 20+ projects spanning data science, machine learning,
-software engineering, and technical writing.
-
-Every practice in this guide is labeled:
+Every practice is drawn from one of two sources and labeled accordingly:
 
 \begin{description}
-  \item[{\color{OfficialPurple}\textbf{[Official]}}] Anthropic's documented recommendation, with source URL.
-  \item[{\color{PractitionerTeal}\textbf{[Practitioner]}}] Discovered through extensive daily use.
+  \item[{\color{OfficialPurple}\textbf{[Official]}}] Anthropic's documented recommendation,
+    verified against current documentation with source URL.
+    Example: \official{Run \code{/init} to generate a starter CLAUDE.md.}
+  \item[{\color{PractitionerTeal}\textbf{[Practitioner]}}] Discovered through extensive daily use
+    across 20+ projects spanning data science, ML, and software engineering.
+    Example: \practitioner{After two failed corrections, \code{/clear} and write
+    a better initial prompt.}
   \item[{\color{ConvergenceGold}\textbf{[Convergence]}}] Both sources agree independently.
+    Example: \convergence{Verification criteria in CLAUDE.md from day one.}
+\end{description}
+
+\subsection*{How This Book Is Organized}
+
+The handbook follows your adoption journey through four parts,
+each corresponding to a level of the Claude Maturity Model (\cref{app:maturity}):
+
+\begin{description}
+  \item[Part I: Foundations] (\cref{part:foundations}) ---
+    What Claude Code is, your first CLAUDE.md, your first session.
+    \emph{Takes you from L1 (Conversational) to L2 (Configured).}
+  \item[Part II: Personal Practice] (\cref{part:practice}) ---
+    Advanced prompting, context management, testing, extensions.
+    \emph{Takes you from L2 to L3 (Systematic).}
+  \item[Part III: Advanced Craft] (\cref{part:advanced}) ---
+    Configuration architecture, agents, project lifecycle, anti-patterns.
+    \emph{Takes you from L3 toward L4 (Autonomous).}
+  \item[Part IV: Team \& Enterprise] (\cref{part:enterprise}) ---
+    Automation, team governance, enterprise deployment.
+    \emph{Scaling from L4 to L5 (Enterprise).}
 \end{description}
 
 \subsection*{Who This Is For}
 
-\textbf{Primary audience:} Senior ICs and tech leads who already use Claude
-and want to level up. This guide assumes familiarity with Claude Code basics.
+\textbf{Primary audience:} Developers who have used Claude Code at least once
+and want to go from ``it works sometimes'' to ``it works reliably.''
+No prior configuration experience assumed.
 
 \textbf{Secondary audience:} Engineering managers evaluating Claude for their teams.
 \cref{ch:enterprise} is specifically designed to be shared with decision-makers.
 
-\subsection*{How to Read This Guide}
+\subsection*{How to Read}
 
 \begin{description}
-  \item[Getting started?] Read \cref{ch:configuration} and \cref{ch:greenfield}.
-    Set up CLAUDE.md and your first hooks.
-  \item[Already using Claude?] Read \cref{ch:antipatterns} and \cref{ch:maturity}
-    to identify your current level and most impactful next investment.
-  \item[Evaluating for your team?] Read \cref{ch:enterprise} and \cref{ch:maturity}.
-  \item[Optimizing costs?] Read \cref{sec:cost} and \cref{sec:cost-scale}.
+  \item[New to Claude Code?] Start at \cref{ch:principles} and read straight through Part I.
+  \item[Already configured?] Start at \cref{ch:prompting} (Part II).
+    Skim Part I for anything you missed.
+  \item[Experienced user?] Jump to \cref{ch:antipatterns}. Fix what is broken.
+    Then read \cref{ch:architecture} for scaling patterns.
+  \item[Manager evaluating Claude?] Read \cref{ch:enterprise} and \cref{app:maturity}.
 \end{description}
 
-\subsection*{Foundational Principles}
+\subsection*{Spiral Structure}
 
-Four engineering principles unify every recommendation in this guide:
-\emph{never fail silently}, \emph{simplicity over complexity},
-\emph{immutability by default}, and \emph{fail fast with diagnostics}.
-See \cref{ch:principles} for the full treatment. Keep them in mind
-as you read---they explain the ``why'' behind the specific practices.
+Key concepts appear at increasing depth as you progress:
+
+\begin{itemize}
+  \item \textbf{CLAUDE.md}: basics in \cref{ch:first-claude-md},
+    architecture in \cref{ch:architecture}
+  \item \textbf{Context}: basics in \cref{ch:first-session},
+    full management in \cref{ch:context}
+  \item \textbf{Testing}: overview in \cref{ch:testing},
+    characterization tests in \cref{ch:projects}
+  \item \textbf{Extensions}: overview in \cref{ch:extending},
+    agents and delegation in \cref{ch:agents}
+\end{itemize}
+
+Each revisit explicitly connects back to the earlier treatment.
 
 \subsection*{A Note on Pace}
 
-The AI tooling landscape moves fast. The model capabilities, API features,
-and best practices described here are verified as of February 2026.
-Some details may have changed by the time you read this.
-Check the repository for the latest version, and consult
+AI tooling moves fast. Content is verified as of February 2026.
+Check the repository for updates, and consult
 \cref{app:sources} for primary source URLs.
 
 \vspace{0.5\baselineskip}

@@ -1,10 +1,13 @@
 ---
 name: deploy-check
 description: Pre-deployment readiness verification
-allowed_tools: [Bash, Read, Glob, Grep]
+allowed-tools: [Bash, Read, Glob, Grep]
 ---
 
 # Pre-Deploy Check
+
+<!-- WHY: Skills that orchestrate multiple checks produce the highest value.
+     This skill replaces 5 manual commands with one invocation. -->
 
 1. Verify all tests pass: `npm test`
 2. Check for uncommitted changes: `git status`

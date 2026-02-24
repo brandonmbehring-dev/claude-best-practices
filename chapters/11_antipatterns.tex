@@ -1,11 +1,17 @@
-% Chapter 11: Anti-Patterns and Common Mistakes
-\chapter{Anti-Patterns and Common Mistakes}
+% Chapter 11: Anti-Patterns & Recovery
+\chapter{Anti-Patterns and Recovery}
 \label{ch:antipatterns}
+
+\begin{itshape}
+Three hours in, Claude is hallucinating function names and ignoring
+your CLAUDE.md rules. What went wrong? More importantly: how do you escape?
+\end{itshape}
 
 Every tool has characteristic misuse patterns.
 These seven anti-patterns are the most common ways developers
-undermine their own productivity with Claude Code.
-Each follows the same structure: symptom, root cause, and prevention.
+undermine their productivity with Claude Code.
+Each includes the symptom, root cause, prevention,
+\emph{and a recovery guide for when you are already stuck}.
 
 % -------------------------------------------------------------------
 \section{Context Overload}
@@ -13,33 +19,70 @@ Each follows the same structure: symptom, root cause, and prevention.
 \antipattern{Context Overload}{%
 Claude ignores important rules. Instructions from CLAUDE.md are followed
 inconsistently. Behavior degrades over long sessions.}{%
-Hub-and-spoke architecture for shared patterns.
+Hub-and-spoke architecture (\cref{ch:architecture}).
 Conditional rules with \code{paths:} frontmatter.
 Hooks for non-negotiable standards.
-Keep CLAUDE.md under 500 lines.
+Keep core CLAUDE.md under $\sim$300 lines.
 }
-
-\marginnote[Warning]{If your CLAUDE.md exceeds 500 lines, split it. Context is finite; instructions compete for attention.}
 
 \textbf{Root cause:} CLAUDE.md has grown to contain every rule, convention,
 and preference accumulated over months. Claude's attention dilutes
 across all of it, and critical rules get the same weight as minor preferences.
+
+\begin{beforeafter}
+\before
+\begin{minted}{text}
+# CLAUDE.md — 650 lines
+Includes: git conventions, code style, architecture notes,
+deployment procedures, 12 module-specific rules, personal
+preferences, historical decisions, aspirational goals...
+\end{minted}
+
+\after
+\begin{minted}{text}
+# CLAUDE.md — 80 lines (core project rules)
+# .claude/rules/backend.md — paths: backend/**/*.py
+# .claude/rules/frontend.md — paths: frontend/**/*.tsx
+# @~/shared-patterns/git.md — imported
+# Hooks enforce: formatting, tests, lint
+\end{minted}
+\end{beforeafter}
+
+\recovery{Context Overload}{%
+Claude is ignoring rules that are in your CLAUDE.md.
+Instructions work at session start but fail after 30 minutes.}{%
+\begin{enumerate}
+  \item Count lines in CLAUDE.md. If over 300: split.
+  \item Move module-specific rules to \code{.claude/rules/} with \code{paths:}.
+  \item Move shared patterns to hub imports.
+  \item Move non-negotiable standards to hooks.
+  \item What remains should be project-wide essentials only.
+\end{enumerate}
+}
 
 % -------------------------------------------------------------------
 \section{The Kitchen Sink Session}
 
 \antipattern{Kitchen Sink Session}{%
 Performance degrades midway through a session. Claude repeats itself,
-forgets earlier decisions, or produces lower-quality output than at session start.}{%
+forgets earlier decisions, or produces lower-quality output.}{%
 Use \code{/clear} between unrelated tasks.
 One session per logical task.
-Use \code{/compact} if the task genuinely requires accumulated context.
+Use \code{/compact} if the task needs accumulated context.
 }
 
 \textbf{Root cause:} Multiple unrelated tasks in a single session.
-Debugging a database query, then writing a React component, then
-reviewing a PR---each task's context remains, consuming tokens
+Each task's context remains, consuming tokens
 that contribute nothing to the current task.
+
+\recovery{Kitchen Sink Session}{%
+You are 90 minutes into a session that started with debugging,
+moved to feature work, and now involves documentation.
+Claude's responses are noticeably worse than at session start.}{%
+Stop. \code{/clear}. Start a fresh session for the current task only.
+Before clearing, note your current state in CURRENT\_WORK.md
+so you do not lose context about what you were doing.
+}
 
 % -------------------------------------------------------------------
 \section{Over-Correcting}
@@ -47,15 +90,26 @@ that contribute nothing to the current task.
 \antipattern{Over-Correcting}{%
 Three or more rounds of ``no, that's not what I meant'' followed by
 increasingly desperate attempts at the same task.}{%
-Apply the two-failure rule: after two failed corrections,
+Two-failure rule (\cref{sec:two-failure}): after two failed corrections,
 \code{/clear} and write a better initial prompt.
-The cost of accumulated correction context exceeds the cost of starting fresh.
 }
 
 \textbf{Root cause:} Each correction adds noise---the original error,
 your correction, Claude's acknowledgment, and its retry.
 After three rounds, the context is dominated by failure patterns.
-Claude's attention is drawn to the corrections rather than the actual task.
+
+\recovery{Over-Correcting}{%
+You are on correction round 4. Claude keeps making the same mistake
+with slight variations.}{%
+\begin{enumerate}
+  \item \code{/clear} immediately.
+  \item Before re-prompting, write down exactly what you want
+    (on paper or in a scratch file).
+  \item Include: what the function should do, an example input/output pair,
+    and one specific constraint Claude kept violating.
+  \item Re-prompt with this more precise request.
+\end{enumerate}
+}
 
 % -------------------------------------------------------------------
 \section{The Permanent Prototype}
@@ -63,69 +117,123 @@ Claude's attention is drawn to the corrections rather than the actual task.
 \antipattern{Permanent Prototype}{%
 Code has been ``working'' for weeks but has no tests, no type hints,
 no error handling. ``We'll add those later'' becomes permanent.}{%
-Define explicit phase transition checklists in CLAUDE.md.
+Define explicit phase transition checklists in CLAUDE.md (\cref{sec:phases}).
 Set a date for graduation from exploration to development.
-Use hooks to enforce graduated standards.
 }
 
-\textbf{Root cause:} The exploration phase (\cref{sec:phases}) has no
+\textbf{Root cause:} The exploration phase has no
 defined exit criteria. Without an explicit transition, the code accumulates
 users and dependencies while remaining at prototype quality.
+
+\recovery{Permanent Prototype}{%
+Your project has been in ``exploration'' mode for 6 weeks.
+It has users. It has no tests.}{%
+\begin{enumerate}
+  \item Add a DEVELOPMENT phase to CLAUDE.md today, effective immediately.
+  \item Have Claude write characterization tests (\cref{sec:refactoring-protocol})
+    for the 3 most critical functions.
+  \item Add a PreCommit hook that runs those tests.
+  \item You now have a safety net. Refactor incrementally from here.
+\end{enumerate}
+}
 
 % -------------------------------------------------------------------
 \section{Pipeline Direction Violations}
 
 \antipattern{Pipeline Direction Violations}{%
 Carefully edited downstream artifacts are overwritten when an upstream
-script is re-run. Hours of manual refinement are lost.}{%
+script is re-run.}{%
 Document pipeline flow direction.
 Mark generated files: \code{\# GENERATED --- do not edit manually}.
-If you must edit generated files, also update the source.
 }
 
-\textbf{Root cause:} The developer edits a generated file (e.g., API client
-code generated from an OpenAPI spec), then re-runs the code generator.
-The generator regenerates from the spec, overwriting the manual edits.
+\textbf{Root cause:} Editing a generated file, then re-running the generator.
+The generator regenerates from source, destroying manual edits.
+
+\recovery{Pipeline Direction Violations}{%
+You just ran \code{extract\_cards.py} and it overwrote 2 hours of
+manual YAML edits.}{%
+\begin{enumerate}
+  \item \code{git checkout -- path/to/overwritten/files} to restore.
+  \item Add \code{\# GENERATED --- do not edit manually} to generated files.
+  \item If manual edits are needed, edit the \emph{source} (.tex, .py)
+    and re-generate. Never edit downstream.
+\end{enumerate}
+}
 
 % -------------------------------------------------------------------
 \section{The Verification Gap}
 
 \antipattern{Verification Gap}{%
-AI-generated code is accepted without testing. Subtle bugs surface in
-production weeks later. ``It looked correct'' becomes the postmortem finding.}{%
-Always provide verification criteria.
-Tests before or with code---never after and separately.
+AI-generated code accepted without testing. Subtle bugs surface in
+production weeks later.}{%
+Always provide verification criteria (\cref{sec:verification}).
+Tests with code---never after and separately.
 Hook-enforced test requirements.
 }
 
 \textbf{Root cause:} AI-generated code \emph{looks} correct.
 The syntax is clean, variable names are reasonable, the logic reads well.
-This appearance of correctness is precisely why verification is essential:
-the bugs are subtle, not obvious.
+This appearance of correctness is precisely why verification is essential.
+
+\recovery{Verification Gap}{%
+You have 1,500 lines of untested AI-generated code.
+It ``works'' but you have zero confidence in it.}{%
+\begin{enumerate}
+  \item Do NOT try to test everything at once.
+  \item Identify the 3 most critical functions (highest risk, most dependencies).
+  \item Have Claude write tests for those 3 functions only.
+  \item Add a PreCommit hook. From now on, no new untested code.
+  \item Expand coverage incrementally: 3 more functions per week.
+\end{enumerate}
+}
 
 % -------------------------------------------------------------------
 \section{Big-Bang Refactoring}
 
 \antipattern{Big-Bang Refactoring}{%
-A large rewrite attempt fails partway through, leaving the codebase in
-a broken state. ``I'll just rewrite the whole module'' leads to days of
-wasted work and a \code{git reset --hard}.}{%
-Use the incremental refactoring protocol (\cref{sec:refactoring-protocol}):
+A large rewrite fails partway through, leaving the codebase broken.}{%
+Incremental protocol (\cref{sec:refactoring-protocol}):
 Extract $\rightarrow$ Test $\rightarrow$ Harden $\rightarrow$ Promote.
-Each step independently shippable.
-Commit after each step.
+Each step independently shippable. Commit after each step.
 }
 
 \textbf{Root cause:} The scope of the rewrite exceeds what can be held
-in context. Claude loses track of the original behavior, introduces
-regressions, and the developer cannot verify correctness because the
-old tests were written for the old architecture.
+in context. Claude loses track of the original behavior and introduces
+regressions.
 
+\recovery{Big-Bang Refactoring}{%
+You are 3 hours into a rewrite. Half the tests fail.
+The old code and new code are mixed together.}{%
+\begin{enumerate}
+  \item \code{git stash} the current mess.
+  \item Return to the last working commit.
+  \item Start the incremental protocol: extract ONE function,
+    write characterization tests, refactor, verify, commit.
+  \item Repeat. Each step takes 25 minutes and always leaves
+    the code in a working state.
+\end{enumerate}
+}
+
+% -------------------------------------------------------------------
 \begin{keyinsight}
-Every anti-pattern in this chapter shares a common thread:
+Every anti-pattern shares a common thread:
 they arise from treating Claude as infinitely capable rather than
 as a powerful but bounded system. Context is finite. Attention degrades.
 Verification is essential. Working within these constraints---not
 ignoring them---is what separates productive Claude usage from frustrating
 Claude usage.
 \end{keyinsight}
+
+% -------------------------------------------------------------------
+\begin{trybox}
+Audit your most active project:
+\begin{enumerate}
+  \item Count lines in CLAUDE.md. Over 300? Flag for splitting.
+  \item Check your last 5 sessions: how many had 3+ correction rounds?
+  \item Is your project in an explicit development phase, or is it a
+    permanent prototype?
+  \item Identify the single anti-pattern most affecting your productivity.
+    Apply the recovery guide above.
+\end{enumerate}
+\end{trybox}
