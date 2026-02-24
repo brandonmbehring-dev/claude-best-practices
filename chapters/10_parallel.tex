@@ -1,0 +1,101 @@
+% Chapter 10: Parallel and Delegated Workflows
+\chapter{Parallel and Delegated Workflows}
+\label{ch:parallel}
+
+The natural mode of Claude Code is sequential: one conversation,
+one context, one task. But many real workflows benefit from parallelism---
+running multiple investigations simultaneously, reviewing code from
+multiple perspectives, or working on independent modules concurrently.
+
+\section{Parallel Session Strategies}
+\label{sec:parallel-strategies}
+
+\marginnote[Official]{Desktop app, web, and Agent Teams for simultaneous work. Git worktrees (\code{--worktree}) for isolated parallel sessions.\sourceurl{https://code.claude.com/docs/en/common-workflows}}
+
+\subsection{Git Worktrees}
+
+\official{The \code{--worktree} flag creates an isolated copy of your repository
+for parallel work.}
+
+\begin{minted}{bash}
+# Start parallel work on two features
+claude --worktree "Implement caching layer"
+claude --worktree "Add rate limiting"
+\end{minted}
+
+Each worktree:
+\begin{itemize}
+  \item Gets its own git branch
+  \item Has a complete, isolated copy of the repository
+  \item Can be merged independently when complete
+  \item Is cleaned up automatically if no changes are made
+\end{itemize}
+
+\subsection{Multi-Perspective Review}
+
+\official{Writer/Reviewer pattern}: run one session to make changes,
+a separate session to review them. Neither session's context contaminates the other.
+
+\practitioner{Extend this to multi-perspective review with subagents:}
+
+\begin{enumerate}
+  \item \textbf{Correctness agent}: ``Does this code do what it claims?''
+  \item \textbf{Security agent}: ``Are there vulnerabilities?''
+  \item \textbf{Performance agent}: ``Are there efficiency concerns?''
+  \item \textbf{Style agent}: ``Does this match project conventions?''
+\end{enumerate}
+
+Running four agents in parallel takes the same wall-clock time as one.
+
+% -------------------------------------------------------------------
+\section{When to Delegate vs.\ Do Directly}
+\label{sec:delegation-decision}
+
+\practitioner{Not everything benefits from delegation.
+The overhead of spawning a subagent is justified only when the task
+is independent and context-heavy enough to warrant isolation.}
+
+\subsection{Delegate When}
+
+\begin{itemize}
+  \item The task is independent of your current work
+  \item It requires heavy context that would pollute your main session
+  \item It can run in the background while you continue other work
+  \item You need an unbiased second opinion
+  \item Multiple tasks can run in parallel for wall-clock savings
+\end{itemize}
+
+\subsection{Do Directly When}
+
+\begin{itemize}
+  \item The task is quick (under 2 minutes)
+  \item It depends on your current session's context
+  \item Sequential reasoning is required (step B depends on step A's result)
+  \item The task is too simple to justify the overhead
+\end{itemize}
+
+\subsection{Parallel Validation Example}
+
+\practitioner{A common high-value pattern: parallel pre-commit validation.}
+
+Instead of running lint, tests, type checking, and coverage sequentially
+(20 minutes), delegate each to a subagent and run in parallel (5 minutes):
+
+\begin{minted}{text}
+Parallel agents:
+  Agent 1: Run linter, report violations
+  Agent 2: Run test suite, report failures
+  Agent 3: Run type checker, report errors
+  Agent 4: Run coverage analysis, report gaps
+\end{minted}
+
+All four results return to your main session.
+You address the issues in priority order.
+
+\begin{keyinsight}
+Parallelism in Claude Code is not about speed alone---it is about
+\emph{perspective isolation}. A reviewer who cannot see the writer's
+reasoning catches different bugs. A security agent that only sees code
+(not intent) finds different vulnerabilities. The diversity of perspectives
+is the value, not just the time savings.
+\end{keyinsight}

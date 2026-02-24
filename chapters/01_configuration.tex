@@ -1,0 +1,263 @@
+% Chapter 1: The Configuration Hierarchy
+\chapter{The Configuration Hierarchy}
+\label{ch:configuration}
+
+Claude Code is not just a chatbot with file access.
+It is a configurable development environment with a layered context system
+that determines how Claude understands your project, what it can do,
+and how it behaves.
+This chapter covers the four mechanisms that shape that behavior:
+\code{CLAUDE.md}, rules, settings, and output styles.
+
+\section{CLAUDE.md --- Your AI's Operating Manual}
+\label{sec:claude-md}
+
+\marginnote[Official]{Run \code{/init} to auto-generate a starter CLAUDE.md from your project structure.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+
+\official{The \code{CLAUDE.md} file is the single most important configuration artifact.}
+Claude reads it at session start and uses it to understand your project's conventions,
+build commands, architecture decisions, and rules of engagement.
+
+\subsection{Hierarchical Loading}
+
+Claude loads \code{CLAUDE.md} files from multiple locations, merging them in order:
+
+\begin{enumerate}
+  \item \code{\textasciitilde/.claude/CLAUDE.md} --- global defaults (applies to all projects)
+  \item Project root \code{CLAUDE.md} or \code{.claude/CLAUDE.md} --- project-level instructions
+  \item Parent and child directory \code{CLAUDE.md} files --- subdirectory-specific overrides
+\end{enumerate}
+
+\marginwarning{If your CLAUDE.md exceeds $\sim$500 lines, Claude will silently deprioritize content near the end. Split into rules files.}
+
+\official{Use the \code{@path/to/file.md} import syntax to reference external files
+without duplicating content.}
+
+\subsection{What to Include}
+
+\begin{itemize}
+  \item Build and test commands Claude cannot guess (e.g., \code{make pilot}, \code{pytest scripts/tests/})
+  \item Code style rules that differ from standard conventions
+  \item Architecture decisions that affect how Claude writes code
+  \item File organization conventions
+  \item Testing requirements and coverage targets
+\end{itemize}
+
+\subsection{What to Exclude}
+
+\begin{itemize}
+  \item What Claude can infer from the codebase (standard language conventions, obvious patterns)
+  \item Long explanations --- keep instructions terse and actionable
+  \item Aspirational rules nobody follows --- document what IS, not what you wish
+\end{itemize}
+
+\begin{tipbox}[Quality Test]
+If Claude keeps violating a rule, one of three things is true:
+(1) the CLAUDE.md is too long and the rule is getting lost,
+(2) the rule contradicts another rule, or
+(3) the rule should be a hook instead of an instruction.
+\end{tipbox}
+
+\subsection{Hub-and-Spoke Architecture}
+
+\practitioner{For teams managing many repositories, maintain a central ``hub'' repo
+with shared patterns referenced via \code{@\textasciitilde/hub/patterns/}.}
+
+This prevents duplication across repos while keeping each project's \code{CLAUDE.md} concise.
+
+\begin{minted}{markdown}
+# Project CLAUDE.md (spoke)
+@~/shared-patterns/git.md
+@~/shared-patterns/testing.md
+
+## Project-Specific
+- Build: `make digital`
+- Test: `pytest tests/`
+\end{minted}
+
+The hub contains canonical patterns for git commits, testing standards, session workflows,
+and other cross-cutting concerns. Each spoke references only the patterns it needs.
+
+\practitioner{Classify repos by context engineering maturity:}
+
+\begin{fullwidth}
+\begin{tabular}{@{}llp{8cm}@{}}
+\toprule
+\textbf{Tier} & \textbf{Components} & \textbf{When to Use} \\
+\midrule
+T0 & None & Prototypes, learning repos \\
+T1 & CLAUDE.md only & Small scripts, documentation projects \\
+T2 & CLAUDE.md + settings & Standard development projects \\
+T3 & + skills, commands, rules & Multi-module projects with established workflows \\
+T4 & + hooks, agents, MCP & Projects requiring automation and quality gates \\
+T5 & + agent teams, pipelines & Enterprise-scale projects with CI/CD integration \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\margintip{Start at T1. Promote when friction justifies it. Most solo projects stabilize at T2--T3.}
+
+% -------------------------------------------------------------------
+\section{Rules: Conditional Context Loading}
+\label{sec:rules}
+
+\official{Place \code{.md} files in \code{.claude/rules/} with \code{paths:} frontmatter
+to control when they load.}\sourceurl{https://code.claude.com/docs/en/best-practices}
+
+Rules without \code{paths:} frontmatter load on \emph{every} session regardless of
+which files you are editing. For monorepos and multi-module projects,
+this bloats context with irrelevant instructions.
+
+\begin{minted}{markdown}
+---
+paths: backend/**/*.py
+---
+# Backend Python Rules
+- Use SQLAlchemy 2.0 async syntax
+- All endpoints need OpenAPI docstrings
+- Run `pytest backend/tests/` after changes
+\end{minted}
+
+\practitioner{Conditional rules are essential for any project with more than three
+distinct modules.} Without them, a rule about SQL formatting loads
+when you are editing React components, wasting context and occasionally
+causing Claude to apply the wrong conventions.
+
+\begin{warnbox}[Common Mistake]
+Forgetting \code{paths:} frontmatter. The rule loads globally,
+Claude's context fills with irrelevant instructions, and important
+rules from CLAUDE.md get deprioritized.
+\end{warnbox}
+
+% -------------------------------------------------------------------
+\section{Settings: 4-Level Precedence}
+\label{sec:settings}
+
+\marginnote[Official]{Settings documentation:\sourceurl{https://code.claude.com/docs/en/settings}}
+
+Claude Code uses a 4-level settings hierarchy. Higher levels override lower:
+
+\begin{enumerate}
+  \item \textbf{Managed} (\code{.managed-settings.json}) --- IT-deployed, highest priority
+  \item \textbf{Local} (\code{.claude/settings.local.json}) --- personal overrides, auto-gitignored
+  \item \textbf{Project} (\code{.claude/settings.json}) --- team standards, committed to git
+  \item \textbf{User} (\code{\textasciitilde/.claude/settings.json}) --- global personal defaults
+\end{enumerate}
+
+\subsection{Key Settings}
+
+\begin{description}
+  \item[\code{permissions}] Allow, deny, and ask rules for tool access.
+    Use \code{allow} for safe operations, \code{deny} for sensitive files,
+    \code{ask} for destructive actions.
+  \item[\code{model}] Default model selection (opus, sonnet, haiku).
+  \item[\code{hooks}] Lifecycle event handlers (see \cref{sec:hooks}).
+  \item[\code{outputStyle}] Response format customization.
+  \item[\code{env}] Environment variables passed to Claude sessions.
+\end{description}
+
+\subsection{Convention: Team vs.\ Personal Settings}
+
+\practitioner{Commit \code{settings.json} for team-wide standards.
+Keep \code{settings.local.json} for personal preferences.}
+
+\begin{minted}{json}
+// .claude/settings.json (committed -- team standards)
+{
+  "permissions": {
+    "deny": ["Read(.env*)", "Read(secrets/**)"],
+    "ask": ["Bash(git push:*)"]
+  }
+}
+\end{minted}
+
+\begin{minted}{json}
+// .claude/settings.local.json (gitignored -- personal)
+{
+  "model": "opus",
+  "outputStyle": "concise"
+}
+\end{minted}
+
+\subsection{Practical Deny Rules}
+
+\margintip{Deny rules are absolute. Unlike CLAUDE.md instructions, they cannot be overridden by conversation.}
+
+\begin{minted}{json}
+{
+  "permissions": {
+    "deny": [
+      "Read(.env*)",
+      "Read(secrets/**)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/credentials*)",
+      "Read(**/.aws/**)",
+      "Bash(rm -rf /)",
+      "Bash(sudo:*)"
+    ]
+  }
+}
+\end{minted}
+
+% -------------------------------------------------------------------
+\section{Output Styles}
+\label{sec:output-styles}
+
+\marginnote[Official]{Configure via \code{outputStyle} in settings or \code{--output-style} flag.}
+
+\official{Output styles customize how Claude structures its responses:
+tone, verbosity, formatting conventions, and problem-solving protocols.}
+
+A custom output style can encode:
+\begin{itemize}
+  \item Problem-solving workflows (e.g., ``always diagnose before fixing'')
+  \item Parallelism strategies for tool usage
+  \item Domain-specific communication patterns
+  \item Formatting preferences (bullet points vs.\ prose, emoji policy)
+\end{itemize}
+
+\practitioner{Custom styles are most valuable when they encode \emph{decision protocols},
+not just formatting preferences.}
+A style that says ``use bullets'' saves minimal effort.
+A style that says ``classify the issue type before searching for solutions''
+changes the quality of every interaction.
+
+% -------------------------------------------------------------------
+\section{Visual: The Configuration Hierarchy}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  layer/.style={draw=PrimaryBlue, fill=PrimaryBlue!8, rounded corners=3pt,
+    minimum width=10cm, minimum height=1.1cm, font=\small, align=center},
+  label/.style={font=\footnotesize\itshape, text=PrimaryBlue!70!black},
+  >=Stealth
+]
+  % Layers from bottom to top
+  \node[layer] (output) at (0,0) {\textbf{Output Styles} --- Communication patterns, tone, problem-solving protocols};
+  \node[layer] (settings) at (0,1.5) {\textbf{Settings} --- Permissions, model, hooks, env vars};
+  \node[layer] (rules) at (0,3.0) {\textbf{Rules} --- Conditional context (paths: frontmatter)};
+  \node[layer] (claude) at (0,4.5) {\textbf{CLAUDE.md} --- Project knowledge, build commands, architecture};
+
+  % Precedence arrow
+  \draw[->, thick, PrimaryBlue!60] (5.5,0) -- (5.5,4.5)
+    node[midway, right, label] {Higher priority};
+
+  % Scope labels
+  \node[label, anchor=east] at (-5.3,4.5) {Global + Project};
+  \node[label, anchor=east] at (-5.3,3.0) {Per-module};
+  \node[label, anchor=east] at (-5.3,1.5) {4-level cascade};
+  \node[label, anchor=east] at (-5.3,0) {Per-user};
+\end{tikzpicture}
+\caption{The four configuration layers, each handling a distinct concern.}
+\label{fig:config-hierarchy}
+\end{figure}
+
+\begin{keyinsight}
+The configuration hierarchy is designed so that each layer handles a different concern:
+\code{CLAUDE.md} for project knowledge, rules for conditional context,
+settings for permissions and behavior, and output styles for communication patterns.
+Mixing these concerns (e.g., putting permission rules in CLAUDE.md)
+reduces their effectiveness.
+\end{keyinsight}

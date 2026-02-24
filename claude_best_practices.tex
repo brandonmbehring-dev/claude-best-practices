@@ -1,0 +1,68 @@
+% claude_best_practices.tex
+% Main document: Best Practices for Using Claude
+% Build: make pilot (quick) or make digital (full)
+
+\documentclass[10pt,oneside,open=any]{scrbook}
+\usepackage{claude-best-practices}
+
+\begin{document}
+
+\makeguidecover
+
+\frontmatter
+\tableofcontents
+
+\mainmatter
+
+% Preamble
+\input{chapters/00_preamble}
+
+% Section 1: Configuration Hierarchy
+\input{chapters/01_configuration}
+
+% Section 2: Commands, Skills, Hooks, Agents
+\input{chapters/02_extensions}
+
+% Section 3: Context Management + Memory
+\input{chapters/03_context}
+
+% Section 4: Prompt Engineering
+\input{chapters/04_prompting}
+
+% Section 5: Testing + Quality
+\input{chapters/05_testing}
+
+% Section 6: Starting New Projects
+\input{chapters/06_greenfield}
+
+% Section 7: Refactoring Legacy Projects
+\input{chapters/07_refactoring}
+
+% Section 8: Automation Pipelines
+\input{chapters/08_automation}
+
+% Section 9: MCP + Tool Integration
+\input{chapters/09_mcp}
+
+% Section 10: Parallel Workflows
+\input{chapters/10_parallel}
+
+% Section 11: Anti-Patterns
+\input{chapters/11_antipatterns}
+
+% Section 12: Maturity Model
+\input{chapters/12_maturity}
+
+% Section 13: Enterprise Deployment
+\input{chapters/13_enterprise}
+
+% Section 14: Foundational Principles
+\input{chapters/14_principles}
+
+% Appendices
+\appendix
+\input{appendices/templates}
+\input{appendices/reference_card}
+\input{appendices/sources}
+
+\end{document}

@@ -1,0 +1,60 @@
+% Preamble
+\chapter*{Preamble}
+\addcontentsline{toc}{chapter}{Preamble}
+\label{ch:preamble}
+
+This guide synthesizes two sources of knowledge about using Claude effectively.
+
+\textbf{Official guidance} from Anthropic: documentation, blog posts,
+engineering reports, and enterprise case studies---researched and verified
+as of February 2026.
+
+\textbf{Practitioner patterns} abstracted from extensive daily use of
+Claude Code across 20+ projects spanning data science, machine learning,
+software engineering, and technical writing.
+
+Every practice in this guide is labeled:
+
+\begin{description}
+  \item[{\color{OfficialPurple}\textbf{[Official]}}] Anthropic's documented recommendation, with source URL.
+  \item[{\color{PractitionerTeal}\textbf{[Practitioner]}}] Discovered through extensive daily use.
+  \item[{\color{ConvergenceGold}\textbf{[Convergence]}}] Both sources agree independently.
+\end{description}
+
+\subsection*{Who This Is For}
+
+\textbf{Primary audience:} Senior ICs and tech leads who already use Claude
+and want to level up. This guide assumes familiarity with Claude Code basics.
+
+\textbf{Secondary audience:} Engineering managers evaluating Claude for their teams.
+\cref{ch:enterprise} is specifically designed to be shared with decision-makers.
+
+\subsection*{How to Read This Guide}
+
+\begin{description}
+  \item[Getting started?] Read \cref{ch:configuration} and \cref{ch:greenfield}.
+    Set up CLAUDE.md and your first hooks.
+  \item[Already using Claude?] Read \cref{ch:antipatterns} and \cref{ch:maturity}
+    to identify your current level and most impactful next investment.
+  \item[Evaluating for your team?] Read \cref{ch:enterprise} and \cref{ch:maturity}.
+  \item[Optimizing costs?] Read \cref{sec:cost} and \cref{sec:cost-scale}.
+\end{description}
+
+\subsection*{Foundational Principles}
+
+Four engineering principles unify every recommendation in this guide:
+\emph{never fail silently}, \emph{simplicity over complexity},
+\emph{immutability by default}, and \emph{fail fast with diagnostics}.
+See \cref{ch:principles} for the full treatment. Keep them in mind
+as you read---they explain the ``why'' behind the specific practices.
+
+\subsection*{A Note on Pace}
+
+The AI tooling landscape moves fast. The model capabilities, API features,
+and best practices described here are verified as of February 2026.
+Some details may have changed by the time you read this.
+Check the repository for the latest version, and consult
+\cref{app:sources} for primary source URLs.
+
+\vspace{0.5\baselineskip}
+\hfill\textit{--- Brandon Behring, February 2026}

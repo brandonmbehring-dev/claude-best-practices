@@ -1,0 +1,201 @@
+% Chapter 7: Refactoring Legacy Projects with Quality Control
+\chapter{Refactoring Legacy Projects with Quality Control}
+\label{ch:refactoring}
+
+Introducing Claude to an existing codebase is harder than starting fresh.
+The codebase has conventions Claude must learn, technical debt it must
+navigate, and invariants it must not break. This chapter covers the
+protocol for safe, incremental improvement.
+
+\section{Brownfield: Introducing Claude to an Existing Codebase}
+\label{sec:brownfield}
+
+\marginnote[Official]{Use Plan Mode first---let Claude read and understand the codebase without modifying anything.\sourceurl{https://code.claude.com/docs/en/common-workflows}}
+
+\subsection{Start with Understanding, Not Action}
+
+\official{Before any changes, use Plan Mode (Shift+Tab) to let Claude explore.}
+Ask:
+\begin{itemize}
+  \item ``Explain the architecture of this project.''
+  \item ``What patterns does this codebase use?''
+  \item ``Where are the tests? What is the test coverage?''
+  \item ``What are the main entry points?''
+\end{itemize}
+
+\official{Document existing conventions in CLAUDE.md, not aspirational ones.}
+A CLAUDE.md that says ``we use strict TypeScript'' when the codebase has
+\code{any} everywhere will cause Claude to produce inconsistent code---
+some files strict, some loose.
+
+\subsection{Incremental Adoption}
+
+\practitioner{Adopt Claude configuration in four incremental steps,
+each independently valuable:}
+
+\begin{enumerate}
+  \item \textbf{CLAUDE.md} documenting current state (build commands, conventions as they are)
+  \item \textbf{Permissions} restricting Claude to safe operations
+  \item \textbf{Hooks} enforcing existing standards (not new ones)
+  \item \textbf{Skills} emerging organically as patterns stabilize
+\end{enumerate}
+
+% -------------------------------------------------------------------
+\section{The Incremental Refactoring Protocol}
+\label{sec:refactoring-protocol}
+
+\practitioner{Never attempt a big-bang rewrite.}
+Use four-step increments, each independently shippable:
+
+\begin{description}
+  \item[1. Extract] Isolate the function or module to refactor.
+    Create a clear boundary between ``changing'' and ``not changing.''
+
+  \item[2. Test] Write characterization tests capturing current behavior.
+    Claude excels at this---prompt: ``Write tests that document exactly
+    what this function does today, including edge cases and error handling.''
+
+  \item[3. Harden] Refactor with tests as safety net.
+    Each change verified against the characterization tests.
+    If a test fails, you have broken existing behavior.
+
+  \item[4. Promote] Move refactored code into production.
+    Run full regression suite. Verify no downstream breakage.
+\end{description}
+
+\begin{tipbox}[Session Sizing]
+Each step fits in a 25-minute focused session.
+Commit after each step.
+If interrupted, the project is always in a working state.
+\end{tipbox}
+
+\subsection{Writer/Reviewer Pattern}
+
+Use separate Claude sessions for writing and reviewing
+to avoid confirmation bias.
+The writer session has context about the refactoring intent and may
+overlook issues. The reviewer session sees only the diff and judges
+it on its own merits.
+See \cref{ch:parallel} for the full treatment of this pattern.
+
+% -------------------------------------------------------------------
+\section{Quality Control During Refactoring}
+\label{sec:refactoring-quality}
+
+\subsection{Characterization Tests First}
+
+\convergence{Before changing any code, have Claude write tests that capture
+existing behavior.} These become your regression safety net.
+
+\begin{minted}{text}
+Prompt: "Read src/payments/legacy_processor.py.
+Write pytest tests that document its exact current behavior:
+- What inputs does it accept?
+- What does it return for each input type?
+- What errors does it raise and when?
+- What side effects does it produce?
+Do NOT write tests for how it SHOULD work.
+Write tests for how it DOES work."
+\end{minted}
+
+\margintip{Characterization tests are temporary---they may test buggy behavior. That is intentional. They exist to detect \emph{changes}, not to assert \emph{correctness}.}
+
+\subsection{Metrics-Driven Approach}
+
+\practitioner{Establish baseline metrics before refactoring.
+Track improvement per sprint. Make progress visible with traffic-light thresholds.}
+
+\begin{fullwidth}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Metric} & \textbf{GREEN} & \textbf{YELLOW} & \textbf{RED} \\
+\midrule
+Test coverage & $\geq$80\% & 60--79\% & $<$60\% \\
+Lint warnings & 0 & 1--10 & $>$10 \\
+Avg function length & $\leq$30 lines & 31--50 & $>$50 \\
+Presentation pass rate & $\geq$95\% & 85--94\% & $<$85\% \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\subsection{Guard Rails via Hooks}
+
+\practitioner{Hooks protect the refactoring process:}
+
+\begin{description}
+  \item[PreCommit] Run full test suite. Block commits if tests fail.
+  \item[PostFileWrite] Auto-format to maintain style consistency.
+  \item[Custom skill] Run coverage diff: ``Did this change reduce coverage?''
+\end{description}
+
+\subsection{Impact Analysis with Subagents}
+
+\official{Use subagents for impact analysis:
+``What other files depend on this module?''
+runs in isolated context without polluting your main session.}
+
+% -------------------------------------------------------------------
+\section{Migration Patterns at Scale}
+\label{sec:migrations}
+
+For bulk migrations across many files, use the Fan-Out pattern
+described in \cref{ch:automation}. For parallel refactoring across
+independent modules, use git worktrees as described in \cref{ch:parallel}.
+
+\subsection{The Quality Flywheel}
+
+\practitioner{After each refactoring sprint:}
+
+\begin{enumerate}
+  \item Update CLAUDE.md with lessons learned
+  \item Add new hooks for discovered gotchas
+  \item Refine skills based on what worked
+  \item Update metrics baselines
+\end{enumerate}
+
+Each sprint improves not just the code but the tooling around the code.
+After three sprints, the refactoring process itself is significantly faster.
+
+% -------------------------------------------------------------------
+\section{Visual: The Incremental Refactoring Cycle}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  step/.style={draw=PrimaryBlue, fill=PrimaryBlue!8, rounded corners=6pt,
+    minimum width=2.5cm, minimum height=1.2cm, font=\small\bfseries, align=center},
+  note/.style={font=\scriptsize, text=DarkText, align=center},
+  arr/.style={->, very thick, PrimaryBlue!60},
+  >=Stealth
+]
+  % Four steps in a cycle
+  \node[step] (extract) at (0,2.5) {1. Extract\\[-2pt]\normalfont\scriptsize Isolate target};
+  \node[step] (test) at (3.5,2.5) {2. Test\\[-2pt]\normalfont\scriptsize Characterize};
+  \node[step] (harden) at (3.5,0) {3. Harden\\[-2pt]\normalfont\scriptsize Refactor};
+  \node[step] (promote) at (0,0) {4. Promote\\[-2pt]\normalfont\scriptsize Ship};
+
+  % Arrows forming cycle
+  \draw[arr] (extract) -- (test);
+  \draw[arr] (test) -- (harden);
+  \draw[arr] (harden) -- (promote);
+  \draw[arr] (promote) -- (extract) node[midway, left, note] {Next\\module};
+
+  % Center label
+  \node[font=\footnotesize\itshape, text=TipGreen!80!black, align=center] at (1.75,1.25)
+    {Commit after\\each step};
+
+  % Time annotation
+  \node[font=\scriptsize, text=PrimaryBlue!70] at (1.75,-0.8)
+    {Each step $\approx$ 25 min $\cdot$ Always shippable};
+\end{tikzpicture}
+\caption{The incremental refactoring cycle. Each step is independently shippable.}
+\label{fig:refactoring-cycle}
+\end{figure}
+
+\begin{keyinsight}
+Refactoring with Claude follows the same principle as refactoring without it:
+small, verifiable increments. The difference is that Claude can write
+characterization tests in minutes instead of hours, making the
+Extract $\rightarrow$ Test $\rightarrow$ Harden $\rightarrow$ Promote cycle
+dramatically faster.
+\end{keyinsight}

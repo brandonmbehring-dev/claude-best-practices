@@ -1,0 +1,96 @@
+% Appendix B: Command and Hook Reference
+\chapter{Command and Hook Reference}
+\label{app:reference}
+
+\section{Built-In Commands}
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Command} & \textbf{Description} \\
+\midrule
+\code{/init} & Auto-generate CLAUDE.md from project structure \\
+\code{/clear} & Clear context, start fresh \\
+\code{/compact} & Summarize conversation, preserve key decisions \\
+\code{/rewind} & Roll back to a previous checkpoint \\
+\code{/rename "name"} & Give current session a descriptive name \\
+\code{/hooks} & Configure lifecycle hooks interactively \\
+\code{/mcp} & Manage MCP server connections \\
+\code{/permissions} & View and modify permission rules \\
+\code{/status} & Show current session status (model, context, tools) \\
+\code{/help} & Show available commands \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\section{Session Management Flags}
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Flag} & \textbf{Description} \\
+\midrule
+\code{--continue} & Resume most recent session \\
+\code{--resume} & Pick from list of previous sessions \\
+\code{--from-pr 123} & Start session with PR context pre-loaded \\
+\code{--worktree} & Create isolated git worktree for parallel work \\
+\code{-p "prompt"} & Headless mode (non-interactive, single prompt) \\
+\code{--output-format} & Output format: \code{json}, \code{stream-json}, \code{text} \\
+\code{--allowedTools} & Restrict available tools (comma-separated) \\
+\code{--model} & Override model: \code{opus}, \code{sonnet}, \code{haiku} \\
+\code{--output-style} & Override output style \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\section{Keyboard Shortcuts}
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Shortcut} & \textbf{Action} \\
+\midrule
+\code{Shift+Tab} & Toggle Plan Mode (read-only analysis) \\
+\code{Alt+T} & Toggle extended thinking \\
+\code{Ctrl+C} & Cancel current generation \\
+\code{Esc} & Cancel current input \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\section{Hook Events}
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{3cm}p{5cm}@{}}
+\toprule
+\textbf{Event} & \textbf{Timing} & \textbf{Typical Use} \\
+\midrule
+\code{PreToolUse} & Before any tool & Validate inputs, block operations \\
+\code{PostToolUse} & After any tool & Log results, trigger follow-up \\
+\code{PreFileWrite} & Before file write & Block sensitive paths, validate content \\
+\code{PostFileWrite} & After file write & Auto-format, lint, validate \\
+\code{PreBashRun} & Before shell command & Block dangerous commands \\
+\code{PostBashRun} & After shell command & Capture output, log \\
+\code{PreCommit} & Before git commit & Run tests, lint, type check \\
+\code{PostCommit} & After git commit & Trigger CI, update dashboards \\
+\code{UserPromptSubmit} & User sends prompt & Transform or validate input \\
+\code{Notification} & Notification event & Route to Slack, email, dashboard \\
+\code{SessionStart} & Session begins & Load context, run health check \\
+\code{SessionEnd} & Session ends & Save state, update logs \\
+\code{WorktreeCreate} & Worktree created & Initialize worktree-specific config \\
+\code{WorktreeRemove} & Worktree removed & Clean up temporary resources \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\section{Settings Precedence}
+
+\begin{enumerate}
+  \item \textbf{Managed} (\code{.managed-settings.json}) --- IT-deployed, highest priority
+  \item \textbf{Local} (\code{.claude/settings.local.json}) --- personal, auto-gitignored
+  \item \textbf{Project} (\code{.claude/settings.json}) --- team standards, committed
+  \item \textbf{User} (\code{\textasciitilde/.claude/settings.json}) --- global personal defaults
+\end{enumerate}
+
+Higher levels override lower. Within each level, \code{deny} rules are absolute
+and cannot be overridden by lower levels.

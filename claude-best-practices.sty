@@ -1,0 +1,485 @@
+% claude-best-practices.sty
+% Self-contained Tufte-style layout for the Claude Best Practices handbook.
+% No external dependencies beyond standard TeX Live packages.
+%
+% Usage: \usepackage{claude-best-practices}
+% Requires: LuaLaTeX with -shell-escape flag
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{claude-best-practices}[2026/02/24 Claude Best Practices Style v1.0]
+
+% =============================================================================
+% ENGINE DETECTION
+% =============================================================================
+\RequirePackage{iftex}
+\RequireLuaTeX
+
+% =============================================================================
+% TUFTE-STYLE GEOMETRY
+% =============================================================================
+\RequirePackage{geometry}
+\geometry{
+    paperwidth=8.5in,
+    paperheight=11in,
+    left=1in,
+    top=1in,
+    textwidth=4.5in,
+    marginparsep=0.3in,
+    marginparwidth=1.9in,
+    textheight=9in,
+    footskip=0.5in,
+    headheight=23pt
+}
+
+% Full-width length for tables spanning text + margin
+\newlength{\fullwidthlen}
+\AtBeginDocument{\setlength{\fullwidthlen}{\dimexpr\textwidth+\marginparwidth+\marginparsep\relax}}
+
+% =============================================================================
+% FONTS
+% =============================================================================
+\RequirePackage{fontspec}
+
+% Fallback font for symbols (stars, arrows, etc.)
+\directlua{
+  luaotfload.add_fallback("symbolfallback", {
+    "DejaVu Sans:mode=harf;",
+  })
+}
+
+\setmainfont{Roboto}[
+  UprightFont = *-Regular,
+  BoldFont = *-Bold,
+  ItalicFont = *-Italic,
+  BoldItalicFont = *-BoldItalic,
+  Scale = 1.0,
+  RawFeature={fallback=symbolfallback}
+]
+
+\setmonofont{Source Code Pro}[
+  Scale = 0.82,
+  UprightFont = *-Regular,
+  BoldFont = *-Bold,
+  ItalicFont = *-It,
+  BoldItalicFont = *-BoldIt
+]
+
+\setsansfont{Roboto}[
+  UprightFont = *-Regular,
+  BoldFont = *-Bold,
+  ItalicFont = *-Italic,
+  BoldItalicFont = *-BoldItalic
+]
+
+\newcommand{\marginfontsize}{\footnotesize}
+
+% =============================================================================
+% TYPOGRAPHY
+% =============================================================================
+\RequirePackage[
+  protrusion=true,
+  expansion=true,
+  tracking=smallcaps,
+  final
+]{microtype}
+
+\SetProtrusion{encoding=*,family=*}{
+  1={-100,-100},
+  .={0,500},
+  ,={0,500}
+}
+
+\RequirePackage{setspace}
+\setstretch{1.15}
+
+% Tufte-style: indent, no parskip
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+
+% =============================================================================
+% COLORS
+% =============================================================================
+\RequirePackage[dvipsnames,svgnames,x11names,table]{xcolor}
+
+\definecolor{PrimaryBlue}{HTML}{0066CC}
+\definecolor{NoteBlue}{HTML}{3498DB}
+\definecolor{WarningOrange}{HTML}{E67E22}
+\definecolor{TipGreen}{HTML}{27AE60}
+\definecolor{CodeBg}{HTML}{F5F5F5}
+\definecolor{CodeFrame}{HTML}{CCCCCC}
+\definecolor{DarkText}{HTML}{222222}
+\definecolor{OfficialPurple}{HTML}{7B2D8E}
+\definecolor{PractitionerTeal}{HTML}{008080}
+\definecolor{ConvergenceGold}{HTML}{B8860B}
+\definecolor{EnterpriseNavy}{HTML}{003366}
+\definecolor{CostRed}{HTML}{CC3333}
+
+% =============================================================================
+% CODE LISTINGS (minted)
+% =============================================================================
+\RequirePackage{minted}
+
+\setminted{
+  frame=lines,
+  framesep=1mm,
+  bgcolor=CodeBg,
+  rulecolor=CodeFrame,
+  fontsize=\footnotesize,
+  breaklines=true,
+  breakanywhere=false,
+  linenos=false,
+  xleftmargin=0pt,
+  baselinestretch=1.05,
+  autogobble=true
+}
+
+\usemintedstyle{friendly}
+
+\RequirePackage{listings}
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{PrimaryBlue},
+  commentstyle=\color{gray},
+  stringstyle=\color{WarningOrange},
+  showstringspaces=false,
+  breaklines=true,
+  frame=single,
+  numbers=none,
+  tabsize=4,
+  backgroundcolor=\color{CodeBg}
+}
+
+\RequirePackage[english]{babel}
+\RequirePackage{csquotes}
+
+% Inline code
+\newcommand{\code}[1]{\texttt{#1}}
+
+% =============================================================================
+% MARGIN NOTES (Tufte-style)
+% =============================================================================
+\RequirePackage{changepage}
+\RequirePackage{marginnote}
+
+\let\pkgmarginnote\marginnote
+
+% Basic sidenote
+\newcommand{\sidenote}[1]{%
+  \pkgmarginnote{%
+    \footnotesize\raggedright%
+    \color{PrimaryBlue!70!black}%
+    #1%
+    \color{DarkText}%
+  }%
+}
+
+% Full-width environment
+\newenvironment{fullwidth}
+  {\begin{adjustwidth}{}{-\marginparwidth-\marginparsep}}
+  {\end{adjustwidth}}
+
+% =============================================================================
+% CALLOUT BOXES (tcolorbox)
+% =============================================================================
+\RequirePackage[breakable,skins]{tcolorbox}
+
+% --- MARGIN CALLOUT BOXES ---
+\newtcolorbox{marginbox}[2][Note]{
+  breakable=true,
+  enhanced,
+  colframe=#2,
+  colback=#2!3,
+  coltitle=DarkText,
+  fonttitle=\bfseries\small,
+  title=#1,
+  leftrule=2pt,
+  rightrule=0pt,
+  toprule=0pt,
+  bottomrule=0pt,
+  arc=0pt,
+  left=1pt,
+  right=1pt,
+  top=0.5pt,
+  bottom=0.5pt,
+  boxsep=0pt,
+  width=\marginparwidth,
+  fontupper=\marginfontsize,
+  titlerule=0mm
+}
+
+% Margin note with category
+\renewcommand{\marginnote}[2][Note]{%
+  \pkgmarginnote{\begin{marginbox}[#1]{NoteBlue}#2\end{marginbox}}%
+}
+
+\newcommand{\marginwarning}[2][Warning]{%
+  \pkgmarginnote{\begin{marginbox}[#1]{WarningOrange}#2\end{marginbox}}%
+}
+
+\newcommand{\margintip}[2][Tip]{%
+  \pkgmarginnote{\begin{marginbox}[#1]{TipGreen}#2\end{marginbox}}%
+}
+
+\newcommand{\marginofficial}[1]{%
+  \pkgmarginnote{\begin{marginbox}[Official]{OfficialPurple}#1\end{marginbox}}%
+}
+
+\newcommand{\margincost}[1]{%
+  \pkgmarginnote{\begin{marginbox}[Cost]{CostRed}#1\end{marginbox}}%
+}
+
+\newcommand{\marginenterprise}[1]{%
+  \pkgmarginnote{\begin{marginbox}[Enterprise]{EnterpriseNavy}#1\end{marginbox}}%
+}
+
+\newcommand{\margintemplate}[1]{%
+  \pkgmarginnote{\begin{marginbox}[Template]{PractitionerTeal}#1\end{marginbox}}%
+}
+
+% --- MAIN TEXT CALLOUT BOXES ---
+\tcbset{
+  callout-compact/.style={
+    breakable,
+    enhanced,
+    arc=0pt,
+    leftrule=3pt,
+    rightrule=0pt,
+    toprule=0pt,
+    bottomrule=0pt,
+    left=2pt,
+    right=2pt,
+    top=1pt,
+    bottom=1pt,
+    boxsep=0pt,
+    toptitle=0.5pt,
+    coltitle=DarkText,
+    fonttitle=\bfseries
+  }
+}
+
+\newtcolorbox{notebox}[1][Note]{
+  callout-compact,
+  colframe=NoteBlue,
+  colback=NoteBlue!3,
+  title=#1
+}
+
+\newtcolorbox{warnbox}[1][Warning]{
+  callout-compact,
+  colframe=WarningOrange,
+  colback=WarningOrange!3,
+  title=#1
+}
+
+\newtcolorbox{tipbox}[1][Tip]{
+  callout-compact,
+  colframe=TipGreen,
+  colback=TipGreen!3,
+  title=#1
+}
+
+\newtcolorbox{officialbox}[1][Anthropic Official]{
+  callout-compact,
+  colframe=OfficialPurple,
+  colback=OfficialPurple!3,
+  title=#1
+}
+
+% =============================================================================
+% PRACTICE LABEL COMMANDS
+% =============================================================================
+% Inline labels for tagging practices
+\newcommand{\official}[1]{%
+  {\color{OfficialPurple}\textbf{[Official]}}~#1%
+}
+\newcommand{\practitioner}[1]{%
+  {\color{PractitionerTeal}\textbf{[Practitioner]}}~#1%
+}
+\newcommand{\convergence}[1]{%
+  {\color{ConvergenceGold}\textbf{[Convergence]}}~#1%
+}
+
+% =============================================================================
+% TABLES
+% =============================================================================
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{longtable}
+\RequirePackage{array}
+\RequirePackage{multicol}
+\RequirePackage{multirow}
+\renewcommand{\arraystretch}{1.2}
+
+% =============================================================================
+% MATH
+% =============================================================================
+\RequirePackage{amsmath,amssymb}
+
+% =============================================================================
+% FIGURES AND GRAPHICS
+% =============================================================================
+\RequirePackage{graphicx}
+\RequirePackage{float}
+\RequirePackage{caption}
+\RequirePackage{tikz}
+\usetikzlibrary{
+  arrows.meta,
+  positioning,
+  shapes.geometric,
+  shapes.misc,
+  fit,
+  calc,
+  backgrounds,
+  decorations.pathreplacing
+}
+
+\captionsetup{
+  font=small,
+  labelfont=bf,
+  format=hang,
+  margin=6pt,
+  skip=4pt,
+  singlelinecheck=false
+}
+
+% =============================================================================
+% LISTS
+% =============================================================================
+\RequirePackage[shortlabels]{enumitem}
+
+\setlist{
+  topsep=0.5pt,
+  itemsep=1.5pt,
+  parsep=0pt,
+  partopsep=0pt,
+  leftmargin=*,
+  listparindent=0pt
+}
+
+\setlist[description]{style=nextline}
+
+% =============================================================================
+% CROSS-REFERENCES AND HYPERLINKS
+% =============================================================================
+\RequirePackage[
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=PrimaryBlue,
+  citecolor=TipGreen!80!black,
+  pdfusetitle,
+  bookmarks=true,
+  bookmarksnumbered=true,
+  pdfstartview=FitH,
+  pdfdisplaydoctitle=true,
+  pdfencoding=unicode
+]{hyperref}
+
+\RequirePackage[capitalise,noabbrev]{cleveref}
+
+% =============================================================================
+% HEADERS (scrlayer-scrpage)
+% =============================================================================
+\RequirePackage[headsepline]{scrlayer-scrpage}
+\pagestyle{scrheadings}
+\automark[chapter]{chapter}
+
+\providecommand{\volumeshort}{Claude Best Practices}
+
+\ihead{\footnotesize\volumeshort}
+\chead{}
+\ohead{\footnotesize\textit{\leftmark}}
+\ifoot{} \cfoot{\pagemark} \ofoot{}
+
+% =============================================================================
+% HEADING STYLES (KOMA-Script, Tufte italic)
+% =============================================================================
+\addtokomafont{chapter}{\color{PrimaryBlue}\itshape}
+\addtokomafont{section}{\color{PrimaryBlue!90!black}\itshape}
+\addtokomafont{subsection}{\color{PrimaryBlue!80!black}\itshape}
+
+\RedeclareSectionCommand[
+  beforeskip=1.0\baselineskip,
+  afterskip=0.3\baselineskip
+]{chapter}
+
+\RedeclareSectionCommand[
+  beforeskip=0.6\baselineskip,
+  afterskip=0.2\baselineskip
+]{section}
+
+\RedeclareSectionCommand[
+  beforeskip=0.6\baselineskip,
+  afterskip=0.15\baselineskip
+]{subsection}
+
+% =============================================================================
+% DOCUMENT METADATA
+% =============================================================================
+\providecommand{\guidetitle}{Best Practices for Using Claude}
+\providecommand{\guidesubtitle}{From Personal Mastery to Enterprise Scale}
+\providecommand{\guideauthor}{Brandon Behring}
+\providecommand{\guideversion}{1.0}
+\providecommand{\guidedate}{February 2026}
+
+% =============================================================================
+% COVER PAGE
+% =============================================================================
+\newcommand{\makeguidecover}{%
+  \begin{titlepage}
+    \centering
+    \vspace*{2cm}
+
+    {\Huge\bfseries\color{PrimaryBlue}\guidetitle\par}
+
+    \vspace{0.5cm}
+    {\Large\guidesubtitle\par}
+
+    \vspace{0.3cm}
+    {\normalsize\textit{What Anthropic Recommends, What Practitioners Discover,\\
+    and Where They Converge}\par}
+
+    \vspace{2cm}
+    {\large\guideauthor\par}
+
+    \vfill
+
+    {\normalsize Version \guideversion\par}
+    {\normalsize\guidedate\par}
+
+    \vspace{0.5cm}
+    {\footnotesize Content verified against Anthropic documentation as of \guidedate.\par}
+    {\footnotesize Licensed under CC~BY~4.0\par}
+  \end{titlepage}
+}
+
+% =============================================================================
+% CONVENIENCE COMMANDS
+% =============================================================================
+
+% Key insight callout
+\newcommand{\keyinsight}[1]{%
+  \begin{notebox}[Key Insight]
+    #1
+  \end{notebox}
+}
+
+% Anti-pattern callout
+\newcommand{\antipattern}[3]{%
+  \begin{warnbox}[Anti-Pattern: #1]
+    \textbf{Symptom:} #2\par
+    \textbf{Prevention:} #3
+  \end{warnbox}
+}
+
+% Maturity level indicator
+\newcommand{\maturitylevel}[1]{%
+  {\color{PrimaryBlue}\textbf{L#1}}%
+}
+
+% Source footnote (for Anthropic URLs)
+\newcommand{\sourceurl}[1]{\footnote{\url{#1}}}
+
+% =============================================================================
+% END OF STYLE
+% =============================================================================
+\endinput
