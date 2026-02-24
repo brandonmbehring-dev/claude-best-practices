@@ -6,9 +6,9 @@
 
 Run a comprehensive check of the project:
 
-1. Run the test suite: `npm test`
-2. Run the linter: `npm run lint`
-3. Run the type checker: `npm run typecheck`
+1. Run the test suite: `pytest tests/`
+2. Run the linter: `ruff check src/`
+3. Run the type checker: `mypy src/`
 4. Report results as a summary table:
 
 | Check | Status | Details |

@@ -46,15 +46,16 @@ this section gives you enough to be productive today.
 \begin{beforeafter}
 \before
 \begin{minted}{text}
-Fix the broken tests.
+Fix the broken pipeline.
 \end{minted}
 
 \after
 \begin{minted}{text}
-The tests in tests/auth/ are failing with a TypeError
-on line 42 of test_login.py. The error is:
-"NoneType has no attribute 'email'".
-Diagnose the root cause and fix it.
+The feature engineering pipeline in
+src/features/temporal.py raises a KeyError on line 34.
+The error is: KeyError: 'timestamp'.
+The column exists in training data but is missing
+from the inference schema. Diagnose and fix.
 \end{minted}
 \end{beforeafter}
 \end{fullwidth}
@@ -71,12 +72,12 @@ three highest-leverage techniques.\sourceurl{https://platform.claude.com/docs/en
 For complex tasks, give Claude an explicit reasoning structure:
 
 \begin{minted}{text}
-Refactor the payment module:
+Refactor the feature engineering pipeline:
 1. Read the current implementation and
-   list all public methods.
-2. Identify methods longer than 30 lines.
-3. For each long method, extract helper
-   functions with clear names.
+   list all transformation steps.
+2. Identify steps that mix data loading
+   with transformation.
+3. Extract pure transformation functions.
 4. Run existing tests after each extraction
    to verify nothing broke.
 \end{minted}
@@ -92,10 +93,12 @@ single highest-leverage practice.\sourceurl{https://docs.anthropic.com/en/docs/c
 Always include how to check the result:
 
 \begin{minted}{text}
-Add input validation to the create_user endpoint.
-Verify: pytest tests/routes/test_users.py passes,
-and manually test with: curl -X POST localhost:8000/users -d '{}'
-(should return 400, not 500).
+Add input validation to the build_features() function.
+Verify: pytest tests/features/test_build.py passes,
+and test with:
+python -c 'from src.features import build_features;
+  build_features(pd.DataFrame())'
+(should raise ValueError, not silently return empty).
 \end{minted}
 
 When Claude knows the success criteria, it can self-correct
@@ -147,26 +150,27 @@ exceeds the cost of starting fresh.
 Here is a realistic mini-session showing the loop in practice:
 
 \begin{minted}{text}
-You: Add a rate limiter to the /api/upload endpoint.
-     Token bucket algorithm, 10 requests/minute per user.
-     Write tests first, then implementation.
-     Verify: pytest tests/middleware/test_rate_limiter.py passes.
+You: Add missing value imputation to the preprocessing
+     pipeline. Strategy: median for numeric columns,
+     mode for categorical. Write tests first.
+     Verify: pytest tests/preprocessing/ passes.
 
-Claude: [writes tests, then implementation, runs tests — 2 pass, 1 fails]
-  "Test test_burst_limit is failing because..."
+Claude: [writes tests, then implementation, runs tests — 3 pass, 1 fails]
+  "Test test_categorical_imputation is failing because..."
 
-You: The burst size should be 3, not 10. Fix the test expectation.
+You: Mode should use the training set distribution,
+     not the test batch. Fix the imputer to fit on train.
 
-Claude: [fixes test, reruns — all pass]
-  "All 3 tests pass. Ready to commit?"
+Claude: [fixes implementation, reruns — all pass]
+  "All 4 tests pass. Ready to commit?"
 
-You: Yes, commit with message "feat: Add token bucket rate limiter"
+You: Yes, commit with message "feat: Add missing value imputation"
 \end{minted}
 
 Notice the structure:
 \begin{itemize}
-  \item The initial prompt included what, how (algorithm), and verification criteria.
-  \item The refinement was specific (which test, what to change).
+  \item The initial prompt included what, how (strategy), and verification criteria.
+  \item The refinement was specific (which behavior, what to change).
   \item One logical change, one commit.
 \end{itemize}
 
@@ -184,12 +188,13 @@ Notice the structure:
 % -------------------------------------------------------------------
 \begin{trybox}
 Start a session with Claude Code on your current project.
-Implement one small feature or fix one bug using this loop:
+Add one feature to your data pipeline or fix one data processing bug:
 \begin{enumerate}
-  \item Write a prompt that includes: what you want, relevant context,
-    and how to verify the result.
+  \item Write a prompt that includes: what you want, the relevant
+    DataFrame schema, and how to verify (e.g., \code{pytest tests/features/}).
   \item Let Claude work. Observe the result.
-  \item If refinement is needed, give specific feedback (file, line, what to change).
+  \item If refinement is needed, give specific feedback
+    (file, line, which column or transformation to change).
   \item When satisfied, commit the change.
 \end{enumerate}
 Track how many refinement rounds it takes.

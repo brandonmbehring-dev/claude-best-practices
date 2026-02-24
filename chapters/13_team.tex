@@ -107,10 +107,12 @@ reducing review cycles.
 During review, use Claude to investigate specific concerns:
 
 \begin{minted}{text}
-In PR #234, the author changed the caching strategy
-in src/cache/redis_client.py.
-What are the implications for cache invalidation?
-Check if any callers depend on the old TTL behavior.
+In PR #234, the author changed the feature
+normalization strategy in
+src/features/preprocessing.py.
+What are the implications for models trained on
+the old normalization? Check if any downstream
+models depend on the old feature distributions.
 \end{minted}
 
 \margintip{The reviewer still makes the decision.

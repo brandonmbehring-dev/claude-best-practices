@@ -112,21 +112,20 @@ It provides 30-second context resume after any interruption.}
 \after
 \begin{minted}{markdown}
 ## Right Now
-Refactoring payment processing to async handlers.
+Refactoring feature engineering to use
+sklearn Pipelines.
 
 ## Why
-Current sync handlers cause 200ms latency spikes
-under load.
+Current feature code leaks test data during
+cross-validation.
 
 ## Next Step
-Write integration tests for the new async
-PaymentProcessor class.
+Write tests verifying no leakage across CV folds.
 
 ## Context When I Return
-- PaymentProcessor class is in
-  src/payments/processor.py
-- 3 of 5 handler methods converted, 2 remaining
-- Tests in tests/payments/ — existing tests pass
+- Pipeline code in src/features/pipeline.py
+- 3 of 7 transformers converted, 4 remaining
+- Tests in tests/features/ — existing tests pass
 \end{minted}
 \end{beforeafter}
 \end{fullwidth}
@@ -216,6 +215,7 @@ see \cref{ch:thinking-partner}.}
 \begin{enumerate}
   \item Create a \code{CURRENT\_WORK.md} for your active project
     with Right Now, Why, Next Step, and Context sections.
+    Include which pipeline step or notebook you are working on.
   \item In your next session, check \code{/context} after 30 minutes.
     How much of the window is consumed?
   \item Track correction rounds for one day. If any task exceeds two,

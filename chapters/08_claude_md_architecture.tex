@@ -91,12 +91,23 @@ irrelevant instructions.
 
 \begin{minted}{markdown}
 ---
-paths: backend/**/*.py
+paths: notebooks/**/*.py
 ---
-# Backend Python Rules
-- Use SQLAlchemy 2.0 async syntax
-- All endpoints need OpenAPI docstrings
-- Run `pytest backend/tests/` after changes
+# Notebook Rules
+- No hardcoded file paths (use config)
+- Every notebook has a markdown header explaining purpose
+- Run `nbstripout` before committing
+\end{minted}
+
+\begin{minted}{markdown}
+---
+paths: src/models/**/*.py
+---
+# Model Training Rules
+- Log all hyperparameters to MLflow
+- Save model artifacts to models/
+- Include reproducibility seed in all configs
+- Run `pytest tests/models/` after changes
 \end{minted}
 
 \begin{warnbox}[Common Mistake]

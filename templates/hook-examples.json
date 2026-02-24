@@ -3,21 +3,21 @@
     "PostFileWrite": [
       {
         "type": "command",
-        "command": "npx prettier --write \"$FILE\"",
-        "description": "Auto-format written files with Prettier"
+        "command": "ruff check --fix \"$FILE\"",
+        "description": "Auto-lint written files with ruff"
       }
     ],
     "PreCommit": [
       {
         "type": "command",
-        "command": "npm run lint && npm test",
-        "description": "Block commits if linting fails or tests fail"
+        "command": "pytest tests/ && mypy src/",
+        "description": "Block commits if tests fail or type errors exist"
       }
     ],
     "PostCommit": [
       {
         "type": "command",
-        "command": "npx coverage-diff",
+        "command": "python -m pytest --cov=src --cov-report=term-missing tests/ 2>/dev/null | tail -5",
         "description": "Report test coverage change after each commit"
       }
     ],

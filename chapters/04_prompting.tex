@@ -24,10 +24,10 @@ Over time, develop a shared vocabulary between you and Claude.}
 \toprule
 \textbf{Natural Language} & \textbf{Precise Version} \\
 \midrule
-``Fix the broken tests'' & \code{diagnose test failures in tests/auth/ \&\& fix root cause} \\
-``Make this code better'' & \code{refactor process\_payment() to <20 lines, extract validation} \\
-``Check if this works'' & \code{validate: run pytest, check coverage >80\%, verify edge cases} \\
-``Add error handling'' & \code{add try/except to api\_call(), raise ValueError with context on 4xx, retry on 5xx} \\
+``Clean this data'' & \code{validate schema, impute nulls with median, drop rows where target is NaN} \\
+``Train a model'' & \code{fit XGBoost on train split, evaluate AUC on val, log params to MLflow} \\
+``Check if this works'' & \code{validate: run pytest, check no data leakage, verify feature distributions match prod} \\
+``Add error handling'' & \code{add validation to build\_features(): raise ValueError on schema mismatch, log and skip rows with >50\% NaN} \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
@@ -56,29 +56,29 @@ see \cref{ch:thinking-partner}.}
 
 \begin{minted}{xml}
 <context>
-The payment module handles Stripe webhooks.
-Current code is in
-src/payments/webhook_handler.py.
+The churn prediction model uses features from
+src/features/customer.py. Current AUC is 0.72
+on validation.
 </context>
 
 <task>
-Add idempotency checking using the
-Stripe event ID.
-Store processed event IDs in Redis
-with 24h TTL.
+Add recency features: days since last purchase,
+days since last login.
+Compute from the events table.
 </task>
 
 <constraints>
-- Must not break existing webhook processing
-- Redis connection available via app.redis
-- Include unit tests using fakeredis
+- No data leakage: features must use only
+  pre-churn data
+- Must work with the existing FeatureStore
+  interface
+- Include unit tests for the new features
 </constraints>
 
 <verification>
-Run: pytest tests/payments/ -v
+Run: pytest tests/features/ -v
 All existing tests must still pass.
-New tests must cover: duplicate event,
-expired event, new event.
+Verify: no future-dated features in test set.
 </verification>
 \end{minted}
 
@@ -88,11 +88,11 @@ expired event, new event.
 pipe data from \code{stdin}.} Real data beats verbal descriptions.
 
 \begin{minted}{text}
-Look at @src/payments/webhook_handler.py
-and @tests/payments/test_webhooks.py.
-The handler processes events but has no
-idempotency check.
-Add one following the existing code patterns.
+Look at @src/features/customer.py
+and @tests/features/test_customer.py.
+The feature builder computes 12 features
+but has no validation for missing values.
+Add validation following existing patterns.
 \end{minted}
 
 \margintip{Including the actual files is always better than describing them.
@@ -240,8 +240,9 @@ through caching alone.
 Take your last three prompts to Claude (check terminal history).
 Rewrite each using the precision vocabulary table:
 \begin{enumerate}
-  \item Replace vague verbs (``fix,'' ``improve,'' ``check'')
-    with precise ones (``diagnose,'' ``refactor to <N lines,'' ``validate: run X'').
+  \item Replace vague verbs (``clean,'' ``train,'' ``check'')
+    with precise ones (``validate schema and impute nulls,''
+    ``fit on train split and evaluate AUC,'' ``run pytest and verify no leakage'').
   \item Add verification criteria to any prompt that lacked them.
   \item Estimate: how many correction rounds would each rewrite have saved?
 \end{enumerate}

@@ -157,7 +157,7 @@ Mark generated files: \code{\# GENERATED --- do not edit manually}.
 The generator regenerates from source, destroying manual edits.
 
 \recovery{Pipeline Direction Violations}{%
-You just ran \code{extract\_cards.py} and it overwrote 2 hours of
+You just ran \code{extract\_features.py} and it overwrote 2 hours of
 manual YAML edits.}{%
 \begin{enumerate}
   \item \code{git checkout -- path/to/overwritten/files} to restore.
@@ -233,12 +233,12 @@ Claude usage.
 
 % -------------------------------------------------------------------
 \begin{trybox}
-Audit your most active project:
+Audit your most active ML project:
 \begin{enumerate}
   \item Count lines in CLAUDE.md. Over 300? Flag for splitting.
   \item Check your last 5 sessions: how many had 3+ correction rounds?
   \item Is your project in an explicit development phase, or is it a
-    permanent prototype?
+    permanent notebook prototype with no tests?
   \item Identify the single anti-pattern most affecting your productivity.
     Apply the recovery guide above.
 \end{enumerate}

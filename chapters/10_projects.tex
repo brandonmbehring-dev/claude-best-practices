@@ -77,8 +77,9 @@ Ask:
 projects, see \cref{ch:thinking-partner}.}
 
 \official{Document existing conventions in CLAUDE.md, not aspirational ones.}
-A CLAUDE.md that says ``we use strict TypeScript'' when the codebase has
-\code{any} everywhere will cause inconsistent code---some files strict, some loose.
+A CLAUDE.md that says ``all features have unit tests'' when most feature code
+is untested notebook-extracted scripts will cause inconsistent behavior---some
+features tested, some not.
 
 \subsection{Incremental Adoption}
 
@@ -127,17 +128,56 @@ If interrupted, the project is always in a working state.
 existing behavior.}
 
 \begin{minted}{text}
-Prompt: "Read src/payments/legacy_processor.py.
-Write pytest tests that document its exact current behavior:
-- What inputs does it accept?
-- What does it return for each input type?
-- What errors does it raise and when?
+Prompt: "Read src/features/legacy_features.py.
+Write pytest tests that document its exact
+current behavior:
+- What DataFrames does it accept?
+- What columns does it produce?
+- What happens with NaN inputs?
 Do NOT write tests for how it SHOULD work.
 Write tests for how it DOES work."
 \end{minted}
 
 \margintip{Characterization tests are temporary---they may test buggy behavior.
 That is intentional. They exist to detect \emph{changes}, not to assert \emph{correctness}.}
+
+\subsection{Golden Master Testing for Pipelines}
+
+For data pipelines, a golden master captures the exact output of the original
+code so that refactored code can be verified against it.
+
+\begin{enumerate}
+  \item \textbf{Capture}: Run the original pipeline on sample data.
+    Save the output DataFrame as a fixture (CSV or Parquet).
+  \item \textbf{Compare}: New code must produce identical output
+    within floating-point tolerance.
+  \item \textbf{Verify}: Use \code{pd.testing.assert\_frame\_equal(new, golden, atol=1e-6)}.
+\end{enumerate}
+
+\begin{minted}{text}
+Prompt: "Run legacy_build_features() on
+tests/fixtures/sample_orders.csv.
+Save the output DataFrame to
+tests/fixtures/golden_features.parquet.
+Then write a test that runs the new
+build_features() on the same input and asserts
+pd.testing.assert_frame_equal(
+    new, golden, atol=1e-6)."
+\end{minted}
+
+\textbf{When to use}: Refactoring feature pipelines, migrating notebook code
+to modules, replacing pandas with polars.
+
+\begin{whybox}[Golden Masters Test Behavior---Not Correctness]
+A golden master preserves the original output---including any bugs.
+If the old code computed a feature incorrectly, the golden master encodes
+that incorrect behavior. Fix bugs \emph{after} migration, with explicit tests
+for the fix. The golden master's job is to guarantee that the migration
+itself changed nothing.
+\end{whybox}
+
+\margintip{Use \code{atol}/\code{rtol} for floats, exact match for categoricals,
+\code{check\_like=True} for column-order independence.}
 
 % -------------------------------------------------------------------
 \section{Visual: The Incremental Refactoring Cycle}
@@ -200,13 +240,14 @@ dramatically faster.
 
 % -------------------------------------------------------------------
 \begin{trybox}
-Pick the messiest function in your project (under 100 lines).
+Pick the messiest feature engineering function in your project (under 100 lines).
 \begin{enumerate}
   \item Have Claude write characterization tests without telling it
-    what the function \emph{should} do. Just: ``Document what it does today.''
+    what the function \emph{should} do. Just: ``Document what DataFrames
+    it accepts, what columns it produces, and what happens with NaN inputs.''
   \item Run the tests. Do they pass?
-  \item If yes: you now have a safety net for refactoring.
-    If no: you have discovered undocumented behavior.
+  \item If yes: save a golden master fixture and you have a safety net
+    for refactoring. If no: you have discovered undocumented behavior.
     Either way, you have learned something valuable.
 \end{enumerate}
 \end{trybox}

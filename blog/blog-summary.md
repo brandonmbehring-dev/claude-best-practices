@@ -38,19 +38,22 @@ These principles become *more* important when AI generates code:
 **[Official]** Run `/init` to auto-generate one. Then refine:
 
 ```markdown
-# Project Name
+# Demand Forecasting
 
-## Build
-- `npm run build` — compile TypeScript
-- `npm test` — run Jest tests
+## Build & Verify
+- `pytest tests/` — run test suite
+- `mypy src/` — type checking
+- `ruff check src/` — lint
 
 ## Architecture
-- src/routes/ — API endpoints
-- src/services/ — Business logic
+- src/features/ — feature engineering pipelines
+- src/models/ — model training and evaluation
+- src/data/ — data loading and validation
+- notebooks/ — exploratory analysis
 - tests/ — mirrors src/ structure
 
 ## Standards
-- TypeScript strict mode, no `any`
+- Type hints on all function signatures
 - Run tests after every code change
 - Never commit without passing lint + tests
 ```
@@ -67,9 +70,9 @@ These principles become *more* important when AI generates code:
 
 | Natural Language | Precise Version |
 |-----------------|-----------------|
-| "Fix the broken tests" | `diagnose test failures in tests/auth/ && fix root cause` |
-| "Make this code better" | `refactor process_payment() to <20 lines, extract validation` |
-| "Check if this works" | `validate: run pytest, check coverage >80%, verify edge cases` |
+| "Clean this data" | `validate schema, impute nulls with median, drop rows where target is NaN` |
+| "Train a model" | `fit XGBoost on train split, evaluate AUC on val, log params to MLflow` |
+| "Check if this works" | `validate: run pytest, check no data leakage, verify feature distributions match prod` |
 
 ### Context as Currency
 
@@ -79,10 +82,10 @@ These principles become *more* important when AI generates code:
 
 ```markdown
 ## Right Now
-Refactoring payment processing to async handlers.
+Refactoring feature engineering to use sklearn Pipelines.
 
 ## Next Step
-Write integration tests for new async PaymentProcessor.
+Write tests verifying no leakage across CV folds.
 ```
 
 ### The Edit-Test-Commit Loop
@@ -150,9 +153,9 @@ Cost optimization: prompt caching (90%) + Batch API (50%) = 70%+ combined saving
 
 Three exercises from the handbook, completable in 10 minutes each:
 
-1. **Audit one function** against the four principles: silent failures? Too long? Mutates inputs? Vague error messages?
-2. **Run `/init`** on your current project. Add deny rules for `.env*` and secrets. Start a session and verify Claude reads your CLAUDE.md.
-3. **Take your last 3 prompts** and rewrite them with precise verbs and verification criteria. Estimate how many correction rounds each rewrite would have saved.
+1. **Audit one feature engineering function** against the four principles: silently drops NaN rows? Too long? Mutates its input DataFrame? Vague error messages?
+2. **Run `/init`** on your current project. Add deny rules for `.env*`, `data/raw/**`, and credentials. Start a session and verify Claude reads your CLAUDE.md.
+3. **Take your last 3 prompts** and rewrite them with precise verbs (validate schema, fit on train split, check no leakage) and verification criteria. Estimate how many correction rounds each rewrite would have saved.
 
 ---
 

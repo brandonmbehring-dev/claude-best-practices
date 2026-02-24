@@ -100,6 +100,9 @@ Short functions. Flat structure. Self-documenting code.
 A 20-line function with a clear name is superior to a 5-line function
 with three levels of abstraction.
 
+\margintip{In notebooks, this means: one cell, one purpose.
+Cells that do loading, cleaning, AND analysis violate this principle.}
+
 \begin{whybox}[Why Simplicity Matters More with AI]
 Simple code is easier for Claude to reason about, test, and modify correctly.
 Complex abstractions increase the probability of subtle bugs in AI-generated
@@ -158,6 +161,8 @@ these principles, Claude's contributions will follow them too.
 If your codebase is silent about errors, full of mutable state,
 and deeply abstracted, Claude's contributions will be the same.
 The codebase is the curriculum. Make it teach the right lessons.
+For data scientists, this includes your notebooks, pipeline scripts,
+and feature engineering code---Claude learns patterns from all of them.
 \end{keyinsight}
 
 This insight has a practical consequence: the single most valuable
@@ -182,12 +187,15 @@ a better teacher, see \cref{ch:thinking-partner}.}
 
 % -------------------------------------------------------------------
 \begin{trybox}
-Pick one function in your current project---ideally one Claude will read often.
-Audit it against the four principles:
+Pick one function in your feature pipeline or data loading code---ideally
+one Claude will read often. Audit it against the four principles:
 \begin{enumerate}
-  \item Does it fail silently anywhere? (catches without re-raising or logging)
-  \item Is it under 30 lines? If not, can it be split?
-  \item Does it mutate its inputs? If so, is that explicit in the name?
+  \item Does it fail silently anywhere? (e.g., silently dropping NaN rows
+    without logging)
+  \item Is it under 30 lines? If not, can you extract the transformation
+    logic from the I/O?
+  \item Does it mutate its input DataFrame? If so, is that explicit
+    in the name?
   \item Do its error messages include what went wrong AND what to do about it?
 \end{enumerate}
 Fix one issue. This is your first investment in the codebase-as-curriculum.

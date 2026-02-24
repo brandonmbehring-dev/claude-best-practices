@@ -59,12 +59,13 @@ What follows are the refinements that make it effective.
 \convergence{Include what Claude cannot infer. Exclude what it can.}
 
 \begin{description}
-  \item[Build and test commands] \code{make pilot}, \code{pytest tests/},
-    \code{npm run build}---anything non-standard or project-specific.
+  \item[Build and test commands] \code{pytest tests/}, \code{mypy src/},
+    \code{ruff check src/}---anything non-standard or project-specific.
   \item[Code style rules] Only those that differ from standard conventions.
-    Do not restate PEP~8 or Prettier defaults.
+    Do not restate PEP~8 defaults.
   \item[Architecture decisions] Where things go and why.
-    ``API routes in \code{src/routes/}. Each route has a test in \code{tests/routes/}.''
+    ``Feature pipelines in \code{src/features/}. Models in \code{src/models/}.
+    Notebooks in \code{notebooks/}.''
   \item[Verification criteria] The single highest-leverage inclusion.
     ``Always run tests after code changes. Never commit without passing CI.''
 \end{description}
@@ -74,27 +75,31 @@ What follows are the refinements that make it effective.
 \before
 \begin{minted}{markdown}
 # My Project
-This is a web app built with React and Express.
-We use TypeScript and try to follow best practices.
+This is an ML project. We use scikit-learn and pandas.
 Tests are important to us.
 \end{minted}
 
 \after
 \begin{minted}{markdown}
-# My Project
+# Demand Forecasting
 
-## Build
-- `npm run build` — compile TypeScript
-- `npm test` — run Jest tests
-- `npm run lint` — ESLint + Prettier
+## Build & Verify
+- `pytest tests/` — run test suite
+- `mypy src/` — type checking
+- `ruff check src/` — lint
 
 ## Architecture
-- src/routes/ — API endpoints (one file per resource)
-- src/services/ — Business logic (no HTTP concerns)
+- src/features/ — feature engineering pipelines
+- src/models/ — model training and evaluation
+- src/data/ — data loading and validation
+- notebooks/ — exploratory analysis
+- data/raw/ — immutable source data
+- data/processed/ — transformed artifacts
 - tests/ — mirrors src/ structure
 
 ## Standards
-- TypeScript strict mode, no `any`
+- Type hints on all function signatures
+- Docstrings on all public functions
 - Run tests after every code change
 - Never commit without passing lint + tests
 \end{minted}
@@ -170,9 +175,9 @@ leaking secrets into a commit, a log, or a conversation.
 \begin{enumerate}
   \item Run \code{/init} on your current project.
   \item Compare the generated CLAUDE.md to what you actually need.
-    Add build/test commands if missing.
-  \item Create \code{.claude/settings.json} with deny rules for \code{.env*}
-    and any secrets directories.
+    Add \code{pytest}, \code{mypy}, and \code{ruff} commands if missing.
+  \item Create \code{.claude/settings.json} with deny rules for \code{.env*},
+    \code{data/raw/**}, and any credentials directories.
   \item Start a new session and verify Claude reads your CLAUDE.md
     (ask: ``What are my build commands?'').
 \end{enumerate}

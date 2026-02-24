@@ -51,29 +51,30 @@ no sunk cost in your approach.}
 \before
 \begin{minted}{text}
 Fix this error:
-  File "processor.py", line 47
-  TypeError: unsupported operand type(s)
-  for +: 'NoneType' and 'int'
+  File "feature_pipeline.py", line 47
+  ValueError: negative value in non-negative
+  feature 'days_since_last_purchase'
 \end{minted}
 
 \after
 \begin{minted}{text}
-I see a TypeError on line 47 of processor.py:
-None + int. Three hypotheses:
+I see a ValueError in feature_pipeline.py
+line 47: negative values in a feature that
+should be non-negative. Three hypotheses:
 
-1. get_score() returns None when the user
-   has no history
-2. The database query returns NULL for
-   inactive accounts
-3. A race condition: score is deleted between
-   check and use
+1. Log transform applied before clipping
+   negative deltas
+2. Currency conversion introduces negatives
+   for returns/refunds
+3. Timezone mismatch causes date subtraction
+   overflow
 
-For hypothesis 1: write a test that calls
-  get_score() with a new user (no history).
-For hypothesis 2: write a test with an
-  inactive account fixture.
-For hypothesis 3: check if get_score() uses
-  a cache that could be invalidated.
+For hypothesis 1: write a test with a purchase
+  date after the reference date.
+For hypothesis 2: write a test with a refund
+  transaction in the events table.
+For hypothesis 3: check if timestamps are
+  timezone-aware or naive.
 
 Run hypothesis 1 first---it is the most
 likely given the stack trace.
@@ -97,7 +98,8 @@ asks questions you would not ask yourself, because you already ``know''
 the answer. (Sometimes you are wrong about what you know.)}
 
 \begin{trybox}
-Pick a recent bug---ideally one that took more than 10 minutes to resolve.
+Pick a recent data pipeline bug---ideally one where results looked plausible
+but were wrong (e.g., feature drift, silent NaN propagation, leakage).
 Write three hypotheses for what caused it.
 Ask Claude to design a minimal test for each hypothesis.
 Would this approach have found the root cause faster?
@@ -169,10 +171,12 @@ no investment in your preferred approach.
 ``Review my database schema.''
 
 \after
-``Here is my schema. I designed it assuming: (1) reads outnumber
-writes 10:1, (2) we never query across tenants, (3) a single Postgres
-instance is sufficient. Which assumption is most likely wrong
-in 12 months, and what breaks when it does?''
+``Here is my feature store schema. I designed it assuming:
+(1) features are computed daily in batch, not real-time,
+(2) training and serving use the same feature computation,
+(3) feature drift is monitored externally.
+Which assumption is most likely wrong in 6 months,
+and what breaks when it does?''
 \end{beforeafter}
 
 The second prompt names the assumptions explicitly, then asks Claude
@@ -314,29 +318,32 @@ and what alternatives were considered. An Architecture Decision Record
 (ADR) preserves this reasoning for your future self.
 
 \begin{minted}{markdown}
-# ADR-007: Event-Driven Payment Processing
+# ADR-007: Offline Feature Computation
 
 ## Context
-Payment processing is synchronous.
-Under load, response times exceed 2s SLA.
+Feature computation runs in nightly batch.
+Some features are stale by 12 hours at serving time.
 
 ## Decision
-Switch to event-driven via RabbitMQ.
+Keep batch for training features.
+Add streaming for 3 real-time features
+(last login recency, cart value, session count).
 
 ## Alternatives Considered
-1. Async HTTP (rejected: still coupled)
-2. Redis pub/sub (rejected: no persistence)
-3. Kafka (rejected: overkill at current scale)
+1. All streaming (rejected: 10x infrastructure cost)
+2. Faster batch, hourly (rejected: still stale)
+3. Feature caching with TTL (rejected: cache
+   invalidation complexity)
 
 ## Consequences
-- Eventual consistency (not immediate)
-- New failure mode: message queue backlog
-- Need dead-letter queue for failed events
+- Two feature computation paths to maintain
+- Real-time features need monitoring for drift
+- Training/serving skew possible for 3 features
 
 ## Assumptions to Revisit
-- Message volume < 1000/min
-- Single consumer is sufficient
-- RabbitMQ managed service available
+- 3 real-time features sufficient for next 6 months
+- Streaming infra handles peak load (Black Friday)
+- Feature drift alerts catch training/serving skew
 \end{minted}
 
 \keyinsight{The most valuable ADR section is ``Alternatives Considered.''
@@ -385,11 +392,12 @@ see \cref{ch:team}.}
 \begin{trybox}
 Choose one technique from this chapter and apply it today:
 \begin{enumerate}
-  \item \textbf{Easiest}: Add a docstring to one function Claude reads often.
+  \item \textbf{Easiest}: Add a docstring to one feature engineering function
+    Claude reads often. Include the expected DataFrame schema.
   \item \textbf{Most impactful}: Use the hypothesis debugging workflow
-    on your next bug.
+    on your next pipeline bug.
   \item \textbf{Most strategic}: Draft an ADR for an upcoming
-    architecture decision.
+    feature store or model serving decision.
 \end{enumerate}
 Pick one. Do it now. The techniques compound---but only if you start.
 \end{trybox}

@@ -26,7 +26,7 @@ Layer defenses so that no single failure mode goes undetected:
 
 \begin{enumerate}
   \item \textbf{Type Safety} --- Catch type errors at compile/lint time.
-    TypeScript strict mode, Python type hints with mypy, Rust's borrow checker.
+    Python type hints with mypy, pandas-stubs for DataFrame types, pandera for schema validation.
 
   \item \textbf{Input Validation} --- Check preconditions at function entry.
     Fail fast with explicit errors (\cref{ch:principles}).
@@ -78,8 +78,9 @@ Production & Full 6-layer & Strict lint, immutability & Coverage >80\%, zero cri
 - Tests: manual OK for now
 - Coverage target: none
 - Graduation criteria:
-  - [ ] Core algorithm validated on real data
-  - [ ] API surface finalized
+  - [ ] Model validated on holdout set
+  - [ ] No data leakage verified
+  - [ ] Feature distributions documented
   - [ ] Dependencies locked
   When all checked: switch to DEVELOPMENT phase
 \end{minted}
@@ -108,11 +109,11 @@ than code-first:}
 \end{enumerate}
 
 \begin{minted}{text}
-Prompt: "Create a rate limiter class with these requirements:
-- Token bucket algorithm
-- Configurable rate (requests/second) and burst size
-- Thread-safe
-- Returns (allowed: bool, retry_after: float)
+Prompt: "Create a FeatureValidator class:
+- Takes a DataFrame and a schema dict
+- Validates column types, value ranges, null counts
+- Returns ValidationResult with errors list
+- Raises ValueError if required columns are missing
 
 Write tests first, then implementation."
 \end{minted}
@@ -161,11 +162,11 @@ for the full treatment). Three hooks that prevent quality debt:
 {
   "hooks": {
     "PostFileWrite": [{
-      "command": "prettier --write \"$FILE\"",
-      "description": "Auto-format on write"
+      "command": "ruff check --fix \"$FILE\"",
+      "description": "Auto-lint on write"
     }],
     "PreCommit": [{
-      "command": "npm run lint && npm test",
+      "command": "pytest tests/ && mypy src/",
       "description": "Block bad commits"
     }]
   }
@@ -199,10 +200,11 @@ If it is advisory, put it in CLAUDE.md.
 \begin{trybox}
 \begin{enumerate}
   \item Add these three lines to your CLAUDE.md:
-    ``Always run tests after code changes.
-    Never commit without passing lint + tests.
-    Include edge case tests for every new function.''
-  \item Add a PreCommit hook that runs your test suite.
+    ``Always run \code{pytest tests/} after code changes.
+    Never commit without passing \code{ruff check src/ \&\& mypy src/}.
+    Include edge case tests (empty DataFrames, NaN-heavy inputs)
+    for every new function.''
+  \item Add a PreCommit hook: \code{pytest tests/ \&\& mypy src/}.
   \item Track: does Claude's test coverage improve over the next week?
 \end{enumerate}
 \end{trybox}

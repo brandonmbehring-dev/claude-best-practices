@@ -24,19 +24,19 @@ They receive a task, execute it with their own tool set, and return results
 to the parent session.
 
 \begin{minted}{markdown}
-# .claude/agents/security-reviewer.md
+# .claude/agents/data-quality-reviewer.md
 ---
-name: security-reviewer
-description: Review code for security vulns
+name: data-quality-reviewer
+description: Review data pipeline for quality issues
 tools: [Read, Grep, Glob]
 ---
-You are a security specialist.
-Review the provided code for:
-1. Injection vulnerabilities
-   (SQL, command, path traversal)
-2. Authentication/authorization gaps
-3. Sensitive data exposure
-4. Dependency vulnerabilities
+You are a data quality specialist.
+Review the provided pipeline code for:
+1. Schema violations and type mismatches
+2. Null handling patterns (silent drops
+   vs explicit imputation)
+3. Distribution drift between train and serve
+4. Data leakage between train and test splits
 Report findings with severity ratings
 (Critical/High/Medium/Low).
 \end{minted}
@@ -126,10 +126,10 @@ then separate for independent review.}
 \practitioner{Extend to multi-perspective review with subagents:}
 
 \begin{enumerate}
-  \item \textbf{Correctness agent}: ``Does this code do what it claims?''
-  \item \textbf{Security agent}: ``Are there vulnerabilities?''
-  \item \textbf{Performance agent}: ``Are there efficiency concerns?''
-  \item \textbf{Style agent}: ``Does this match project conventions?''
+  \item \textbf{Correctness agent}: ``Does this logic do what it claims?''
+  \item \textbf{Data quality agent}: ``Schema violations? Null patterns? Drift?''
+  \item \textbf{Statistical validity agent}: ``Are assumptions met? Distributions stable?''
+  \item \textbf{Reproducibility agent}: ``Seeds set? Configs versioned? Results deterministic?''
 \end{enumerate}
 
 Running four agents in parallel takes the same wall-clock time as one.
@@ -148,7 +148,7 @@ and team lead orchestration.}
 Best suited for:
 \begin{itemize}
   \item Research tasks requiring multiple perspectives
-  \item Cross-functional coordination (frontend + backend + database)
+  \item Cross-functional coordination (feature engineering + model training + evaluation + data validation)
   \item Complex multi-module changes that need coordination
 \end{itemize}
 
@@ -181,12 +181,13 @@ is the value, not just the time savings.
 
 % -------------------------------------------------------------------
 \begin{trybox}
-Identify one task that currently takes you more than 10 minutes sequentially.
+Identify one review task that currently takes you more than 10 minutes.
 Design a 2-agent parallel split:
 \begin{enumerate}
-  \item What does Agent 1 do? What tools does it need?
-  \item What does Agent 2 do? What tools does it need?
-  \item Are the tasks truly independent? (If Agent 2 needs Agent 1's output, they cannot run in parallel.)
+  \item Agent 1: data quality review (schema, nulls, distributions).
+  \item Agent 2: statistical validity review (leakage, assumptions, reproducibility).
+  \item Are the tasks truly independent? (If Agent 2 needs Agent 1's output,
+    they cannot run in parallel.)
   \item Write the agent definition file for one of them.
 \end{enumerate}
 \end{trybox}

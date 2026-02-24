@@ -3,7 +3,7 @@
     "allow": [
       "Read", "Grep", "Glob",
       "Write(**)", "Edit(**)",
-      "Bash(npm run *)", "Bash(npx *)",
+      "Bash(pytest *)", "Bash(mypy *)", "Bash(ruff *)",
       "Bash(git status)", "Bash(git diff *)",
       "Bash(git log *)", "Bash(git add *)"
     ],
