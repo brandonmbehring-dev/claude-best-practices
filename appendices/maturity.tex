@@ -31,7 +31,7 @@ Each Part introduction in this handbook references the levels below.
 % -------------------------------------------------------------------
 \section{Upgrade Checklists}
 
-\subsection{L1 $\rightarrow$ L2: From Conversational to Configured}
+\subsection{\texorpdfstring{L1 $\rightarrow$ L2}{L1 to L2}: From Conversational to Configured}
 
 \begin{itemize}
   \item[$\square$] Create CLAUDE.md with build commands and code conventions
@@ -43,7 +43,7 @@ Each Part introduction in this handbook references the levels below.
 
 Reference: \cref{ch:first-claude-md}, \cref{ch:first-session}
 
-\subsection{L2 $\rightarrow$ L3: From Configured to Systematic}
+\subsection{\texorpdfstring{L2 $\rightarrow$ L3}{L2 to L3}: From Configured to Systematic}
 
 \begin{itemize}
   \item[$\square$] Create hub directory for shared patterns
@@ -57,7 +57,7 @@ Reference: \cref{ch:first-claude-md}, \cref{ch:first-session}
 
 Reference: \cref{ch:architecture}, \cref{ch:context}, \cref{ch:thinking-partner}
 
-\subsection{L3 $\rightarrow$ L4: From Systematic to Autonomous}
+\subsection{\texorpdfstring{L3 $\rightarrow$ L4}{L3 to L4}: From Systematic to Autonomous}
 
 \begin{itemize}
   \item[$\square$] Create skills for repeated multi-step workflows
@@ -70,7 +70,7 @@ Reference: \cref{ch:architecture}, \cref{ch:context}, \cref{ch:thinking-partner}
 
 Reference: \cref{ch:extending}, \cref{ch:agents}
 
-\subsection{L4 $\rightarrow$ L5: From Autonomous to Enterprise}
+\subsection{\texorpdfstring{L4 $\rightarrow$ L5}{L4 to L5}: From Autonomous to Enterprise}
 
 \begin{itemize}
   \item[$\square$] Deploy managed-settings.json for organization-wide policy
@@ -113,6 +113,7 @@ agent teams without plan documents produce uncoordinated work.
 \section{Visual: Maturity Pyramid}
 
 \begin{figure}[H]
+\begin{fullwidth}
 \centering
 \begin{tikzpicture}[
   level/.style={draw=PrimaryBlue, fill=PrimaryBlue!#1, trapezium, trapezium angle=80,
@@ -136,4 +137,5 @@ agent teams without plan documents produce uncoordinated work.
 \end{tikzpicture}
 \caption{The maturity pyramid. Most solo developers stabilize at L3.}
 \label{fig:maturity-pyramid}
+\end{fullwidth}
 \end{figure}
