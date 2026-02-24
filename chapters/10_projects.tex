@@ -142,16 +142,16 @@ That is intentional. They exist to detect \emph{changes}, not to assert \emph{co
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-  step/.style={draw=PrimaryBlue, fill=PrimaryBlue!8, rounded corners=6pt,
+  phasebox/.style={draw=PrimaryBlue, fill=PrimaryBlue!8, rounded corners=6pt,
     minimum width=2.5cm, minimum height=1.2cm, font=\small\bfseries, align=center},
   note/.style={font=\scriptsize, text=DarkText, align=center},
   arr/.style={->, very thick, PrimaryBlue!60},
   >=Stealth
 ]
-  \node[step] (extract) at (0,2.5) {1. Extract\\[-2pt]\normalfont\scriptsize Isolate target};
-  \node[step] (test) at (3.5,2.5) {2. Test\\[-2pt]\normalfont\scriptsize Characterize};
-  \node[step] (harden) at (3.5,0) {3. Harden\\[-2pt]\normalfont\scriptsize Refactor};
-  \node[step] (promote) at (0,0) {4. Promote\\[-2pt]\normalfont\scriptsize Ship};
+  \node[phasebox] (extract) at (0,2.5) {1. Extract\\[-2pt]\normalfont\scriptsize Isolate target};
+  \node[phasebox] (test) at (3.5,2.5) {2. Test\\[-2pt]\normalfont\scriptsize Characterize};
+  \node[phasebox] (harden) at (3.5,0) {3. Harden\\[-2pt]\normalfont\scriptsize Refactor};
+  \node[phasebox] (promote) at (0,0) {4. Promote\\[-2pt]\normalfont\scriptsize Ship};
 
   \draw[arr] (extract) -- (test);
   \draw[arr] (test) -- (harden);

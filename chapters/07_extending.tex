@@ -45,12 +45,16 @@ Check the current project state:
 4. Recommend the single highest-priority next action
 \end{minted}
 
+\marginnote[Official]{Custom slash commands have been merged into skills.
+Both \code{.claude/commands/} and \code{.claude/skills/} work.
+Skills take precedence if names conflict.\sourceurl{https://code.claude.com/docs/en/skills}}
+
 % -------------------------------------------------------------------
 \section{Skills: Domain Knowledge and Workflows}
 \label{sec:skills}
 
-\marginnote[Official]{Place in \code{.claude/skills/}.
-Markdown with YAML frontmatter.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/skills}}
+\marginnote[Official]{Each skill lives in its own directory as
+\code{SKILL.md}.\sourceurl{https://code.claude.com/docs/en/skills}}
 
 \official{Skills combine domain knowledge with executable workflows.}
 Unlike commands (which are prompt templates), skills can:
@@ -60,7 +64,48 @@ Unlike commands (which are prompt templates), skills can:
   \item Include file globs for automatic triggering
   \item Define multi-step procedures with validation gates
   \item Restrict available tools via \code{allowed-tools} frontmatter
+  \item Run shell commands dynamically before sending content to Claude
+  \item Spawn a forked subagent context via \code{context: fork}
 \end{itemize}
+
+\subsection{File Structure and Precedence}
+
+Each skill is a directory containing a \code{SKILL.md} file:
+
+\begin{minted}{text}
+.claude/skills/qa-health/SKILL.md      # Project skill
+~/.claude/skills/deploy-check/SKILL.md # Personal (all projects)
+\end{minted}
+
+\practitioner{Precedence: enterprise (managed settings)
+$>$ personal $>$ project.}
+Plugin skills use a namespaced format: \code{plugin-name:skill-name}.
+
+\subsection{Frontmatter Reference}
+
+All frontmatter keys are optional. The \code{name} defaults to the directory name
+if omitted.
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Key} & \textbf{Purpose} \\
+\midrule
+\code{name} & Display name and \code{/slash-command}. Lowercase, hyphens, max 64 chars. \\
+\code{description} & What the skill does. Claude uses this to decide when to auto-apply. \\
+\code{allowed-tools} & Tools permitted without prompting while skill is active. \textbf{Hyphenated.} \\
+\code{argument-hint} & Autocomplete hint, e.g.\ \code{[issue-number]}. \\
+\code{model} & Override model while skill is active (\code{sonnet}, \code{opus}, \code{haiku}). \\
+\code{context} & Set to \code{fork} to run in a forked subagent context. \\
+\code{agent} & Which subagent type to use when \code{context: fork} is set. \\
+\code{hooks} & Lifecycle hooks scoped to this skill's execution. \\
+\code{user-invocable} & Set to \code{false} to hide from \code{/} menu. Default: \code{true}. \\
+\code{disable-model-invocation} & Set to \code{true} to prevent Claude from auto-loading. Default: \code{false}. \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\subsection{Basic Skill Example}
 
 \begin{minted}{yaml}
 ---
@@ -74,6 +119,82 @@ allowed-tools: [Bash, Read, Glob]
 3. Report findings with actionable recommendations
 4. If any RED items, create TODO list for fixes
 \end{minted}
+
+\subsection{Dynamic Context}
+
+\marginnote[Official]{The \code{!`command`} syntax runs shell commands
+at skill load time, injecting live data into the prompt.}
+
+Skills can execute shell commands \emph{before} their content reaches Claude.
+This injects live project state into the prompt:
+
+\begin{minted}{yaml}
+---
+name: review-changes
+description: Review recent changes with full context
+allowed-tools: [Bash, Read, Grep]
+---
+# Review Changes
+
+Current branch status:
+!`git status --short`
+
+Recent commits:
+!`git log --oneline -5`
+
+Review the changes above for logic errors, missing tests,
+and style violations per our CLAUDE.md.
+\end{minted}
+
+Including ``ultrathink'' anywhere in skill content enables extended thinking
+for that skill's execution.
+
+\subsection{Forked Context: Skill as Subagent}
+
+\practitioner{For skills that need isolation---long-running analysis,
+exploratory research, or tasks that should not pollute your main context---use
+\code{context: fork}.}
+
+\begin{minted}{yaml}
+---
+name: deep-audit
+description: Run thorough code audit in isolated context
+context: fork
+agent: general-purpose
+model: opus
+allowed-tools: [Read, Grep, Glob, Bash]
+---
+# Deep Audit
+Analyze the entire codebase for:
+1. Security vulnerabilities
+2. Performance bottlenecks
+3. Dead code
+Report findings with file:line references and severity.
+\end{minted}
+
+The forked context runs as a subagent---it gets its own context window,
+does not consume your main session's context, and returns a summary when done.
+This bridges skills and subagents (\cref{ch:agents}).
+
+\subsection{Budget and Permissions}
+
+\marginnote[Official]{Skill descriptions consume $\sim$2\% of context window
+(fallback: 16{,}000 characters).
+Use \code{/context} to check for excluded skills.}
+
+Permission rules can target skills specifically:
+
+\begin{minted}{json}
+{
+  "permissions": {
+    "allow": ["Skill(qa-health)"],
+    "deny": ["Skill(deploy *)"]
+  }
+}
+\end{minted}
+
+\code{Skill(name)} matches exactly; \code{Skill(name *)} matches a prefix
+with any arguments; bare \code{Skill} denies all skill usage.
 
 \margintip{A skill that saves 5 minutes per use and runs 3 times per week
 saves 13 hours per year. Measure value by frequency $\times$ savings.}
