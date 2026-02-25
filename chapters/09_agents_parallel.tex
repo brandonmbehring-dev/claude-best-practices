@@ -17,7 +17,7 @@ how to design agent workflows, and how to run work in parallel.
 \label{sec:subagents}
 
 \marginnote[Official]{Define in \code{.claude/agents/}. Each agent runs with its
-own context, isolated from the main session.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/sub-agents}}
+own context, isolated from the main session.\sourceurl{https://code.claude.com/docs/en/sub-agents}}
 
 \official{Subagents are purpose-built Claude instances that run in isolated context.}
 They receive a task, execute it with their own tool set, and return results
@@ -88,7 +88,7 @@ Parallelism trades cost for speed.}
 \label{sec:worktrees}
 
 \marginnote[Official]{The \code{--worktree} flag creates an isolated copy
-of your repository for parallel work.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/overview}}
+of your repository for parallel work.\sourceurl{https://code.claude.com/docs/en/overview}}
 
 \begin{minted}{bash}
 # Start parallel work on two features
@@ -139,7 +139,7 @@ Running four agents in parallel takes the same wall-clock time as one.
 \label{sec:agent-teams}
 
 \marginnote[Official]{Research preview. Multiple agents share a task list
-and can message each other.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/agent-teams}}
+and can message each other.\sourceurl{https://code.claude.com/docs/en/agent-teams}}
 
 \official{Agent Teams extend subagents with collaboration:
 shared task lists, direct messaging between agents,

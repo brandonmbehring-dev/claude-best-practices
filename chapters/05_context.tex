@@ -19,7 +19,7 @@ for cross-session persistence.
 
 \marginnote[Official]{Performance degrades as context fills.
 Use \code{/clear} between unrelated tasks. Use \code{/compact}
-for selective summarization.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/best-practices}}
+for selective summarization.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
 \begin{whybox}[The Non-Linear Cost of Context]
 Context degradation is not gradual---there is a noticeable threshold
@@ -86,7 +86,7 @@ takes $\sim$200 tokens and produces a better result.
 \label{sec:sessions}
 
 \marginnote[Official]{Named sessions: \code{/rename}, \code{--continue},
-\code{--resume}, \code{--from-pr}.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/overview}}
+\code{--resume}, \code{--from-pr}.\sourceurl{https://code.claude.com/docs/en/overview}}
 
 \official{Sessions persist across terminal restarts.} Key commands:
 
@@ -138,7 +138,7 @@ Write tests verifying no leakage across CV folds.
 \label{sec:memory}
 
 \marginnote[Official]{Claude records and recalls memories across sessions
-automatically. Memory files persist in \code{\textasciitilde/.claude/projects/*/memory/}.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/memory}}
+automatically. Memory files persist in \code{\textasciitilde/.claude/projects/*/memory/}.\sourceurl{https://code.claude.com/docs/en/memory}}
 
 \official{Claude maintains auto-memory that persists across conversations.}
 It records patterns, decisions, and lessons learned, making them available
@@ -170,7 +170,7 @@ If yes, store it. If uncertain, wait for confirmation.}
 \label{sec:plans}
 
 \marginnote[Official]{Use Plan Mode (Shift+Tab) for read-only analysis
-before implementation.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/overview}}
+before implementation.\sourceurl{https://code.claude.com/docs/en/overview}}
 
 \official{The recommended workflow for complex tasks:
 Explore $\rightarrow$ Plan $\rightarrow$ Implement $\rightarrow$ Commit.}
