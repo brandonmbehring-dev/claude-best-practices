@@ -6,7 +6,7 @@ QUICKSTART = quickstart_guide
 OUTDIR = output
 LATEXMK_FLAGS = -lualatex -shell-escape -interaction=nonstopmode -file-line-error
 
-.PHONY: pilot digital quickstart all check check-strict validate-json validate-hooks validate-includes clean
+.PHONY: pilot digital quickstart all check check-strict validate-json validate-hooks validate-includes validate-no-deprecated clean
 
 # Quick test build (single pass, no refs/index)
 pilot:
@@ -116,6 +116,18 @@ validate-includes:
 	done; \
 	if [ "$$FAIL" -eq 1 ]; then exit 1; fi; \
 	echo "validate-includes: PASS"
+
+# Catch deprecated hook event names in source files
+validate-no-deprecated:
+	@echo "=== Deprecated hook name check ==="
+	@HITS=$$(grep -rlE 'PreCommit|PostCommit|PreFileWrite|PostFileWrite|PreBashRun|PostBashRun' \
+	  chapters/*.tex appendices/*.tex templates/*.json $(QUICKSTART).tex 2>/dev/null | \
+	  grep -v 'source-hierarchy' || true); \
+	if [ -n "$$HITS" ]; then \
+	  echo "FAIL: Deprecated hook event names found in:"; \
+	  echo "$$HITS"; exit 1; \
+	fi; \
+	echo "validate-no-deprecated: PASS"
 
 # --- Cleanup ---
 
