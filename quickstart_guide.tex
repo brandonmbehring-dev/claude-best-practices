@@ -1,206 +1,27 @@
 % quickstart_guide.tex
-% A succinct quick-start guide for LLM-experienced developers new to Claude Code
+% Ground-up rewrite: action-first pedagogy with dual-track SE maturity
+% Three-act arc: Safety → Understanding → Ownership
 % Build: make quickstart
 
 \documentclass[10pt,oneside]{scrartcl}
+\usepackage{claude-best-practices}
 
-% --- Geometry: narrower for a reference guide feel ---
-\usepackage{geometry}
-\geometry{
-    paperwidth=8.5in,
-    paperheight=11in,
-    left=0.9in,
-    right=0.9in,
-    top=0.8in,
-    bottom=0.8in,
-    footskip=0.4in,
-    headheight=20pt
-}
-
-% --- Engine ---
-\usepackage{iftex}
-\RequireLuaTeX
-
-% --- Fonts ---
-\usepackage{fontspec}
-
-\directlua{
-  luaotfload.add_fallback("symbolfallback", {
-    "DejaVu Sans:mode=harf;",
-  })
-}
-
-\setmainfont{Roboto}[
-  UprightFont = *-Regular,
-  BoldFont = *-Bold,
-  ItalicFont = *-Italic,
-  BoldItalicFont = *-BoldItalic,
-  Scale = 1.0,
-  RawFeature={fallback=symbolfallback}
-]
-
-\setmonofont{Source Code Pro}[
-  Scale = 0.82,
-  UprightFont = *-Regular,
-  BoldFont = *-Bold,
-  ItalicFont = *-It,
-  BoldItalicFont = *-BoldIt
-]
-
-\setsansfont{Roboto}[
-  UprightFont = *-Regular,
-  BoldFont = *-Bold,
-  ItalicFont = *-Italic,
-  BoldItalicFont = *-BoldItalic
-]
-
-% --- Typography ---
-\usepackage[protrusion=true, expansion=true, final]{microtype}
-\usepackage{setspace}
-\setstretch{1.12}
+% --- Quickstart overrides ---
+% Tutorial paragraph style: no-indent with spacing
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{4pt}
 
-% --- Colors ---
-\usepackage[dvipsnames,svgnames,x11names,table]{xcolor}
-
-\definecolor{PrimaryBlue}{HTML}{0066CC}
-\definecolor{NoteBlue}{HTML}{3498DB}
-\definecolor{WarningOrange}{HTML}{E67E22}
-\definecolor{TipGreen}{HTML}{27AE60}
-\definecolor{CodeBg}{HTML}{F5F5F5}
-\definecolor{CodeFrame}{HTML}{CCCCCC}
-\definecolor{DarkText}{HTML}{222222}
-\definecolor{OfficialPurple}{HTML}{7B2D8E}
-\definecolor{PractitionerTeal}{HTML}{008080}
-\definecolor{WhyAmber}{HTML}{D4AC0D}
-\definecolor{ExerciseIndigo}{HTML}{5B2C6F}
-\definecolor{CostRed}{HTML}{CC3333}
-
-% --- Code ---
-\usepackage{minted}
-\setminted{
-  frame=lines,
-  framesep=1mm,
-  bgcolor=CodeBg,
-  rulecolor=CodeFrame,
-  fontsize=\footnotesize,
-  breaklines=true,
-  breakanywhere=false,
-  linenos=false,
-  xleftmargin=0pt,
-  baselinestretch=1.05,
-  autogobble=true
-}
-\usemintedstyle{friendly}
-
-\usepackage[english]{babel}
-\usepackage{csquotes}
-\newcommand{\code}[1]{\texttt{#1}}
-
-% --- Boxes ---
-\usepackage[breakable,skins]{tcolorbox}
-
-\tcbset{
-  qs-box/.style={
-    breakable,
-    enhanced,
-    arc=0pt,
-    leftrule=3pt,
-    rightrule=0pt,
-    toprule=0pt,
-    bottomrule=0pt,
-    left=4pt,
-    right=4pt,
-    top=3pt,
-    bottom=3pt,
-    boxsep=0pt,
-    toptitle=1pt,
-    coltitle=DarkText,
-    fonttitle=\bfseries\small
-  }
-}
-
-\newtcolorbox{keybox}[1][Key Idea]{
-  qs-box,
-  colframe=PrimaryBlue,
-  colback=PrimaryBlue!4,
-  title=#1
-}
-
-\newtcolorbox{warnbox}[1][Common Mistake]{
-  qs-box,
-  colframe=WarningOrange,
-  colback=WarningOrange!4,
-  title=#1
-}
-
-\newtcolorbox{tipbox}[1][Tip]{
-  qs-box,
-  colframe=TipGreen,
-  colback=TipGreen!4,
-  title=#1
-}
-
-\newtcolorbox{whybox}[1][Why This Matters]{
-  qs-box,
-  colframe=WhyAmber,
-  colback=WhyAmber!4,
-  title=#1
-}
-
-% --- Tables ---
-\usepackage{booktabs}
-\usepackage{tabularx}
-\usepackage{array}
-\renewcommand{\arraystretch}{1.2}
-
-% --- Lists ---
-\usepackage[shortlabels]{enumitem}
-\setlist{
-  topsep=2pt,
-  itemsep=1.5pt,
-  parsep=0pt,
-  partopsep=0pt,
-  leftmargin=*,
-  listparindent=0pt
-}
-
-% --- Graphics ---
-\usepackage{tikz}
-\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc}
-
-% --- Hyperlinks ---
-\usepackage[
-  colorlinks=true,
-  linkcolor=PrimaryBlue,
-  urlcolor=PrimaryBlue,
-  pdfusetitle,
-  bookmarks=true,
-  pdfstartview=FitH
-]{hyperref}
-
-% --- Headers ---
-\usepackage[headsepline]{scrlayer-scrpage}
-\pagestyle{scrheadings}
+% Headers (quickstart branding)
 \ihead{\footnotesize Claude Code Quick Start}
-\chead{}
 \ohead{\footnotesize\textit{\headmark}}
-\ifoot{} \cfoot{\pagemark} \ofoot{}
 
-% --- Section styling ---
-\addtokomafont{section}{\color{PrimaryBlue}\itshape}
-\addtokomafont{subsection}{\color{PrimaryBlue!85!black}\itshape}
-
-\RedeclareSectionCommand[
-  beforeskip=0.8\baselineskip,
-  afterskip=0.2\baselineskip
-]{section}
-
-\RedeclareSectionCommand[
-  beforeskip=0.5\baselineskip,
-  afterskip=0.15\baselineskip
-]{subsection}
+% keybox (quickstart-specific; not in shared sty)
+\newtcolorbox{keybox}[1][Key Idea]{
+  callout-compact,
+  colframe=PrimaryBlue,
+  colback=PrimaryBlue!3,
+  title=#1
+}
 
 % =====================================================================
 \begin{document}
@@ -215,26 +36,210 @@
 % --- Title ---
 \begin{center}
   {\LARGE\bfseries\color{PrimaryBlue}Claude Code Quick Start}\\[4pt]
-  {\large Your First 60 Minutes: From Setup to Verified Code}\\[6pt]
+  {\large Your First 60 Minutes: From Setup to Professional Workflow}\\[6pt]
   {\normalsize Brandon Behring \quad|\quad February 2026}\\[2pt]
-  {\footnotesize For data scientists and developers familiar with LLMs, new to Claude Code}
+  {\footnotesize For data scientists and developers new to Claude Code}
 \end{center}
 
 \vspace{0.3cm}
 \hrule height 0.5pt
 \vspace{0.4cm}
 
+% --- The Contract ---
+By the end of this hour, you will have:
+\begin{enumerate}
+  \item Claude Code installed and running in your project
+  \item Your first AI-assisted test (a real test in your test suite)
+  \item Your first AI-assisted commit (a real commit in your history)
+  \item A CLAUDE.md that encodes your project's standards
+  \item A clean session close with context for next time
+\end{enumerate}
+
+\margintip{Already comfortable with Claude Code? Skip to \emph{Your First CLAUDE.md} (\cref{sec:claudemd}) --- the essential commands table is on the last page.}
+
+\textbf{Four terms you'll encounter} (defined again in the margins on first use):
+\begin{description}[leftmargin=2.2cm, style=sameline, font=\bfseries]
+  \item[Session] Your conversation with Claude Code, persisted across terminal restarts.
+  \item[Tool use] When Claude runs a command, reads a file, or edits code on your behalf.
+  \item[CLAUDE.md] A file where you give Claude persistent instructions about your project.
+  \item[Permission] Whether Claude asks before acting or acts autonomously.
+\end{description}
+
 % =====================================================================
-\section{The Mindset Shift (Minutes 0--5)}
+\section{Safety}
 
-You already know LLMs. Claude Code is not a chat interface---it is an
-\textbf{agent loop} running in your terminal:
+\subsection{Install and Launch (Minutes 0--5)}
 
+\begin{minted}{bash}
+npm install -g @anthropic-ai/claude-code
+cd your-project
+claude
+\end{minted}
+
+\margintip{Requires Node.js 18+. If you don't have it: \code{nvm install 18}.}
+
+\marginnote[Vocab]{\textbf{Session} --- your conversation with Claude, persisted across terminal restarts. Resume anytime with \code{claude -{}-continue}.}
+
+% Example output (yours will differ):
+\begin{minted}[frame=none]{text}
+  Welcome to Claude Code!
+  /help for commands, /quit to exit
+
+>
+\end{minted}
+
+You have a prompt. Claude is ready.
+
+\begin{tipbox}[If Something Goes Wrong]
+\begin{itemize}[itemsep=1pt]
+  \item \textbf{Auth error} --- Run \code{claude login} and follow the prompts.
+  \item \textbf{Wrong directory} --- Claude works best in a project root with source files.
+  \item \textbf{No project handy} --- Try it on any git repo, even a small one.
+\end{itemize}
+\end{tipbox}
+
+% -----------------------------------------------------------------
+\subsection{Your First Question (Minutes 5--10)}
+
+Ask Claude to explain your codebase:
+
+\begin{minted}{text}
+You type: "What does this project do? Focus on the main
+          entry points and data flow."
+\end{minted}
+
+\margintip{The \code{@} prefix loads file content before Claude responds --- more precise than describing what to read.}
+
+% Example output (yours will differ):
+\begin{minted}[frame=none]{text}
+This project is a demand forecasting pipeline with three
+main components:
+  - Data ingestion: src/data/load.py
+  - Feature engineering: src/features/build.py
+  - Model training: src/models/train.py
+The entry point is main.py, which orchestrates...
+\end{minted}
+
+Now ask something specific:
+
+\begin{minted}{text}
+You type: "@src/features/build.py explain this function's
+          edge cases — what happens with empty input?"
+\end{minted}
+
+\marginnote[Cross-Ref]{For the full vocabulary of precision prompting, see Ch4.}
+
+Claude returns a real explanation of \emph{your} code. It didn't guess --- it used tools to examine your source files. Notice: the second prompt was more specific and got a better answer. That's the specification skill.
+
+% -----------------------------------------------------------------
+\subsection{Safety Net and First Edit (Minutes 10--15)}
+
+Before we ask Claude to change anything --- your safety nets:
+
+\begin{keybox}[Your Safety Net]
+\begin{description}[leftmargin=2.2cm, style=sameline, font=\bfseries\ttfamily, itemsep=2pt]
+  \item[Esc] Stop Claude mid-action. Context preserved, nothing lost.
+  \item[Esc+Esc] Open rewind menu. Restore conversation, code, or both.
+  \item[Approval] Claude always asks before editing. You approve or reject every change.
+\end{description}
+\end{keybox}
+
+\margintip{Nothing is permanent until you approve it. If anything goes wrong, \code{Esc + Esc} rewinds to any previous state.}
+
+Now, your first edit:
+
+\begin{minted}{text}
+You type: "Add a one-line docstring to build_features()
+          describing what it does and what it returns."
+\end{minted}
+
+\marginofficial{Five permission modes exist. \code{Shift+Tab} cycles through Normal, Auto-Accept, and Plan.\sourceurl{https://code.claude.com/docs/en/permissions}}
+
+Claude reads the function, writes the docstring, and shows you a diff. A permission dialog appears. Read the diff --- does it match the function's actual behavior? If yes, approve.
+
+\marginnote[Vocab]{\textbf{Tool use} --- each file read, edit, or command Claude runs is a tool call. You just saw three: read the file, write the docstring, show the diff.}
+
+\begin{tipbox}
+Notice how Claude broke this into steps: read the function, understand it, write the docstring, ask for approval. That's an \emph{agent loop} --- the same pattern you'd use when designing agents for your team.
+\end{tipbox}
+
+\begin{warnbox}[Precision Matters]
+\textbf{Vague:} ``Add some documentation''\\
+\hspace*{1em}$\rightarrow$ Claude guesses which functions, what style, how verbose
+
+\textbf{Precise:} ``Add a one-line docstring to \code{build\_features()} describing what it does and what it returns''\\
+\hspace*{1em}$\rightarrow$ One function, one change, verifiable result
+\end{warnbox}
+
+% --- Act 1 → Act 2 transition ---
+\begin{whybox}[The Shift]
+You just described what you wanted and verified the result --- without writing a line of code yourself. That's the new loop: \emph{specify} what you want, \emph{observe} what Claude produces, \emph{refine} if needed. The implementation is Claude's job. Knowing what ``correct'' looks like is yours.
+
+Now let's make ``correct'' concrete --- with tests.
+\end{whybox}
+
+% =====================================================================
+\section{Understanding}
+
+\subsection{Explore, Then Test (Minutes 15--25)}
+
+The core loop: explore $\rightarrow$ implement $\rightarrow$ verify.
+
+\textbf{Step 1 --- Explore:}
+
+\begin{minted}{text}
+You type: "Explain what build_features() does, including
+          edge cases. What happens with empty input?
+          What about missing keys?"
+\end{minted}
+
+Claude explains the function's behavior, including cases you may not have considered.
+
+\textbf{Step 2 --- Write a test:}
+
+\begin{minted}{text}
+You type: "Write a test for build_features() that covers:
+          - Normal input with expected output
+          - Empty input
+          - Missing required keys
+          Put it in tests/test_features.py"
+\end{minted}
+
+\marginofficial{``Give Claude a way to verify its own work'' is Anthropic's stated single highest-leverage practice.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+
+Claude writes the test file. Permission dialog appears. Approve it.
+
+\textbf{Step 3 --- Run the test:}
+
+\begin{minted}{text}
+You type: "Run the test."
+\end{minted}
+
+% Example output (yours will differ):
+\begin{minted}[frame=none]{text}
+tests/test_features.py::test_normal_input PASSED
+tests/test_features.py::test_empty_input PASSED
+tests/test_features.py::test_missing_keys PASSED
+3 passed in 0.42s
+\end{minted}
+
+Your code now has a regression test it didn't have five minutes ago. If tests \emph{fail} --- even better. Claude just found a bug. The test caught a real issue. This is exactly why we test.
+
+\marginnote[Cross-Ref]{For the full TDD workflow and 6-layer validation architecture, see Ch6.}
+
+\margintip{Tests constrain implementation. When Claude writes code to pass \emph{your} tests, the ``looks correct but is subtly wrong'' failure mode is caught automatically.}
+
+\begin{whybox}[Why Testing Is the Core Skill]
+AI-generated code has a specific failure mode: it \emph{looks correct}. Clean syntax, reasonable names, plausible logic. The bugs are subtle, not obvious. Your ability to define what ``correct'' means --- through tests --- is now more valuable than your ability to write the implementation.
+\end{whybox}
+
+% --- Agent loop diagram (cherry-picked from v2.1, relabeled) ---
 \begin{center}
 \begin{tikzpicture}[
-  node distance=1.4cm,
+  node distance=1.2cm,
   box/.style={draw=PrimaryBlue, fill=PrimaryBlue!6, rounded corners=3pt,
-    font=\small\bfseries, minimum width=1.6cm, minimum height=0.65cm, align=center},
+    font=\small\bfseries, minimum width=1.5cm, minimum height=0.65cm,
+    align=center},
   arr/.style={-{Stealth[length=5pt]}, thick, PrimaryBlue!70!black},
 ]
   \node[box] (prompt) {Prompt};
@@ -246,38 +251,107 @@ You already know LLMs. Claude Code is not a chat interface---it is an
   \draw[arr] (reason) -- (tool);
   \draw[arr] (tool) -- (observe);
   \draw[arr, rounded corners=8pt] (observe) -- ++(0,-0.8) -| (reason)
-    node[pos=0.25, below, font=\tiny\itshape, text=DarkText] {repeat until done};
+    node[pos=0.25, below, font=\tiny\itshape, text=DarkText]
+    {repeat until done};
 \end{tikzpicture}
 \end{center}
 
-Three properties define the system:
+You just experienced this loop: you prompted (``write a test''), Claude reasoned about the function, used tools (Read, Write, Bash/pytest), and you observed the result.
 
-\begin{description}[leftmargin=2.5cm, style=nextline, font=\bfseries\color{PrimaryBlue!80!black}]
-  \item[Context Window] A finite workspace. Every file read, tool result,
-    and conversation turn consumes tokens. When it fills, early information fades.
-    This is the single most important constraint to internalize.
+\begin{tipbox}
+You defined what ``correct'' means for this function. In agent design, these become guardrails --- the verification criteria that keep autonomous systems producing trustworthy results.
+\end{tipbox}
 
-  \item[Tool Use] Claude calls tools (\code{Read}, \code{Edit}, \code{Bash},
-    \code{Grep}\ldots) instead of typing code. Each call costs context tokens
-    and produces observable effects. Your job is to \emph{minimize unnecessary calls}
-    through good configuration.
+% -----------------------------------------------------------------
+\subsection{Review, Regression, and Commit (Minutes 25--35)}
 
-  \item[Configuration] Four layers shape behavior: \code{CLAUDE.md} (project knowledge),
-    rules (conditional context), settings (permissions), and hooks (enforced automation).
-    These are not suggestions---they are the operating system.
-\end{description}
+\textbf{Step 1 --- Review the diff:}
 
-\begin{keybox}[The Core Insight]
-Developers who treat Claude as a chatbot get chatbot results.
-Developers who understand the agent loop---finite context, tool costs,
-configuration layers---get a powerful engineering partner.
-\end{keybox}
+\begin{minted}{text}
+You type: "Show me all the changes we've made this session."
+\end{minted}
+
+\begin{tipbox}[Reading Diffs --- What to Check]
+\begin{itemize}[itemsep=1pt]
+  \item Does the docstring match the function's \emph{actual} behavior?
+  \item Does the test import the right module?
+  \item Are there any changes you didn't expect?
+  \item Does the test actually assert correctness, not just ``doesn't crash''?
+\end{itemize}
+\end{tipbox}
+
+\textbf{Step 2 --- Regression check:}
+
+\begin{minted}{text}
+You type: "Run the full test suite to make sure our changes
+          didn't break anything."
+\end{minted}
+
+\marginnote[Vocab]{\textbf{Regression testing} --- verifying that new code doesn't break existing behavior. The practice that turns a collection of scripts into reliable software.}
+
+This takes 30 seconds and catches the most expensive bugs --- the ones where a fix in one place breaks something elsewhere.
+
+\textbf{Step 3 --- Commit:}
+
+\begin{minted}{text}
+You type: "Commit these changes with message:
+          'Add docstring and tests for build_features'"
+\end{minted}
+
+\marginnote[Cross-Ref]{For context management during long sessions, see Ch5.}
+
+Claude stages the files, writes the message, and commits. It used multiple tools in sequence --- diff, stage, commit --- without you specifying each step. You described the \emph{outcome}; Claude figured out the \emph{procedure}. That's the specification skill: describe what, not how.
+
+% --- Act 2 → Act 3 transition ---
+\begin{whybox}[From Builder to Architect]
+You didn't write the test or the docstring --- but you defined what they should do, verified the result, and caught a real issue. Your value shifted from \emph{typing code} to \emph{defining correctness}. That's not a demotion --- it's an upgrade. Architects who can verify are more valuable than typists who can implement.
+
+Now let's make these practices permanent.
+\end{whybox}
 
 % =====================================================================
-\section{Setup: CLAUDE.md and Deny Rules (Minutes 5--10)}
+\section{Ownership}
 
-\code{CLAUDE.md} is a briefing document for a fast, capable, amnesiac teammate.
-It is the \textbf{single most important file} in your configuration.
+\subsection{Your First CLAUDE.md (Minutes 35--45)}
+\label{sec:claudemd}
+
+\begin{minted}{text}
+You type: /init
+\end{minted}
+
+\marginofficial{CLAUDE.md loads automatically every session. It is the single most important configuration file.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+
+Claude generates a starter CLAUDE.md from your project structure. Review it --- it's a starting point, not finished. Let's make it yours.
+
+\textbf{Add three things:}
+
+\textbf{1. Build commands} --- tell Claude how to verify:
+
+\begin{minted}{markdown}
+## Build & Verify
+- `pytest tests/` — run test suite
+- `ruff check src/` — lint (if applicable)
+\end{minted}
+
+\textbf{2. Testing standard} --- make it non-negotiable:
+
+\begin{minted}{markdown}
+## Standards
+- Write tests before implementation
+- Run tests after every code change
+\end{minted}
+
+\textbf{3. Documentation standard} --- one line is enough:
+
+\begin{minted}{markdown}
+- Every public function must have a docstring
+\end{minted}
+
+\margintip{Keep CLAUDE.md under 300 lines. Move module-specific rules to \code{.claude/rules/} with path filters.}
+
+\marginnote[Cross-Ref]{For the full CLAUDE.md architecture (rules, settings, hooks), see Ch8.}
+
+Here's what a mature CLAUDE.md looks like after a few sessions of refinement:
 
 \begin{minted}{markdown}
 # Demand Forecasting
@@ -291,7 +365,6 @@ It is the \textbf{single most important file} in your configuration.
 - src/features/ — feature engineering pipelines
 - src/models/ — model training and evaluation
 - src/data/ — data loading and validation
-- notebooks/ — exploratory analysis
 - tests/ — mirrors src/ structure
 
 ## Standards
@@ -302,255 +375,123 @@ It is the \textbf{single most important file} in your configuration.
 
 \begin{warnbox}
 Do NOT write: \emph{``This is an ML project. We use scikit-learn. Tests are important.''}\\
-DO write: \textbf{commands}, \textbf{locations}, and \textbf{rules}---not descriptions.
+DO write: \textbf{commands}, \textbf{locations}, and \textbf{rules} --- not descriptions.
 Claude needs to know how to \emph{work on} your project, not \emph{about} it.
 \end{warnbox}
 
-\textbf{Quick start}: Open your project, type \code{/init}.
-Claude generates a starter CLAUDE.md from your project structure. Review, refine, commit.
+\begin{tipbox}
+CLAUDE.md is your first agent configuration file. Every agent you build --- for your team, for a pipeline, for production --- will need something like it: persistent instructions that shape behavior without requiring human presence.
+\end{tipbox}
 
-\subsection{Protect Your Secrets (Day One)}
+Your standards are now infrastructure, not memory. Every future session starts from this baseline.
 
-Create \code{.claude/settings.json}:
+% -----------------------------------------------------------------
+\subsection{Close Cleanly (Minutes 45--55)}
 
-\begin{minted}{json}
-{
-  "permissions": {
-    "deny": [
-      "Read(.env*)", "Read(secrets/**)",
-      "Read(**/*.pem)", "Read(**/*.key)"
-    ]
-  }
-}
+\textbf{Step 1 --- Name the session:}
+
+\begin{minted}{text}
+You type: /rename first-session-demand-forecast
 \end{minted}
 
-Deny rules are absolute---cannot be overridden by prompts or prompt injection.
+\margintip{Treat sessions like branches --- one logical workstream per session. Resume later with \code{claude -{}-continue} or \code{claude -{}-resume}.}
 
-% =====================================================================
-\section{Your First Verified Win (Minutes 10--25)}
+\textbf{Step 2 --- Check context:}
 
-\begin{whybox}
-AI-generated code has a specific failure mode: it \textbf{looks correct}.
-Clean syntax, reasonable names, plausible logic.
-The bugs are subtle, not obvious. Verification is essential.
+\begin{minted}{text}
+You type: /context
+\end{minted}
+
+\marginwarning{When context usage crosses 60\%, quality drops non-linearly. Proactively \code{/compact} or \code{/clear}.}
+
+\marginnote[Cross-Ref]{For the full context toolkit (status line, CURRENT\_WORK.md, auto-memory), see Ch5.}
+
+\textbf{Step 3 --- Clear for next task:}
+
+\begin{minted}{text}
+You type: /clear
+\end{minted}
+
+Fresh context for the next task. The session is saved --- resume anytime.
+
+\begin{keybox}[Three Rules That Prevent 90\% of Frustration]
+\begin{enumerate}
+  \item \textbf{One task per session.} \code{/clear} between unrelated work.
+  \item \textbf{Two-failure rule.} After two failed corrections $\rightarrow$ \code{/clear} + better prompt. Don't push through noise.
+  \item \textbf{Tests, not trust.} If Claude's code looks right but has no test, it's not done.
+\end{enumerate}
+\end{keybox}
+
+\marginnote[Cross-Ref]{For the full anti-patterns catalog (six traps and their escapes), see Ch11.}
+
+% --- Act 3 closing ---
+\begin{whybox}[Infrastructure Not Memory]
+You encoded your standards into CLAUDE.md so they persist without you remembering them. You named your session so you can find it later. You cleared context so the next task starts clean. This is the collaboration skill: designing systems that work reliably --- whether the collaborator is Claude, an agent you build, or a future teammate.
 \end{whybox}
 
-\subsection{The Pattern: Test First, Then Implement}
+% -----------------------------------------------------------------
+\subsection{What You Built (Minutes 55--60)}
 
-\begin{enumerate}
-  \item \textbf{Describe the interface}: inputs, outputs, edge cases.
-  \item \textbf{Claude writes tests} based on the interface.
-  \item \textbf{Claude writes implementation} that passes the tests.
-  \item \textbf{Tests run automatically} (via hooks or your prompt).
-\end{enumerate}
+In one hour, you:
+\begin{itemize}
+  \item Explored your codebase with Claude (specification)
+  \item Wrote a real test and caught real behavior (verification)
+  \item Ran regression tests to ensure nothing broke (engineering discipline)
+  \item Committed with a meaningful message (workflow)
+  \item Created CLAUDE.md with project standards (collaboration)
+  \item Closed cleanly with a named session (professional habit)
+\end{itemize}
 
-\begin{minted}{text}
-Prompt: "Create a FeatureValidator class:
-- Takes a DataFrame and a schema dict
-- Validates column types, value ranges, null counts
-- Returns ValidationResult with errors list
-- Raises ValueError if required columns are missing
+Everything you practiced today --- specification, verification, collaboration design --- is the foundation of effective AI-assisted development. The skills transfer directly to building agents, designing pipelines, and working with AI tools beyond Claude Code. The handbook's 16 chapters deepen every practice you touched in this hour.
 
-Write tests first, then implementation."
-\end{minted}
-
-This works because Claude excels at test generation when given clear specs.
-Tests then \emph{constrain} the implementation, preventing the
-``looks correct but is subtly wrong'' failure mode.
-
-\subsection{Verification Criteria in Every Prompt}
-
-Always tell Claude how to check its own work:
-
-\begin{minted}{text}
-Add input validation to the build_features() function.
-Verify: pytest tests/features/test_build.py passes,
-and test with:
-python -c 'from src.features import build_features;
-  build_features(pd.DataFrame())'
-(should raise ValueError, not silently return empty).
-\end{minted}
-
-\begin{keybox}[Anthropic's \#1 Practice]
-``Give Claude a way to verify its own work'' is Anthropic's stated
-single highest-leverage practice. It aligns exactly with what
-practitioners discover independently.
-\end{keybox}
-
-\subsection{The 6-Layer Validation Architecture}
-
-Layer defenses so no single failure mode goes undetected:
-
-\begin{center}
-\begin{tabular}{@{}clp{7.5cm}@{}}
-\toprule
-\textbf{\#} & \textbf{Layer} & \textbf{What It Catches} \\
-\midrule
-1 & Type Safety & Type errors at compile/lint time \\
-2 & Input Validation & Precondition failures at function entry \\
-3 & Unit Tests & Single-function correctness (80\%+ coverage) \\
-4 & Integration Tests & Multi-component workflow failures \\
-5 & End-to-End Tests & Complete user workflow failures \\
-6 & Property-Based Tests & Edge cases you didn't think of \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-Layers 1--2 are free to add today. Layers 3--4 are the baseline for production.
-
-\subsection{Enforce with Hooks, Not Hope}
-
-CLAUDE.md instructions are advisory---Claude may forget in long sessions.
-Hooks are \textbf{enforced}:
-
-\begin{minted}{json}
-{
-  "hooks": {
-    "PostToolUse": [{
-      "matcher": "Edit|Write",
-      "hooks": [{
-        "type": "command",
-        "command": ".claude/hooks/lint-on-write.sh",
-        "description": "Auto-lint written files"
-      }]
-    }],
-    "PreToolUse": [{
-      "matcher": "Bash",
-      "hooks": [{
-        "type": "command",
-        "command": ".claude/hooks/pre-commit-gate.sh",
-        "description": "Block commits with failing tests"
-      }]
-    }]
-  }
-}
-\end{minted}
-
-\textbf{Rule of thumb}: If a standard is non-negotiable, make it a hook.
-If it is advisory, put it in CLAUDE.md.
-
-% =====================================================================
-\section{Plan Before You Edit (Minutes 25--35)}
-
-For complex or unfamiliar tasks, separate exploration from implementation.
-Press \code{Shift+Tab} twice to enter Plan Mode---Claude reads and analyzes
-but cannot modify files.
-
-\begin{enumerate}
-  \item \textbf{Explore} (Plan Mode): ``Read \code{src/features/} and explain
-    how temporal features are computed.''
-  \item \textbf{Plan} (Plan Mode): ``I want to add recency features.
-    What files change? Create a plan.''
-  \item \textbf{Implement} (Normal Mode): ``Implement the plan.
-    Write tests first, then code.''
-  \item \textbf{Commit}: ``Commit with a descriptive message.''
-\end{enumerate}
-
-\begin{tipbox}[When to Skip]
-Skip planning when the scope is clear and the fix is small.
-If you can describe the diff in one sentence, just ask Claude to do it.
-Plan when you are uncertain, the change spans multiple files,
-or you are unfamiliar with the code.
-\end{tipbox}
-
-% =====================================================================
-\section{The Session Loop (Minutes 35--45)}
-
-Every productive session follows this cycle:
-
-\begin{enumerate}
-  \item \textbf{Prompt} --- describe what you want with verification criteria.
-  \item \textbf{Observe} --- read the diff, check the tests, examine output.
-  \item \textbf{Refine} --- give specific feedback (file, line, what to change).
-  \item \textbf{Commit} --- one logical change per commit.
-\end{enumerate}
-
-\subsection{Context Hygiene (The Rules That Matter)}
-
-\begin{description}[leftmargin=3.5cm, style=nextline, font=\ttfamily\bfseries]
-  \item[/clear] Wipe context between unrelated tasks. Cost: 30 seconds.
-  \item[/compact] Summarize, keeping key decisions. Use within long tasks.
-  \item[Two-failure rule] After two failed corrections, \code{/clear} and write a
-    better prompt. Three rounds of ``no, that's not what I meant'' means the
-    context is dominated by failure patterns, not the task.
+\textbf{Where to go next:}
+\begin{description}[leftmargin=3cm, style=sameline, font=\bfseries]
+  \item[Testing (Ch6)] Full TDD workflow, 6-layer validation, property-based testing.
+  \item[Context (Ch5)] Session strategies, status line, CURRENT\_WORK.md, auto-memory.
+  \item[CLAUDE.md (Ch8)] Rules files, settings layers, hooks for enforcement.
 \end{description}
 
-\begin{tipbox}
-Watch the token counter. When it approaches 60--70\% of the window,
-proactively \code{/compact} or \code{/clear}.
-Context degradation is non-linear---there is a threshold where quality drops sharply.
-\end{tipbox}
-
-% =====================================================================
-\section{Phase-Appropriate Rigor (Minutes 45--55)}
-
-Not all code needs the same standards. Applying production rigor to a prototype
-kills velocity. Applying prototype standards to production kills reliability.
-
+% --- Retrospective workflow diagram ---
 \begin{center}
-\begin{tabular}{@{}lp{3cm}p{3cm}p{4cm}@{}}
-\toprule
-\textbf{Phase} & \textbf{Testing} & \textbf{Code Quality} & \textbf{Transition Trigger} \\
-\midrule
-Exploration & Manual OK & Long functions OK & Hypothesis validated \\
-Development & Unit + integration & Style enforced & Coverage >60\% \\
-Production & Full 6-layer & Strict lint & Coverage >80\%, zero warnings \\
-\bottomrule
-\end{tabular}
+\begin{tikzpicture}[
+  node distance=0.4cm and 1.0cm,
+  wfstep/.style={draw=PrimaryBlue, fill=PrimaryBlue!6, rounded corners=3pt,
+    font=\small, minimum width=5cm, minimum height=0.8cm, align=left},
+  num/.style={font=\bfseries\small\color{PrimaryBlue}},
+  arr/.style={-{Stealth[length=5pt]}, thick, PrimaryBlue!50},
+]
+  \node[wfstep] (s1) {Install + explore};
+  \node[wfstep, below=of s1] (s2) {Safety net + first edit};
+  \node[wfstep, below=of s2] (s3) {Explore + test};
+  \node[wfstep, below=of s3] (s4) {Review + regression + commit};
+  \node[wfstep, below=of s4] (s5) {CLAUDE.md};
+  \node[wfstep, below=of s5] (s6) {Close cleanly};
+
+  \node[num, left=0.3cm of s1] {1};
+  \node[num, left=0.3cm of s2] {2};
+  \node[num, left=0.3cm of s3] {3};
+  \node[num, left=0.3cm of s4] {4};
+  \node[num, left=0.3cm of s5] {5};
+  \node[num, left=0.3cm of s6] {6};
+
+  \draw[arr] (s1) -- (s2);
+  \draw[arr] (s2) -- (s3);
+  \draw[arr] (s3) -- (s4);
+  \draw[arr] (s4) -- (s5);
+  \draw[arr] (s5) -- (s6);
+
+  % Loop back: next session starts at step 3
+  \draw[arr, rounded corners=6pt] (s6.east) -- ++(0.6,0) |- (s3.east)
+    node[pos=0.25, right, font=\tiny\itshape, text=DarkText] {next session};
+\end{tikzpicture}
 \end{center}
 
-Make phase transitions explicit in CLAUDE.md:
+% --- Essential Commands Table (cherry-picked) ---
+\margintip{Bookmark this page. The commands table is your quick reference for every session.}
 
-\begin{minted}{markdown}
-## Phase: DEVELOPMENT (since Feb 15)
-- Coverage target: 60%+
-- Graduation criteria:
-  - [ ] All feature pipelines have unit tests
-  - [ ] No data leakage in CV pipeline
-  When all checked: switch to PRODUCTION phase
-\end{minted}
+\subsection*{Essential Commands}
 
-% =====================================================================
-\section{The Six Traps (Reference)}
-
-\begin{enumerate}[leftmargin=*, itemsep=4pt]
-  \item \textbf{Context Overload} --- CLAUDE.md grows to 600+ lines,
-    rules get ignored. \emph{Fix}: Keep under 300 lines.
-    Move module-specific rules to \code{.claude/rules/} with path filters.
-
-  \item \textbf{Kitchen Sink Session} --- Multiple unrelated tasks in one
-    session. Quality degrades. \emph{Fix}: \code{/clear} between tasks.
-    One logical task per session.
-
-  \item \textbf{Over-Correcting} --- Four rounds of corrections, each adding noise.
-    \emph{Fix}: Two-failure rule. \code{/clear}, write a better prompt.
-
-  \item \textbf{Verification Gap} --- AI code accepted without tests.
-    Subtle bugs surface weeks later. \emph{Fix}: Test-first. Hooks enforce it.
-
-  \item \textbf{Permanent Prototype} --- ``We'll add tests later'' becomes never.
-    \emph{Fix}: Explicit phase transitions in CLAUDE.md with dates and criteria.
-
-  \item \textbf{Infinite Exploration} --- ``Investigate how auth works'' without scoping.
-    Claude reads 40 files, filling context with exploration results.
-    \emph{Fix}: Scope investigations narrowly. Use subagents for research
-    so exploration runs in isolated context.
-\end{enumerate}
-
-\begin{keybox}[The Common Thread]
-Every trap comes from treating Claude as infinitely capable.
-Context is finite. Attention degrades. Verification is essential.
-Working \emph{within} these constraints---not ignoring them---is
-what separates productive from frustrating usage.
-When stuck: \code{Esc} to stop, \code{Esc + Esc} to rewind,
-\code{/clear} to start fresh.
-\end{keybox}
-
-% =====================================================================
-\section{Quick Reference Card}
-
-\subsection{Essential Commands}
-
+\begin{fullwidth}
 \begin{center}
 \begin{tabular}{@{}lp{8cm}@{}}
 \toprule
@@ -565,56 +506,18 @@ When stuck: \code{Esc} to stop, \code{Esc + Esc} to rewind,
 \code{Esc + Esc} & Open rewind menu (restore or summarize from checkpoint) \\
 \code{Shift+Tab} & Cycle modes (Normal $\rightarrow$ Auto-Accept $\rightarrow$ Plan) \\
 \code{Alt+T} & Toggle extended thinking \\
-\code{--continue} & Resume most recent session \\
-\code{--resume} & Pick from previous sessions \\
+\code{-{}-continue} & Resume most recent session \\
+\code{-{}-resume} & Pick from previous sessions \\
 \bottomrule
 \end{tabular}
 \end{center}
-
-\subsection{The One-Page Workflow}
-
-\begin{center}
-\begin{tikzpicture}[
-  node distance=0.4cm and 1.0cm,
-  wfstep/.style={draw=PrimaryBlue, fill=PrimaryBlue!6, rounded corners=3pt,
-    font=\small, minimum width=5.5cm, minimum height=0.8cm, align=left},
-  num/.style={font=\bfseries\small\color{PrimaryBlue}},
-  arr/.style={-{Stealth[length=5pt]}, thick, PrimaryBlue!50},
-]
-  \node[wfstep] (s1) {\code{/init} \textrightarrow{} create CLAUDE.md + deny rules};
-  \node[wfstep, below=of s1] (s2) {Add verification criteria + hook enforcement};
-  \node[wfstep, below=of s2] (s3) {Plan Mode if complex; direct prompt if simple};
-  \node[wfstep, below=of s3] (s4) {Prompt with specs + ``write tests first''};
-  \node[wfstep, below=of s4] (s5) {Observe output, check diffs and tests};
-  \node[wfstep, below=of s5] (s6) {Refine (\code{Esc} to stop, feedback) or \code{/clear} + retry};
-  \node[wfstep, below=of s6] (s7) {Commit one logical change};
-
-  \node[num, left=0.3cm of s1] {1};
-  \node[num, left=0.3cm of s2] {2};
-  \node[num, left=0.3cm of s3] {3};
-  \node[num, left=0.3cm of s4] {4};
-  \node[num, left=0.3cm of s5] {5};
-  \node[num, left=0.3cm of s6] {6};
-  \node[num, left=0.3cm of s7] {7};
-
-  \draw[arr] (s1) -- (s2);
-  \draw[arr] (s2) -- (s3);
-  \draw[arr] (s3) -- (s4);
-  \draw[arr] (s4) -- (s5);
-  \draw[arr] (s5) -- (s6);
-  \draw[arr] (s6) -- (s7);
-
-  % Loop back
-  \draw[arr, rounded corners=6pt] (s7.east) -- ++(0.6,0) |- (s3.east)
-    node[pos=0.25, right, font=\tiny\itshape, text=DarkText] {next task};
-\end{tikzpicture}
-\end{center}
+\end{fullwidth}
 
 \vfill
 
 \begin{center}
 \footnotesize
-\textit{Extracted from ``Best Practices for Using Claude'' (v2.1+).}\\
+\textit{Extracted from ``Best Practices for Using Claude'' (v2.2+).}\\
 \textit{Full handbook: 16 chapters covering foundations through enterprise deployment.}\\[4pt]
 Licensed under CC~BY~4.0 \quad|\quad Content verified against Anthropic docs, February 2026
 \end{center}

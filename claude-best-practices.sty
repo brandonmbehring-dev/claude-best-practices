@@ -505,7 +505,8 @@
 % =============================================================================
 \RequirePackage[headsepline]{scrlayer-scrpage}
 \pagestyle{scrheadings}
-\automark[chapter]{chapter}
+% Guard: scrartcl has no \chapter
+\@ifundefined{chapter}{\automark{section}}{\automark[chapter]{chapter}}
 
 \providecommand{\volumeshort}{Claude Best Practices}
 
@@ -517,14 +518,16 @@
 % =============================================================================
 % HEADING STYLES (KOMA-Script, Tufte italic)
 % =============================================================================
-\addtokomafont{chapter}{\color{PrimaryBlue}\itshape}
+\@ifundefined{chapter}{}{\addtokomafont{chapter}{\color{PrimaryBlue}\itshape}}
 \addtokomafont{section}{\color{PrimaryBlue!90!black}\itshape}
 \addtokomafont{subsection}{\color{PrimaryBlue!80!black}\itshape}
 
-\RedeclareSectionCommand[
-  beforeskip=1.0\baselineskip,
-  afterskip=0.3\baselineskip
-]{chapter}
+\@ifundefined{chapter}{}{%
+  \RedeclareSectionCommand[
+    beforeskip=1.0\baselineskip,
+    afterskip=0.3\baselineskip
+  ]{chapter}%
+}
 
 \RedeclareSectionCommand[
   beforeskip=0.6\baselineskip,
