@@ -107,8 +107,10 @@ Each template includes WHY comments explaining the purpose of each section.
 }
 \end{minted}
 
-{\footnotesize \textit{Note: Permission rules use glob syntax (\code{*}),
-not colon syntax. Evaluation order: deny first, then ask, then allow.}}
+{\footnotesize \textit{Note: Permission rules support both glob syntax
+(\code{Bash(git push *)}, \code{Edit(/src/**/*.ts)})
+and colon-style constraints (\code{WebFetch(domain:example.com)}).
+Evaluation order: deny first, then ask, then allow.}}
 
 \section{Hook Configuration}
 
