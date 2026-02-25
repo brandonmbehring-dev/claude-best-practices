@@ -1,5 +1,7 @@
 # Best Practices for Using Claude
 
+[![Validate](https://github.com/brandonmbehring-dev/claude-best-practices/actions/workflows/validate.yml/badge.svg)](https://github.com/brandonmbehring-dev/claude-best-practices/actions/workflows/validate.yml)
+
 **From Personal Mastery to Enterprise Scale**
 
 What Anthropic recommends, what practitioners discover, and where they converge.
@@ -27,8 +29,10 @@ Every practice is tagged:
 | Format | Location | Description |
 |--------|----------|-------------|
 | PDF Handbook | `output/claude_best_practices.pdf` | Full 87-page Tufte-style guide |
+| Release PDFs | [GitHub Releases](https://github.com/brandonmbehring-dev/claude-best-practices/releases) | Download built PDFs |
 | Blog Summary | `blog/blog-summary.md` | 12-page Markdown extract |
 | Templates | `templates/` | Copy-paste starter files |
+| Changelog | [CHANGELOG.md](CHANGELOG.md) | Version history |
 
 ## Building
 
@@ -76,7 +80,7 @@ Standalone copy-paste files in `templates/`:
 
 ## Version
 
-v1.0 -- February 2026
+v2.1 -- February 2026
 
 Content verified against Anthropic documentation as of February 2026.
 
