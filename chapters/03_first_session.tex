@@ -177,7 +177,14 @@ the wrong problem.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 For complex or unfamiliar tasks, let Claude understand the codebase
 before making changes. Press \code{Shift+Tab} twice to enter
 Plan Mode---Claude can read files and answer questions
-but cannot modify anything.
+but cannot modify anything. Use \code{Ctrl+G} to open the plan
+in an external text editor for detailed review, or start directly
+in Plan Mode from the command line with \code{claude --permission-mode plan}.
+
+\marginnote[Official]{Five permission modes exist:
+Normal, Auto-Accept, Plan (keyboard-cyclable via \code{Shift+Tab}),
+plus \code{dontAsk} and \code{bypassPermissions} (settings-only).
+\sourceurl{https://code.claude.com/docs/en/permissions}}
 
 \official{The recommended workflow for complex tasks has four phases:}
 
