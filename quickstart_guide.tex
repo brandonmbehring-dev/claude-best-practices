@@ -157,6 +157,7 @@ You type: "Add a one-line docstring to build_features()
 
 Claude reads the function, writes the docstring, and shows you a diff. A permission dialog appears. Read the diff --- does it match the function's actual behavior? If yes, approve.
 
+\smallskip
 \marginnote[Vocab]{\textbf{Tool use} --- each file read, edit, or command Claude runs is a tool call. You just saw three: read the file, write the docstring, show the diff.}
 
 \begin{tipbox}
@@ -227,6 +228,7 @@ Your code now has a regression test it didn't have five minutes ago. If tests \e
 
 \marginnote[Cross-Ref]{For the full TDD workflow and 6-layer validation architecture, see Ch6.}
 
+\smallskip
 \margintip{Tests constrain implementation. When Claude writes code to pass \emph{your} tests, the ``looks correct but is subtly wrong'' failure mode is caught automatically.}
 
 \begin{whybox}[Why Testing Is the Core Skill]
@@ -349,9 +351,9 @@ Claude generates a starter CLAUDE.md from your project structure. Review it --- 
 
 \margintip{Keep CLAUDE.md under 300 lines. Move module-specific rules to \code{.claude/rules/} with path filters.}
 
-\marginnote[Cross-Ref]{For the full CLAUDE.md architecture (rules, settings, hooks), see Ch8.}
-
 Here's what a mature CLAUDE.md looks like after a few sessions of refinement:
+
+\marginnote[Cross-Ref]{For the full CLAUDE.md architecture (rules, settings, hooks), see Ch8.}
 
 \begin{minted}{markdown}
 # Demand Forecasting
@@ -404,6 +406,7 @@ You type: /context
 
 \marginwarning{When context usage crosses 60\%, quality drops non-linearly. Proactively \code{/compact} or \code{/clear}.}
 
+\smallskip
 \marginnote[Cross-Ref]{For the full context toolkit (status line, CURRENT\_WORK.md, auto-memory), see Ch5.}
 
 \textbf{Step 3 --- Clear for next task:}
@@ -517,7 +520,7 @@ Everything you practiced today --- specification, verification, collaboration de
 
 \begin{center}
 \footnotesize
-\textit{Extracted from ``Best Practices for Using Claude'' (v2.2+).}\\
+\textit{Extracted from ``Best Practices for Using Claude'' (v2.3+).}\\
 \textit{Full handbook: 16 chapters covering foundations through enterprise deployment.}\\[4pt]
 Licensed under CC~BY~4.0 \quad|\quad Content verified against Anthropic docs, February 2026
 \end{center}
