@@ -28,7 +28,7 @@ Every practice is tagged:
 
 | Format | Location | Description |
 |--------|----------|-------------|
-| PDF Handbook | `output/claude_best_practices.pdf` | Full 87-page Tufte-style guide |
+| PDF Handbook | `output/claude_best_practices.pdf` | Full 94-page Tufte-style guide |
 | Release PDFs | [GitHub Releases](https://github.com/brandonmbehring-dev/claude-best-practices/releases) | Download built PDFs |
 | Blog Summary | `blog/blog-summary.md` | 12-page Markdown extract |
 | Templates | `templates/` | Copy-paste starter files |
@@ -80,7 +80,7 @@ Standalone copy-paste files in `templates/`:
 
 ## Version
 
-v2.1 -- February 2026
+v2.2 -- February 2026
 
 Content verified against Anthropic documentation as of February 2026.
 

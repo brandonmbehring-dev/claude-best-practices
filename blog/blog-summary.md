@@ -6,7 +6,7 @@
 
 After using Claude Code daily across 20+ projects for over a year, I compiled my hard-won patterns and cross-referenced them against Anthropic's official documentation. Some matched. Some surprised me. Some things the docs don't mention at all.
 
-This post extracts the highest-impact practices from a full handbook (v2.0, 70+ pages). Every practice is tagged:
+This post extracts the highest-impact practices from a full handbook (v2.2, 90+ pages). Every practice is tagged:
 
 - **[Official]** — Anthropic's documented recommendation
 - **[Practitioner]** — Discovered through extensive daily use
@@ -88,6 +88,25 @@ Refactoring feature engineering to use sklearn Pipelines.
 Write tests verifying no leakage across CV folds.
 ```
 
+### Status Line
+
+**[Official]** Zero-cost monitoring — the status line shows context usage %, accumulated cost, current branch, and active model. No tokens consumed. Glance down, know where you stand.
+
+### Course-Correcting
+
+**[Official]** Three escape hatches:
+- **Esc** — stop Claude mid-action (context preserved)
+- **Esc + Esc** — open rewind menu: restore conversation, code, or both to any checkpoint
+- **Automatic checkpoints** — every tool use is a restore point
+
+### Plan Before You Build
+
+**[Convergence]** The Explore → Plan → Implement → Commit workflow. Use `Shift+Tab` to enter Plan Mode where Claude reasons but cannot edit files. Review the plan with `Ctrl+G` in your editor, then switch back to implement.
+
+### Session Management
+
+**[Official]** Named sessions (`/rename`), `--from-pr` for PR-scoped context, keyboard navigation in the session picker. Convention: name sessions by intent, not date.
+
 ### The Edit-Test-Commit Loop
 
 **[Convergence]** "Give Claude a way to verify its work" is the single highest-leverage practice.
@@ -96,11 +115,29 @@ Write tests verifying no leakage across CV folds.
 - **Phase-appropriate standards**: exploration (manual OK) → development (80% coverage) → production (full validation)
 - **Test-first with Claude**: describe interface → tests → implementation → automatic verification
 
+### Thinking Together: Interviews
+
+**[Practitioner]** Let Claude interview *you* for requirements. The `AskUserQuestion` tool turns Claude into an interviewer — it asks clarifying questions before writing a line of code. Best for ambiguous features or unfamiliar domains.
+
+### Rich Inputs
+
+**[Official]** Three ways to feed Claude more context without burning tokens on copy-paste:
+- **@-file references** — `@src/config.ts` injects file content
+- **Piping** — `cat data.json | claude "analyze this"`
+- **URL allowlisting** — permit Claude to fetch specific documentation URLs
+
 ### Extending Claude
 
 **[Convergence]** The golden rule: if a standard is non-negotiable, make it a hook. If advisory, put it in CLAUDE.md.
 
 Four mechanisms, in order of complexity: Commands → Skills → Hooks → MCP Servers.
+
+Additional extension points:
+- **Plugins** (`/plugin`) — browse and install community plugins
+- **Notification hooks** — route completion alerts to Slack, email, or desktop
+- **MCP permission wildcards** — `mcp__server__*` allows all tools from a trusted server
+- **Sandboxing** (`/sandbox`) — OS-level isolation for untrusted operations
+- **CLI tools** — context-efficient alternatives to MCP for simple integrations
 
 ---
 
@@ -117,7 +154,15 @@ Do directly when: quick, context-dependent, sequential, simple.
 
 **[Official]** Writer/Reviewer pattern: one session makes changes, another reviews the diff without context about intent. Catches errors the writer is blind to.
 
-### Seven Anti-Patterns (with Recovery Guides)
+### Worktree Isolation
+
+**[Official]** Run parallel sessions that can't interfere with each other. `--worktree` creates an isolated git worktree — each agent gets its own branch, its own working directory, its own context. Merge when done.
+
+### Fan-Out with Tool Scoping
+
+**[Practitioner]** `--allowedTools` restricts what each subagent can touch. Glob patterns (`Edit,Bash(npm test*)`) let you scope agents to specific tools — one writes code, another only runs tests, a third only reads. Prevents cross-contamination in parallel workflows.
+
+### Eight Anti-Patterns (with Recovery Guides)
 
 | Anti-Pattern | Prevention | Recovery |
 |-------------|------------|---------|
@@ -128,6 +173,7 @@ Do directly when: quick, context-dependent, sequential, simple.
 | Pipeline Direction | Mark generated files | `git checkout` + edit source |
 | Verification Gap | Tests with code, hooks | Test 3 critical functions first |
 | Big-Bang Refactoring | Extract→Test→Harden→Promote | `git stash`, restart incrementally |
+| Infinite Exploration | Scope investigations, use subagents | `/clear`, re-prompt with scope |
 
 ---
 
@@ -161,7 +207,7 @@ Three exercises from the handbook, completable in 10 minutes each:
 
 ## Get the Full Handbook
 
-This post is extracted from an 87-page handbook with TikZ diagrams, before/after examples, decision frameworks, and copy-paste templates.
+This post is extracted from a 94-page handbook with TikZ diagrams, before/after examples, decision frameworks, and copy-paste templates.
 
 **Want the templates?** Download from the repo's releases page.
 
