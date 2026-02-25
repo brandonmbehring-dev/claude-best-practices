@@ -1,31 +1,49 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "hooks": {
-    "PostFileWrite": [
+    "PostToolUse": [
       {
-        "type": "command",
-        "command": "ruff check --fix \"$FILE\"",
-        "description": "Auto-lint written files with ruff"
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/lint-on-write.sh",
+            "description": "Auto-lint written files with ruff"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -m pytest --cov=src --cov-report=term-missing tests/ 2>/dev/null | tail -5",
+            "description": "Report test coverage after shell commands"
+          }
+        ]
       }
     ],
-    "PreCommit": [
+    "PreToolUse": [
       {
-        "type": "command",
-        "command": "pytest tests/ && mypy src/",
-        "description": "Block commits if tests fail or type errors exist"
-      }
-    ],
-    "PostCommit": [
-      {
-        "type": "command",
-        "command": "python -m pytest --cov=src --cov-report=term-missing tests/ 2>/dev/null | tail -5",
-        "description": "Report test coverage change after each commit"
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-commit-gate.sh",
+            "description": "Block git commits if tests fail or type errors exist"
+          }
+        ]
       }
     ],
     "Stop": [
       {
-        "type": "command",
-        "command": "echo \"Task completed at $(date)\" >> .claude/session.log",
-        "description": "Log task completion timestamp"
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"Task completed at $(date)\" >> .claude/session.log",
+            "description": "Log task completion timestamp"
+          }
+        ]
       }
     ]
   }
