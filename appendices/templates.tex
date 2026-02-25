@@ -115,15 +115,21 @@ not colon syntax. Evaluation order: deny first, then ask, then allow.}}
 \begin{minted}{json}
 {
   "hooks": {
-    "PostFileWrite": [{
-      "type": "command",
-      "command": "ruff check --fix \"$FILE\"",
-      "description": "Auto-lint written files"
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{
+        "type": "command",
+        "command": ".claude/hooks/lint-on-write.sh",
+        "description": "Auto-lint written files"
+      }]
     }],
-    "PreCommit": [{
-      "type": "command",
-      "command": "pytest tests/ && mypy src/",
-      "description": "Block commits with test failures or type errors"
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{
+        "type": "command",
+        "command": ".claude/hooks/pre-commit-gate.sh",
+        "description": "Block commits with test failures or type errors"
+      }]
     }]
   }
 }

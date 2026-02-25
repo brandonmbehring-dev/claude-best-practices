@@ -161,13 +161,21 @@ for the full treatment). Three hooks that prevent quality debt:
 \begin{minted}{json}
 {
   "hooks": {
-    "PostFileWrite": [{
-      "command": "ruff check --fix \"$FILE\"",
-      "description": "Auto-lint on write"
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{
+        "type": "command",
+        "command": ".claude/hooks/lint-on-write.sh",
+        "description": "Auto-lint on write"
+      }]
     }],
-    "PreCommit": [{
-      "command": "pytest tests/ && mypy src/",
-      "description": "Block bad commits"
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{
+        "type": "command",
+        "command": ".claude/hooks/pre-commit-gate.sh",
+        "description": "Block bad commits"
+      }]
     }]
   }
 }
@@ -177,7 +185,8 @@ for the full treatment). Three hooks that prevent quality debt:
 CLAUDE.md: ``Always run tests before committing.''
 Claude may forget, especially in long sessions with degraded context.
 
-Hook: \code{PreCommit $\rightarrow$ pytest}.
+Hook: \code{PreToolUse} matching \code{Bash} $\rightarrow$ gate on
+\code{git commit} commands, run \code{pytest} first.
 Tests run every time, regardless of context state. Cannot be forgotten.
 
 The principle: if a standard is non-negotiable, make it a hook.
@@ -204,7 +213,8 @@ If it is advisory, put it in CLAUDE.md.
     Never commit without passing \code{ruff check src/ \&\& mypy src/}.
     Include edge case tests (empty DataFrames, NaN-heavy inputs)
     for every new function.''
-  \item Add a PreCommit hook: \code{pytest tests/ \&\& mypy src/}.
+  \item Add a PreToolUse hook (matching \code{Bash}) that gates commits on
+    \code{pytest tests/ \&\& mypy src/}.
   \item Track: does Claude's test coverage improve over the next week?
 \end{enumerate}
 \end{trybox}

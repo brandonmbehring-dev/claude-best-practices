@@ -28,8 +28,8 @@ better outcomes over the project's lifetime:}
     Claude examines your project structure and proposes conventions.
   \item \textbf{Set up permissions} in \code{.claude/settings.json}.
     Deny access to \code{.env*} and \code{secrets/}.
-  \item \textbf{Add one hook}: \code{PostFileWrite $\rightarrow$ auto-format}.
-    This prevents style drift from the first file onward.
+  \item \textbf{Add one hook}: \code{PostToolUse} matching \code{Edit|Write}
+    $\rightarrow$ auto-format. This prevents style drift from the first file onward.
 \end{enumerate}
 
 \subsection{Week 1: Patterns Emerge}
@@ -38,7 +38,8 @@ better outcomes over the project's lifetime:}
   \item \textbf{Add testing infrastructure.}
     Configure test runner in CLAUDE.md.
   \item \textbf{Add your first custom command} for the most common workflow.
-  \item \textbf{Configure PreCommit hook} $\rightarrow$ run tests.
+  \item \textbf{Configure PreToolUse hook} matching \code{Bash} $\rightarrow$
+    gate \code{git commit} on passing tests.
     The single most valuable hook for new projects.
 \end{enumerate}
 

@@ -138,7 +138,8 @@ It has users. It has no tests.}{%
   \item Add a DEVELOPMENT phase to CLAUDE.md today, effective immediately.
   \item Have Claude write characterization tests (\cref{sec:refactoring-protocol})
     for the 3 most critical functions.
-  \item Add a PreCommit hook that runs those tests.
+  \item Add a PreToolUse hook (matching \code{Bash}) that gates
+    \code{git commit} on those tests passing.
   \item You now have a safety net. Refactor incrementally from here.
 \end{enumerate}
 }
@@ -189,7 +190,7 @@ It ``works'' but you have zero confidence in it.}{%
   \item Do NOT try to test everything at once.
   \item Identify the 3 most critical functions (highest risk, most dependencies).
   \item Have Claude write tests for those 3 functions only.
-  \item Add a PreCommit hook. From now on, no new untested code.
+  \item Add a PreToolUse hook gating commits on tests. No new untested code.
   \item Expand coverage incrementally: 3 more functions per week.
 \end{enumerate}
 }

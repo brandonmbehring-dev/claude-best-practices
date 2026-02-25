@@ -37,8 +37,8 @@ Each Part introduction in this handbook references the levels below.
   \item[$\square$] Create CLAUDE.md with build commands and code conventions
   \item[$\square$] Add \code{.claude/settings.json} with deny rules for secrets
   \item[$\square$] Create 3+ custom commands for common workflows
-  \item[$\square$] Add PostFileWrite hook for auto-formatting
-  \item[$\square$] Add PreCommit hook for test suite
+  \item[$\square$] Add PostToolUse hook (matching \code{Edit|Write}) for auto-formatting
+  \item[$\square$] Add PreToolUse hook (matching \code{Bash}) gating commits on test suite
 \end{itemize}
 
 Reference: \cref{ch:first-claude-md}, \cref{ch:first-session}

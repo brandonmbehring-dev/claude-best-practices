@@ -136,8 +136,8 @@ Draft a team \code{settings.json} with:
 \begin{enumerate}
   \item 3 deny rules protecting sensitive files (\code{.env*}, \code{secrets/}, credentials)
   \item 1 ask rule for destructive operations (\code{git push})
-  \item 1 PostFileWrite hook for auto-formatting
-  \item 1 PreCommit hook for your test suite
+  \item 1 PostToolUse hook (matching \code{Edit|Write}) for auto-formatting
+  \item 1 PreToolUse hook (matching \code{Bash}) gating commits on your test suite
 \end{enumerate}
 Have a teammate review it. Does it match their expectations?
 \end{trybox}
