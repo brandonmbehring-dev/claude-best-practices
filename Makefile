@@ -6,7 +6,7 @@ QUICKSTART = quickstart_guide
 OUTDIR = output
 LATEXMK_FLAGS = -lualatex -shell-escape -interaction=nonstopmode -file-line-error
 
-.PHONY: pilot digital quickstart all check check-strict validate-json validate-hooks validate-includes validate-no-deprecated clean
+.PHONY: pilot digital quickstart all check check-strict validate-json validate-hooks validate-includes validate-no-deprecated check-urls clean
 
 # Quick test build (single pass, no refs/index)
 pilot:
@@ -128,6 +128,26 @@ validate-no-deprecated:
 	  echo "$$HITS"; exit 1; \
 	fi; \
 	echo "validate-no-deprecated: PASS"
+
+# Informational: spot-check critical URLs (never blocks build)
+CRITICAL_URLS = \
+  https://code.claude.com/docs/en/hooks \
+  https://code.claude.com/docs/en/best-practices \
+  https://code.claude.com/docs/en/settings \
+  https://code.claude.com/docs/en/skills \
+  https://code.claude.com/docs/en/mcp
+
+check-urls:
+	@echo "=== URL spot-check (informational) ==="
+	@for url in $(CRITICAL_URLS); do \
+	  STATUS=$$(curl -sL -o /dev/null -w '%{http_code}' --max-time 10 "$$url" 2>/dev/null); \
+	  if [ "$$STATUS" = "200" ] || [ "$$STATUS" = "301" ] || [ "$$STATUS" = "302" ]; then \
+	    echo "  OK ($$STATUS): $$url"; \
+	  else \
+	    echo "  WARN ($$STATUS): $$url"; \
+	  fi; \
+	done; \
+	echo "check-urls: DONE (informational only)"
 
 # --- Cleanup ---
 
