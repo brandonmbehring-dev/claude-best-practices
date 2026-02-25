@@ -35,6 +35,51 @@ Items that drift over time and need periodic manual verification.
 - **Manual:** Spot-check 2-3 partnership/news URLs from enterprise chapter
 - **Action:** Fix or annotate any broken links
 
+## False Positives (Verified 2026-02-25)
+
+Codex notebooks flagged these as potentially outdated — independent verification
+against official docs confirmed they are **correct**:
+
+- **Shift+Tab cycle** (Normal → Auto-Accept → Plan): Confirmed in official docs.
+  Two additional modes (dontAsk, bypassPermissions) exist but are settings-only.
+- **Alt+T toggles extended thinking**: Confirmed in official docs.
+- **Ctrl+G opens plan in external editor**: Confirmed in official docs.
+- **Ctrl+B backgrounds a running task**: Confirmed in official docs.
+
+## New URLs Added (v2.2, 2026-02-25)
+
+These URLs were added in the Phases 2-3 content update and should be monitored:
+
+| URL | Used in | Claim |
+|-----|---------|-------|
+| https://code.claude.com/docs/en/statusline | ch05 (status line) | Status line is customizable, zero API tokens |
+| https://code.claude.com/docs/en/common-workflows | ch09 (worktrees), ch07 (notification, plugins) | Worktree lifecycle, notification hooks, code intelligence |
+| https://code.claude.com/docs/en/permissions | ch03, ref card (permission modes) | Five permission modes, MCP wildcard syntax |
+| https://code.claude.com/docs/en/best-practices | ch04 (rich inputs), ch12 (allowedTools) | @file references, --allowedTools scoping |
+
+## Conditional Claims (Need Re-verification on Major Updates)
+
+These claims use conditional language ("up to", "workload-dependent") and reference
+official maximums. Re-verify if Anthropic changes pricing or caching behavior:
+
+- **Prompt caching up to 90%**: ch04, ch14
+- **Batch API 50% discount**: ch04, ch14
+- **Combined up to 70%+ savings**: ch04, ch14
+- **Up to 60-80% per-session cost reduction via caching**: ch04
+
+## Codex Notebook Provenance
+
+Insights from two codex notebooks were distilled into this watchlist and the
+implementation plan (2026-02-25). The notebooks themselves have been removed:
+- `codex_claude_guides_completeness_notebook.md` — coverage audit, accuracy checks
+- `codex_quickstart_principles_quickwins_notebook.md` — narrative flow, quick-win structure
+
+Key insights preserved:
+- Permission mode model has 5 modes, not 3 (addressed: footnote + margin note added)
+- Numeric claims needed conditional language (addressed: "up to", "workload-dependent")
+- Quickstart benefits from "First 60 Minutes" time-marker framing (addressed)
+- All 44 handbook URLs returned HTTP 200 at time of audit
+
 ## Validation Commands
 
 ```bash
