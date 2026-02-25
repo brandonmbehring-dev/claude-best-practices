@@ -161,13 +161,9 @@ Three exercises from the handbook, completable in 10 minutes each:
 
 ## Get the Full Handbook
 
-This post is extracted from a 70+ page handbook with TikZ diagrams, before/after examples, decision frameworks, and copy-paste templates.
+This post is extracted from an 87-page handbook with TikZ diagrams, before/after examples, decision frameworks, and copy-paste templates.
 
-**Want the templates?** Star the repo: [github.com/bbehring/claude-best-practices](https://github.com/bbehring/claude-best-practices)
-
-**Want the full PDF?** Download from the repo's releases page.
-
-**Want help implementing this for your team?** I consult on AI-assisted development workflows. [Contact me on LinkedIn](https://linkedin.com/in/brandonbehring).
+**Want the templates?** Download from the repo's releases page.
 
 ---
 

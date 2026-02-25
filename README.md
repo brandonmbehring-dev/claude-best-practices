@@ -26,7 +26,7 @@ Every practice is tagged:
 
 | Format | Location | Description |
 |--------|----------|-------------|
-| PDF Handbook | `output/claude_best_practices.pdf` | Full 30-page Tufte-style guide |
+| PDF Handbook | `output/claude_best_practices.pdf` | Full 87-page Tufte-style guide |
 | Blog Summary | `blog/blog-summary.md` | 12-page Markdown extract |
 | Templates | `templates/` | Copy-paste starter files |
 
