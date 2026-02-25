@@ -9,11 +9,20 @@ How do you structure a request so Claude does what you mean?
 How do you know when to start fresh versus keep going?
 \end{itshape}
 
+By the end of this chapter, you will have:
+\begin{itemize}
+  \item A repeatable session loop: prompt $\rightarrow$ observe $\rightarrow$ refine $\rightarrow$ commit
+  \item Three prompting techniques that handle 80\% of interactions
+  \item A context hygiene discipline (two commands, one rule)
+  \item Escape routes for when things go wrong
+\end{itemize}
+
 \section{The Session Loop}
 \label{sec:session-loop}
 
 A productive session with Claude follows a repeating cycle:
 
+\begin{keybox}[The Session Loop]
 \begin{enumerate}
   \item \textbf{Prompt} --- describe what you want, with enough context
     for Claude to act without guessing.
@@ -24,9 +33,14 @@ A productive session with Claude follows a repeating cycle:
   \item \textbf{Commit} --- when the change is verified, commit it.
     One logical change per commit.
 \end{enumerate}
+\end{keybox}
+
+\margintip{The Quick Start Guide walks through this loop hands-on in 60 minutes. This chapter explains the principles behind it.}
 
 \margintip{This is the same loop experienced developers use
 when pair programming---just faster.}
+
+\marginnote[Cross-Ref]{If Claude goes off track: \code{Esc} stops mid-action, \code{Esc+Esc} opens the rewind menu. Full details in \cref{sec:course-correct}.}
 
 The rest of this chapter teaches three essential skills for the prompt
 and refine steps: how to write clear requests, how to provide useful feedback,
@@ -104,6 +118,10 @@ python -c 'from src.features import build_features;
 When Claude knows the success criteria, it can self-correct
 before you ever see the result.
 
+\begin{whybox}[From Typing to Defining]
+You just learned three techniques: specificity, step-by-step reasoning, and verification criteria. Notice the shift---none of them are about writing code. They are about defining what ``correct'' means precisely enough that Claude can produce it. Your value moved from implementation to specification. The rest of this chapter protects that investment: keeping context clean so these techniques stay effective.
+\end{whybox}
+
 % -------------------------------------------------------------------
 \section{Context Hygiene: The Basics}
 \label{sec:context-basics}
@@ -166,6 +184,10 @@ go back if Claude takes a wrong turn.
 \margintip{If you have corrected Claude more than twice on the same issue,
 the context is cluttered with failed approaches.
 \code{/clear} and start fresh with a better prompt.}
+
+\begin{whybox}
+You now have the tools to recover from any wrong turn. The next section adds one more capability: letting Claude explore and plan \emph{before} it builds, so wrong turns happen less often.
+\end{whybox}
 
 % -------------------------------------------------------------------
 \section{Plan Mode: Explore Before You Build}
@@ -248,6 +270,14 @@ Notice the structure:
   \item \code{Esc} to stop mid-action, \code{Esc+Esc} to rewind
   \item Use \code{/clear} between unrelated tasks
   \item Two-failure rule: after two corrections, start fresh
+\end{itemize}
+
+\textbf{What you practiced:}
+\begin{itemize}
+  \item Specification: writing prompts that include what, context, and verification criteria
+  \item Observation: reading diffs and test results before approving
+  \item Context discipline: clearing between tasks, compacting when long
+  \item Course-correction: stopping, rewinding, starting fresh
 \end{itemize}
 
 % -------------------------------------------------------------------

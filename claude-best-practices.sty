@@ -6,7 +6,7 @@
 % Requires: LuaLaTeX with -shell-escape flag
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{claude-best-practices}[2026/02/24 Claude Best Practices Style v2.0]
+\ProvidesPackage{claude-best-practices}[2026/02/25 Claude Best Practices Style v2.3]
 
 % =============================================================================
 % ENGINE DETECTION
@@ -365,6 +365,15 @@
   title=#1
 }
 
+% Key Box — crystallized takeaway (reader should memorize this)
+\newtcolorbox{keybox}[1][Key Idea]{
+  callout-compact,
+  colframe=PrimaryBlue,
+  colback=PrimaryBlue!3,
+  title=#1,
+  leftrule=4pt
+}
+
 % Decision Box — decision framework (when to choose X over Y)
 \newtcolorbox{decisionbox}[1][Decision Framework]{
   callout-compact,
@@ -545,7 +554,7 @@
 \providecommand{\guidetitle}{Best Practices for Using Claude}
 \providecommand{\guidesubtitle}{From Personal Mastery to Enterprise Scale}
 \providecommand{\guideauthor}{Brandon Behring}
-\providecommand{\guideversion}{2.0}
+\providecommand{\guideversion}{2.3}
 \providecommand{\guidedate}{February 2026}
 
 \AtBeginDocument{%
