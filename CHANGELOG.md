@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.2] - 2026-02-25
+
+### Added
+- Plan Mode workflow (Explore→Plan→Implement→Commit) in Ch3
+- Course-correction section (Esc, Esc+Esc, checkpoints) in Ch3
+- Permission mode documentation (5 modes, Ctrl+G, --permission-mode plan) in Ch3
+- Positive vs negative instructions tip in Ch2
+- Status line zero-cost monitoring section in Ch5
+- Session navigation (picker shortcuts, --from-pr, naming conventions) in Ch5
+- Customizing compaction and checkpoint/rewind expansion in Ch5
+- Claude Interview pattern (AskUserQuestion) in Ch5
+- Rich content inputs (@-file, piping, URL allowlisting) in Ch4
+- Boris Cherny verification attribution in Ch6
+- Plugins, sandboxing, notification hooks, and CLI tools in Ch7
+- MCP permission wildcards (mcp__server__*) in Ch7
+- Code intelligence plugin expansion in Ch7
+- Worktree expansion (before/after, subagent isolation, housekeeping) in Ch9
+- "Infinite Exploration" anti-pattern (#8) in Ch11
+- /debug and /status diagnostic margintip in Ch11
+- Fan-out --allowedTools with glob scoping in Ch12
+- Quickstart: "First 60 Minutes" time-marker framing, Plan Mode section, 6th trap
+- Volatility watchlist with conditional claims tracking in docs/
+
+### Changed
+- Softened unsourced claims (3x→2-3x, 70%+ qualified) in Ch3, Ch14
+- Reference card: added /debug, /plugin, /sandbox, Esc+Esc, permission footnote
+- Blog summary updated to reflect all new content
+- README updated with current page count (94 pages) and version
+- Anti-pattern count: 7 → 8
+- Page count: 87 → 94
+
+### Removed
+- Codex completeness notebooks (distilled into volatility watchlist)
+
 ## [v2.1] - 2026-02-24
 
 ### Added
@@ -54,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Starter templates for CLAUDE.md, settings.json, hooks, commands, skills, agents, rules
 - Blog summary extraction (Markdown in `blog/`)
 
+[v2.2]: https://github.com/brandonmbehring-dev/claude-best-practices/compare/v2.1...v2.2
 [v2.1]: https://github.com/brandonmbehring-dev/claude-best-practices/compare/v2.0...v2.1
 [v2.0]: https://github.com/brandonmbehring-dev/claude-best-practices/compare/v1.0...v2.0
 [v1.0]: https://github.com/brandonmbehring-dev/claude-best-practices/releases/tag/v1.0
