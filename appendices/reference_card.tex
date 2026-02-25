@@ -52,7 +52,8 @@
 \toprule
 \textbf{Shortcut} & \textbf{Action} \\
 \midrule
-\code{Shift+Tab} & Toggle Plan Mode (read-only analysis) \\
+\code{Shift+Tab} & Cycle permission modes (Normal $\rightarrow$ Auto-Accept $\rightarrow$ Plan) \\
+\code{Ctrl+G} & Open plan in external text editor \\
 \code{Alt+T} & Toggle extended thinking \\
 \code{Ctrl+C} & Cancel current generation \\
 \code{Ctrl+B} & Background a running task \\
@@ -67,32 +68,31 @@
 \begin{fullwidth}
 \begin{tabular}{@{}lp{3cm}p{5cm}@{}}
 \toprule
-\textbf{Event} & \textbf{Timing} & \textbf{Typical Use} \\
+\textbf{Event} & \textbf{Matcher Target} & \textbf{Typical Use} \\
 \midrule
-\code{SessionStart} & Session begins & Load context, run health check \\
-\code{UserPromptSubmit} & User sends prompt & Transform or validate input \\
-\code{PreToolUse} & Before tool call & Validate inputs, block operations \\
-\code{PermissionRequest} & Permission dialog & Auto-allow/deny by rule \\
-\code{PostToolUse} & After tool succeeds & Log results, trigger follow-up \\
-\code{PostToolUseFailure} & After tool fails & Error handling, retry logic \\
-\code{PreFileWrite} & Before file write & Block sensitive paths \\
-\code{PostFileWrite} & After file write & Auto-format, lint, validate \\
-\code{PreBashRun} & Before shell command & Block dangerous commands \\
-\code{PostBashRun} & After shell command & Capture output, log \\
-\code{PreCommit} & Before git commit & Run tests, lint, type check \\
-\code{PostCommit} & After git commit & Trigger CI, update dashboards \\
-\code{Notification} & Notification event & Route to Slack, email \\
-\code{Stop} & Claude finishes responding & Run cleanup tasks \\
-\code{SubagentStart} & Subagent spawned & Initialize agent config \\
-\code{SubagentStop} & Subagent finishes & Process agent results \\
-\code{PreCompact} & Before compaction & Save state before summarization \\
-\code{SessionEnd} & Session terminates & Save state, update logs \\
+\code{SessionStart} & How started & Load context, run health check \\
+\code{UserPromptSubmit} & (no matcher) & Transform or validate input \\
+\code{PreToolUse} & Tool name & Validate inputs, block operations \\
+\code{PermissionRequest} & Tool name & Auto-allow/deny by rule \\
+\code{PostToolUse} & Tool name & Auto-lint, log, trigger follow-up \\
+\code{PostToolUseFailure} & Tool name & Error handling, retry logic \\
+\code{Notification} & Notification type & Route to Slack, email \\
+\code{SubagentStart} & Agent type & Initialize agent config \\
+\code{SubagentStop} & Agent type & Process agent results \\
+\code{Stop} & (no matcher) & Run cleanup tasks \\
+\code{TeammateIdle} & (no matcher) & Notify when agent idles \\
+\code{TaskCompleted} & (no matcher) & Post-task automation \\
+\code{ConfigChange} & Config source & React to settings changes \\
+\code{WorktreeCreate} & (no matcher) & Custom worktree setup \\
+\code{WorktreeRemove} & (no matcher) & Custom worktree cleanup \\
+\code{PreCompact} & Trigger type & Save state before compaction \\
+\code{SessionEnd} & Why ended & Save state, update logs \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
 
-{\footnotesize \textit{Additional events include \code{TeammateIdle}, \code{TaskCompleted},
-\code{ConfigChange}, \code{WorktreeCreate}, and \code{WorktreeRemove}.}}
+{\footnotesize \textit{Matchers are regex patterns. Tool events match on tool name
+(e.g., \code{Bash}, \code{Edit|Write}). Events marked ``no matcher'' always fire.}}
 
 \section{Hook Types}
 

@@ -406,13 +406,21 @@ Hooks are \textbf{enforced}:
 \begin{minted}{json}
 {
   "hooks": {
-    "PostFileWrite": [{
-      "command": "ruff check --fix \"$FILE\"",
-      "description": "Auto-lint every written file"
+    "PostToolUse": [{
+      "matcher": "Edit|Write",
+      "hooks": [{
+        "type": "command",
+        "command": ".claude/hooks/lint-on-write.sh",
+        "description": "Auto-lint written files"
+      }]
     }],
-    "PreCommit": [{
-      "command": "pytest tests/ && mypy src/",
-      "description": "Block commits with failing tests"
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{
+        "type": "command",
+        "command": ".claude/hooks/pre-commit-gate.sh",
+        "description": "Block commits with failing tests"
+      }]
     }]
   }
 }
@@ -521,7 +529,7 @@ what separates productive from frustrating usage.
 \code{/clear} & Clear context, start fresh \\
 \code{/compact} & Summarize, preserve key decisions \\
 \code{/context} & Visualize current context usage \\
-\code{Shift+Tab} & Toggle Plan Mode (read-only analysis) \\
+\code{Shift+Tab} & Cycle permission modes (Normal $\rightarrow$ Auto-Accept $\rightarrow$ Plan) \\
 \code{Alt+T} & Toggle extended thinking \\
 \code{--continue} & Resume most recent session \\
 \code{--resume} & Pick from previous sessions \\

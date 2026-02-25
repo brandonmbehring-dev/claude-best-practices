@@ -204,7 +204,7 @@ saves 13 hours per year. Measure value by frequency $\times$ savings.}
 \label{sec:hooks}
 
 \marginnote[Official]{Configure via \code{/hooks} or in
-\code{settings.json}.\sourceurl{https://docs.anthropic.com/en/docs/claude-code/hooks-guide}}
+\code{settings.json}.\sourceurl{https://code.claude.com/docs/en/hooks}}
 
 \convergence{Hooks are the enforcement layer.
 Unlike CLAUDE.md instructions (which are advisory),
@@ -213,24 +213,27 @@ hooks \textbf{always execute}.}
 \subsection{Available Lifecycle Events}
 
 \begin{fullwidth}
-\begin{tabular}{@{}lp{8cm}@{}}
+\begin{tabular}{@{}lp{3.5cm}p{5cm}@{}}
 \toprule
-\textbf{Event} & \textbf{Use Case} \\
+\textbf{Event} & \textbf{Matcher Target} & \textbf{Use Case} \\
 \midrule
-\code{PreToolUse} & Validate or transform tool inputs before execution \\
-\code{PostToolUse} & React to tool outputs (logging, metrics) \\
-\code{PreFileWrite} & Block writes to protected files; enforce formatting \\
-\code{PostFileWrite} & Auto-format, lint, or validate written files \\
-\code{PreBashRun} & Validate commands before execution; block dangerous ops \\
-\code{PostBashRun} & Capture output for logging or metrics \\
-\code{PreCommit} & Run test suite; block commits with failing tests \\
-\code{PostCommit} & Trigger CI, update dashboards, send notifications \\
-\code{UserPromptSubmit} & Transform or validate user input \\
-\code{Notification} & Route notifications to Slack, email, or dashboard \\
-\code{Stop} & Run cleanup when Claude finishes a task \\
-\code{SubagentStart} & Initialize subagent-specific configuration \\
-\code{SubagentStop} & Process subagent results \\
-\code{PreCompact} & Save state before context compaction \\
+\code{SessionStart} & How session started & Load context, run health check \\
+\code{UserPromptSubmit} & (no matcher) & Transform or validate user input \\
+\code{PreToolUse} & Tool name & Validate inputs, block operations \\
+\code{PermissionRequest} & Tool name & Auto-allow/deny by rule \\
+\code{PostToolUse} & Tool name & Auto-lint, log results, trigger follow-up \\
+\code{PostToolUseFailure} & Tool name & Error handling, retry logic \\
+\code{Notification} & Notification type & Route to Slack, email, or dashboard \\
+\code{SubagentStart} & Agent type & Initialize subagent-specific config \\
+\code{SubagentStop} & Agent type & Process subagent results \\
+\code{Stop} & (no matcher) & Run cleanup when Claude finishes \\
+\code{TeammateIdle} & (no matcher) & Notify when agent team member idles \\
+\code{TaskCompleted} & (no matcher) & Post-task automation \\
+\code{ConfigChange} & Config source & React to settings file changes \\
+\code{WorktreeCreate} & (no matcher) & Custom worktree setup logic \\
+\code{WorktreeRemove} & (no matcher) & Custom worktree cleanup logic \\
+\code{PreCompact} & Trigger type & Save state before context compaction \\
+\code{SessionEnd} & Why session ended & Save state, update logs \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
@@ -357,5 +360,5 @@ Create a \code{/check} command for your project:
   \item Format output as a summary table: Check $|$ Status $|$ Details.
   \item Test it: type \code{/check} in your next session.
 \end{enumerate}
-Bonus: add a PostFileWrite hook: \code{ruff check --fix "\$FILE"}.
+Bonus: add a PostToolUse hook matching \code{Edit|Write}: auto-lint written files.
 \end{trybox}
