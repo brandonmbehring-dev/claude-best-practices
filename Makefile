@@ -6,7 +6,7 @@ QUICKSTART = quickstart_guide
 OUTDIR = output
 LATEXMK_FLAGS = -lualatex -shell-escape -interaction=nonstopmode -file-line-error
 
-.PHONY: pilot digital quickstart all check check-strict validate-json validate-hooks clean
+.PHONY: pilot digital quickstart all check check-strict validate-json validate-hooks validate-includes clean
 
 # Quick test build (single pass, no refs/index)
 pilot:
@@ -101,6 +101,21 @@ validate-hooks:
 	done; \
 	if [ "$$FAIL" -eq 1 ]; then exit 1; fi; \
 	echo "validate-hooks: PASS"
+
+# Detect orphaned chapter files not in the build include graph
+validate-includes:
+	@echo "=== Include-graph check ==="
+	@FAIL=0; \
+	INCLUDED=$$(grep -oP '\\input\{chapters/[^}]+' $(MAIN).tex | \
+	  sed 's/\\input{//' | sed 's/$$/.tex/'); \
+	for f in chapters/*.tex; do \
+	  BASE=$$f; \
+	  if ! echo "$$INCLUDED" | grep -qx "$$BASE"; then \
+	    echo "FAIL: $$BASE exists but is not in build include graph"; FAIL=1; \
+	  fi; \
+	done; \
+	if [ "$$FAIL" -eq 1 ]; then exit 1; fi; \
+	echo "validate-includes: PASS"
 
 # --- Cleanup ---
 
