@@ -279,6 +279,73 @@ Use Managed MCP for enterprise policy enforcement.
 \end{warnbox}
 
 % -------------------------------------------------------------------
+\section{Plugins: Community Extensions}
+\label{sec:plugins}
+
+\marginnote[Official]{Run \code{/plugin} to browse the marketplace.
+Plugins bundle skills, hooks, subagents, and MCP into installable
+units.\sourceurl{https://code.claude.com/docs/en/plugins}}
+
+\official{Plugins are pre-packaged extensions from the community and Anthropic.}
+They bundle multiple extension types into a single installable unit,
+avoiding manual configuration.
+
+\begin{description}
+  \item[Code intelligence plugins] For typed languages, these give Claude
+    precise symbol navigation and automatic error detection after edits.
+    If you work with TypeScript, Rust, Go, or Java, install one immediately.
+  \item[Service integration plugins] Connect to external tools
+    (Notion, Figma, monitoring) without writing MCP servers.
+\end{description}
+
+\begin{minted}{bash}
+# Browse available plugins
+/plugin
+
+# Plugins appear in .claude/plugins/ after installation
+\end{minted}
+
+\practitioner{Plugins are the fastest path from ``nothing configured''
+to ``productive.'' Check the marketplace before building custom skills.}
+
+% -------------------------------------------------------------------
+\section{Sandboxing: Safe Autonomy}
+\label{sec:sandboxing}
+
+\marginnote[Official]{Enable with \code{/sandbox}. Restricts filesystem
+and network access at the OS level.\sourceurl{https://code.claude.com/docs/en/sandboxing}}
+
+\official{Sandboxing provides OS-level isolation that restricts
+filesystem and network access, allowing Claude to work more freely
+within defined boundaries.}
+
+With sandboxing enabled, Claude can run commands without per-action
+permission prompts because the sandbox prevents access beyond
+its boundaries. This is a safer alternative to
+\code{--dangerously-skip-permissions}.
+
+% -------------------------------------------------------------------
+\section{CLI Tools: Context-Efficient Integration}
+\label{sec:cli-tools}
+
+\convergence{CLI tools are the most context-efficient way to interact
+with external services.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+
+Install the CLI for services you use regularly:
+\begin{itemize}
+  \item GitHub: \code{gh} (issues, PRs, comments, releases)
+  \item AWS: \code{aws} (S3, Lambda, deployment)
+  \item GCP: \code{gcloud} (compute, storage, BigQuery)
+  \item Monitoring: \code{sentry-cli}, \code{datadog-ci}
+\end{itemize}
+
+Claude knows how to use common CLIs. For unfamiliar ones, try:
+\emph{``Use \code{tool --help} to learn about the tool, then use it to solve X.''}
+
+\margintip{CLIs consume far less context than MCP tools or API calls.
+Prefer CLIs over MCP for well-known services.}
+
+% -------------------------------------------------------------------
 \section{The Delegation Hierarchy}
 \label{sec:delegation-hierarchy}
 

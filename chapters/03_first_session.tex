@@ -144,6 +144,62 @@ exceeds the cost of starting fresh.
 \end{warnbox}
 
 % -------------------------------------------------------------------
+\section{Course-Correcting}
+\label{sec:course-correct}
+
+\convergence{The best results come from tight feedback loops.
+Correct Claude as soon as you notice it going off track.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+
+\begin{description}
+  \item[\code{Esc}] Stop Claude mid-action. Context is preserved,
+    so you can redirect immediately.
+  \item[\code{Esc + Esc}] Open the rewind menu: restore conversation,
+    code, or both to any previous checkpoint.
+  \item[\code{``Undo that''}] Have Claude revert its changes.
+  \item[\code{/clear}] Reset context entirely between unrelated tasks.
+\end{description}
+
+Every action Claude takes creates a checkpoint automatically.
+Think of checkpoints as free save points---you can always
+go back if Claude takes a wrong turn.
+
+\margintip{If you have corrected Claude more than twice on the same issue,
+the context is cluttered with failed approaches.
+\code{/clear} and start fresh with a better prompt.}
+
+% -------------------------------------------------------------------
+\section{Plan Mode: Explore Before You Build}
+\label{sec:plan-mode}
+
+\marginnote[Official]{Separate research from implementation to avoid solving
+the wrong problem.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+
+For complex or unfamiliar tasks, let Claude understand the codebase
+before making changes. Press \code{Shift+Tab} twice to enter
+Plan Mode---Claude can read files and answer questions
+but cannot modify anything.
+
+\official{The recommended workflow for complex tasks has four phases:}
+
+\begin{enumerate}
+  \item \textbf{Explore} (Plan Mode): ``Read \code{src/features/} and explain
+    how we compute temporal features.''
+  \item \textbf{Plan} (Plan Mode): ``I want to add recency features.
+    What files need to change? Create a plan.''
+  \item \textbf{Implement} (Normal Mode): ``Implement the plan.
+    Write tests first, then code. Run the test suite.''
+  \item \textbf{Commit}: ``Commit with a descriptive message.''
+\end{enumerate}
+
+\begin{tipbox}[When to Skip Planning]
+Planning adds overhead. Skip it when the scope is clear and the fix is small
+(typo, log line, variable rename). If you could describe the diff
+in one sentence, just ask Claude to do it directly.
+Plan when you are uncertain about the approach, the change spans multiple files,
+or you are unfamiliar with the code.
+\end{tipbox}
+
+% -------------------------------------------------------------------
 \section{A Complete Example}
 \label{sec:session-example}
 
@@ -181,6 +237,8 @@ Notice the structure:
   \item Session loop: prompt $\rightarrow$ observe $\rightarrow$ refine $\rightarrow$ commit
   \item Be specific about \emph{what} you want, not \emph{how} to do it
   \item Include verification criteria in every prompt
+  \item Plan Mode (Shift+Tab $\times$ 2) for complex or unfamiliar tasks
+  \item \code{Esc} to stop mid-action, \code{Esc+Esc} to rewind
   \item Use \code{/clear} between unrelated tasks
   \item Two-failure rule: after two corrections, start fresh
 \end{itemize}

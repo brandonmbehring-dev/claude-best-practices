@@ -430,6 +430,30 @@ Hooks are \textbf{enforced}:
 If it is advisory, put it in CLAUDE.md.
 
 % =====================================================================
+\section{Plan Before You Build}
+
+For complex or unfamiliar tasks, separate exploration from implementation.
+Press \code{Shift+Tab} twice to enter Plan Mode---Claude reads and analyzes
+but cannot modify files.
+
+\begin{enumerate}
+  \item \textbf{Explore} (Plan Mode): ``Read \code{src/features/} and explain
+    how temporal features are computed.''
+  \item \textbf{Plan} (Plan Mode): ``I want to add recency features.
+    What files change? Create a plan.''
+  \item \textbf{Implement} (Normal Mode): ``Implement the plan.
+    Write tests first, then code.''
+  \item \textbf{Commit}: ``Commit with a descriptive message.''
+\end{enumerate}
+
+\begin{tipbox}[When to Skip]
+Skip planning when the scope is clear and the fix is small.
+If you can describe the diff in one sentence, just ask Claude to do it.
+Plan when you are uncertain, the change spans multiple files,
+or you are unfamiliar with the code.
+\end{tipbox}
+
+% =====================================================================
 \section{The Session Loop}
 
 Every productive session follows this cycle:
@@ -487,7 +511,7 @@ Make phase transitions explicit in CLAUDE.md:
 \end{minted}
 
 % =====================================================================
-\section{The Five Traps (and How to Escape)}
+\section{The Six Traps (and How to Escape)}
 
 \begin{enumerate}[leftmargin=*, itemsep=4pt]
   \item \textbf{Context Overload} --- CLAUDE.md grows to 600+ lines,
@@ -506,6 +530,11 @@ Make phase transitions explicit in CLAUDE.md:
 
   \item \textbf{Permanent Prototype} --- ``We'll add tests later'' becomes never.
     \emph{Fix}: Explicit phase transitions in CLAUDE.md with dates and criteria.
+
+  \item \textbf{Infinite Exploration} --- ``Investigate how auth works'' without scoping.
+    Claude reads 40 files, filling context with exploration results.
+    \emph{Fix}: Scope investigations narrowly. Use subagents for research
+    so exploration runs in isolated context.
 \end{enumerate}
 
 \begin{keybox}[The Common Thread]
@@ -513,6 +542,8 @@ Every trap comes from treating Claude as infinitely capable.
 Context is finite. Attention degrades. Verification is essential.
 Working \emph{within} these constraints---not ignoring them---is
 what separates productive from frustrating usage.
+When stuck: \code{Esc} to stop, \code{Esc + Esc} to rewind,
+\code{/clear} to start fresh.
 \end{keybox}
 
 % =====================================================================
@@ -529,7 +560,10 @@ what separates productive from frustrating usage.
 \code{/clear} & Clear context, start fresh \\
 \code{/compact} & Summarize, preserve key decisions \\
 \code{/context} & Visualize current context usage \\
-\code{Shift+Tab} & Cycle permission modes (Normal $\rightarrow$ Auto-Accept $\rightarrow$ Plan) \\
+\code{/rewind} & Restore conversation, code, or both to a checkpoint \\
+\code{Esc} & Stop Claude mid-action (context preserved) \\
+\code{Esc + Esc} & Open rewind menu (restore or summarize from checkpoint) \\
+\code{Shift+Tab} & Cycle modes (Normal $\rightarrow$ Auto-Accept $\rightarrow$ Plan) \\
 \code{Alt+T} & Toggle extended thinking \\
 \code{--continue} & Resume most recent session \\
 \code{--resume} & Pick from previous sessions \\
@@ -549,10 +583,11 @@ what separates productive from frustrating usage.
 ]
   \node[wfstep] (s1) {\code{/init} \textrightarrow{} create CLAUDE.md + deny rules};
   \node[wfstep, below=of s1] (s2) {Add verification criteria + hook enforcement};
-  \node[wfstep, below=of s2] (s3) {Prompt with specs + ``write tests first''};
-  \node[wfstep, below=of s3] (s4) {Observe output, check diffs and tests};
-  \node[wfstep, below=of s4] (s5) {Refine (specific feedback) or \code{/clear} + retry};
-  \node[wfstep, below=of s5] (s6) {Commit one logical change};
+  \node[wfstep, below=of s2] (s3) {Plan Mode if complex; direct prompt if simple};
+  \node[wfstep, below=of s3] (s4) {Prompt with specs + ``write tests first''};
+  \node[wfstep, below=of s4] (s5) {Observe output, check diffs and tests};
+  \node[wfstep, below=of s5] (s6) {Refine (\code{Esc} to stop, feedback) or \code{/clear} + retry};
+  \node[wfstep, below=of s6] (s7) {Commit one logical change};
 
   \node[num, left=0.3cm of s1] {1};
   \node[num, left=0.3cm of s2] {2};
@@ -560,15 +595,17 @@ what separates productive from frustrating usage.
   \node[num, left=0.3cm of s4] {4};
   \node[num, left=0.3cm of s5] {5};
   \node[num, left=0.3cm of s6] {6};
+  \node[num, left=0.3cm of s7] {7};
 
   \draw[arr] (s1) -- (s2);
   \draw[arr] (s2) -- (s3);
   \draw[arr] (s3) -- (s4);
   \draw[arr] (s4) -- (s5);
   \draw[arr] (s5) -- (s6);
+  \draw[arr] (s6) -- (s7);
 
   % Loop back
-  \draw[arr, rounded corners=6pt] (s6.east) -- ++(0.6,0) |- (s3.east)
+  \draw[arr, rounded corners=6pt] (s7.east) -- ++(0.6,0) |- (s3.east)
     node[pos=0.25, right, font=\tiny\itshape, text=DarkText] {next task};
 \end{tikzpicture}
 \end{center}
@@ -577,7 +614,7 @@ what separates productive from frustrating usage.
 
 \begin{center}
 \footnotesize
-\textit{Extracted from ``Best Practices for Using Claude'' (v2.0).}\\
+\textit{Extracted from ``Best Practices for Using Claude'' (v2.1+).}\\
 \textit{Full handbook: 14 chapters covering foundations through enterprise deployment.}\\[4pt]
 Licensed under CC~BY~4.0 \quad|\quad Content verified against Anthropic docs, February 2026
 \end{center}

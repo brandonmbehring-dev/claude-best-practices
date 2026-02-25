@@ -128,6 +128,14 @@ If Claude keeps violating a rule, one of three things is true:
 (3) the rule should be a hook instead of an instruction (see \cref{ch:extending}).
 \end{tipbox}
 
+\begin{tipbox}[Write Positive Instructions]
+Replace negative constraints with positive alternatives.
+\emph{``Never use raw SQL''} leaves Claude uncertain about what to use.
+\emph{``Always use the ORM query builder in \code{src/db/queries.py}''} tells
+Claude exactly what to do instead.
+Positive instructions are clearer, more actionable, and more reliably followed.
+\end{tipbox}
+
 % -------------------------------------------------------------------
 \section{Your First Deny Rules}
 \label{sec:first-deny}

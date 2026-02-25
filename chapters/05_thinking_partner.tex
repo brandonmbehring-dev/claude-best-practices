@@ -309,6 +309,38 @@ before and after the docstring.
 \end{trybox}
 
 % -------------------------------------------------------------------
+\section{Let Claude Interview You}
+\label{sec:interview}
+
+\official{For larger features, have Claude interview you before implementation.
+Start with a minimal prompt and ask Claude to dig into the hard
+parts.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+
+\begin{minted}{text}
+I want to build a feature drift monitoring system.
+Interview me in detail. Ask about:
+- Technical implementation
+- Data sources and schemas
+- Edge cases and failure modes
+- Tradeoffs I might not have considered
+
+Keep interviewing until we have covered everything,
+then write a complete spec to SPEC.md.
+\end{minted}
+
+Once the spec is complete, start a fresh session to implement it.
+The new session has clean context focused entirely on implementation,
+and you have a written spec to reference.
+
+\begin{whybox}[Why Interviews Beat Requirements Documents]
+You do not know what you do not know. When you write requirements,
+you only state what you have already thought of.
+When Claude interviews you, it asks about things you have not
+considered---edge cases, failure modes, infrastructure constraints.
+The result is more complete requirements with less effort.
+\end{whybox}
+
+% -------------------------------------------------------------------
 \section{Architecture Decision Records}
 \label{sec:adr}
 
@@ -367,6 +399,7 @@ see \cref{sec:plans}.}
   \item Claude is a thinking mirror: distortions reveal gaps in your code
   \item Debugging: three hypotheses, minimal tests, isolate blame
   \item Tests as exploration: discover requirements, not just verify them
+  \item Interviews: let Claude ask what you have not considered
   \item Assumption surfacing: name your assumptions, then stress-test them
   \item Pre-mortem: imagine failure, work backwards to design flaw
   \item Docstrings, type hints, error messages: minutes to add, compound forever

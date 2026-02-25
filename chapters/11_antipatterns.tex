@@ -8,7 +8,7 @@ your CLAUDE.md rules. What went wrong? More importantly: how do you escape?
 \end{itshape}
 
 Every tool has characteristic misuse patterns.
-These seven anti-patterns are the most common ways developers
+These eight anti-patterns are the most common ways developers
 undermine their productivity with Claude Code.
 Each includes the symptom, root cause, prevention,
 \emph{and a recovery guide for when you are already stuck}.
@@ -192,6 +192,53 @@ It ``works'' but you have zero confidence in it.}{%
   \item Have Claude write tests for those 3 functions only.
   \item Add a PreToolUse hook gating commits on tests. No new untested code.
   \item Expand coverage incrementally: 3 more functions per week.
+\end{enumerate}
+}
+
+% -------------------------------------------------------------------
+\section{The Infinite Exploration}
+
+\antipattern{Infinite Exploration}{%
+You ask Claude to ``investigate'' something without scoping it.
+Claude reads hundreds of files, filling the context window with
+exploration results that crowd out implementation.}{%
+Scope investigations narrowly.
+Use subagents for exploration so the research context does not
+consume your main session (\cref{ch:agents}).
+}
+
+\textbf{Root cause:} Unbounded investigation prompts like
+``look into how auth works'' give Claude no stopping criteria.
+It reads every related file, consuming context that should be
+reserved for the actual task.
+
+\begin{fullwidth}
+\begin{beforeafter}
+\before
+\begin{minted}{text}
+Investigate how our authentication system works.
+\end{minted}
+
+\after
+\begin{minted}{text}
+Use a subagent to investigate how our auth system
+handles token refresh, and whether we have any
+existing OAuth utilities I should reuse.
+Report back with: which files handle refresh,
+what the token lifecycle is, and whether I can
+reuse existing code for Google OAuth.
+\end{minted}
+\end{beforeafter}
+\end{fullwidth}
+
+\recovery{Infinite Exploration}{%
+You asked Claude to ``look into'' something and it has read 40 files.
+Your context is full of exploration results and you have not
+started the actual task.}{%
+\begin{enumerate}
+  \item \code{/clear} immediately.
+  \item Re-prompt with a scoped question and explicit deliverables.
+  \item Or: delegate to a subagent so exploration runs in isolated context.
 \end{enumerate}
 }
 

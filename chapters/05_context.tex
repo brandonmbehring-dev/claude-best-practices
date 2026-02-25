@@ -49,8 +49,12 @@ signal-to-noise drops sharply.
     window is getting large.
 
   \item[\code{/rewind}] Checkpoint and roll back to a previous state.
-    Use when Claude went down a wrong path and you want to revert
-    without losing earlier good work.
+    Every action Claude takes creates an automatic checkpoint.
+    Double-tap \code{Esc} or run \code{/rewind} to open the rewind menu:
+    restore conversation only, restore code only, restore both,
+    or summarize from a selected message.
+    Checkpoints persist across sessions---you can close your terminal
+    and still rewind later.
 
   \item[\code{/context}] Visualize current context usage.
     Shows how much of the window is consumed and by what.
@@ -80,6 +84,24 @@ failure patterns rather than the actual task.}
 \code{/clear} discards 2,500 tokens of noise.
 A better initial prompt (informed by what went wrong)
 takes $\sim$200 tokens and produces a better result.
+
+\subsection{Customizing Compaction}
+
+\official{You can control what survives compaction by adding instructions
+to CLAUDE.md:}
+
+\begin{minted}{markdown}
+## Compaction Rules
+When compacting, always preserve:
+- The full list of modified files
+- Any test commands and their results
+- Architecture decisions from this session
+\end{minted}
+
+For partial compaction, use \code{Esc + Esc} or \code{/rewind},
+select a message checkpoint, and choose \textbf{Summarize from here}.
+This condenses messages from that point forward while keeping
+earlier context intact---more surgical than \code{/compact}.
 
 % -------------------------------------------------------------------
 \section{Session Management}
