@@ -37,7 +37,27 @@ Requires LuaLaTeX with `latexmk`:
 ```bash
 make pilot    # Quick test build (~30s)
 make digital  # Full build with references (~2min)
+make validate # Run all validation guards (JSON, hooks, includes, deprecated names)
+make all      # validate + digital + quickstart + check
 ```
+
+### Validation Guards
+
+Run `make validate` before submitting changes. It checks:
+
+| Target | What it catches |
+|--------|----------------|
+| `validate-json` | Malformed JSON in `templates/` |
+| `validate-hooks` | Invalid hook event names vs `docs/valid-hook-events.txt` |
+| `validate-includes` | Orphaned `.tex` files not in the build graph |
+| `validate-no-deprecated` | Deprecated hook names (PreCommit, PostCommit, etc.) |
+
+Informational (never blocks):
+
+| Target | What it does |
+|--------|--------------|
+| `check-urls` | Spot-checks 5 critical documentation URLs |
+| `check` | Summarizes LaTeX warnings/errors from build logs |
 
 ## Templates
 

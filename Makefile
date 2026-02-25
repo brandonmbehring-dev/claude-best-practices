@@ -6,7 +6,7 @@ QUICKSTART = quickstart_guide
 OUTDIR = output
 LATEXMK_FLAGS = -lualatex -shell-escape -interaction=nonstopmode -file-line-error
 
-.PHONY: pilot digital quickstart all check check-strict validate-json validate-hooks validate-includes validate-no-deprecated check-urls clean
+.PHONY: pilot digital quickstart all check check-strict validate validate-json validate-hooks validate-includes validate-no-deprecated check-urls clean
 
 # Quick test build (single pass, no refs/index)
 pilot:
@@ -23,8 +23,11 @@ quickstart:
 	@mkdir -p $(OUTDIR)
 	latexmk $(LATEXMK_FLAGS) -output-directory=$(OUTDIR) $(QUICKSTART).tex
 
-# Build everything + informational check
-all: digital quickstart check
+# Build everything: validate first, then build, then informational check
+all: validate digital quickstart check
+
+# Umbrella: run all validation guards (blocks on failure)
+validate: validate-json validate-hooks validate-includes validate-no-deprecated
 
 # --- Quality checks ---
 
