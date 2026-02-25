@@ -6,7 +6,7 @@ QUICKSTART = quickstart_guide
 OUTDIR = output
 LATEXMK_FLAGS = -lualatex -shell-escape -interaction=nonstopmode -file-line-error
 
-.PHONY: pilot digital quickstart all check check-strict clean
+.PHONY: pilot digital quickstart all check check-strict validate-json validate-hooks clean
 
 # Quick test build (single pass, no refs/index)
 pilot:
@@ -70,6 +70,37 @@ check-strict:
 	done; \
 	if [ "$$FAIL" -eq 1 ]; then exit 1; fi; \
 	echo "check-strict: PASS (zero errors)"
+
+# --- Validation guards ---
+
+# Validate all JSON files parse correctly
+validate-json:
+	@echo "=== JSON validation ==="
+	@FAIL=0; \
+	for f in templates/*.json; do \
+	  if ! jq empty "$$f" 2>/dev/null; then \
+	    echo "FAIL: $$f is not valid JSON"; FAIL=1; \
+	  else \
+	    echo "  OK: $$f"; \
+	  fi; \
+	done; \
+	if [ "$$FAIL" -eq 1 ]; then exit 1; fi; \
+	echo "validate-json: PASS"
+
+# Validate hook event names against canonical allowlist
+validate-hooks:
+	@echo "=== Hook event validation ==="
+	@FAIL=0; \
+	for f in templates/*.json; do \
+	  EVENTS=$$(jq -r '.hooks // {} | keys[]' "$$f" 2>/dev/null); \
+	  for ev in $$EVENTS; do \
+	    if ! grep -qx "$$ev" docs/valid-hook-events.txt; then \
+	      echo "FAIL: $$f uses invalid hook event '$$ev'"; FAIL=1; \
+	    fi; \
+	  done; \
+	done; \
+	if [ "$$FAIL" -eq 1 ]; then exit 1; fi; \
+	echo "validate-hooks: PASS"
 
 # --- Cleanup ---
 
