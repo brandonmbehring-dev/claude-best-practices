@@ -80,7 +80,7 @@ Standalone copy-paste files in `templates/`:
 
 ## Version
 
-v2.2 -- February 2026
+v2.3 -- February 2026
 
 Content verified against Anthropic documentation as of February 2026.
 

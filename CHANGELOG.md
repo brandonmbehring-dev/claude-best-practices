@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.3] - 2026-02-25
+
+### Changed
+- Quickstart guide: ground-up rewrite with action-first pedagogy
+  - Three-act arc (Safety → Understanding → Ownership) with dual-track SE maturity
+  - Imports `claude-best-practices.sty` for Tufte-style margins and visual language
+  - 14 margin notes (vocab, cross-refs, official sources, tips, warnings)
+  - 13 terminal transcripts ("You type: ..." → example output)
+  - Safety nets (Esc, Esc+Esc, permission dialog) taught before first edit
+  - Failure handling for top 3 first-launch issues
+  - Three `\whybox` mindset transitions at act boundaries
+  - Three agent-building observational callouts
+  - Cherry-picks: agent loop TikZ, CLAUDE.md example, descriptions-vs-commands warnbox, commands table
+  - Cuts: abstract properties, hooks JSON, phase-appropriate rigor, six traps (distilled to 3-item checklist)
+- Style package: scrartcl compatibility guards for chapter-dependent commands
+
+### Removed
+- Quickstart: 95-line duplicated preamble (fonts, colors, boxes) — now imports shared sty
+- Quickstart: abstract properties section, 6-layer validation table, hooks JSON example
+
 ## [v2.2] - 2026-02-25
 
 ### Added
@@ -88,6 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Starter templates for CLAUDE.md, settings.json, hooks, commands, skills, agents, rules
 - Blog summary extraction (Markdown in `blog/`)
 
+[v2.3]: https://github.com/brandonmbehring-dev/claude-best-practices/compare/v2.2...v2.3
 [v2.2]: https://github.com/brandonmbehring-dev/claude-best-practices/compare/v2.1...v2.2
 [v2.1]: https://github.com/brandonmbehring-dev/claude-best-practices/compare/v2.0...v2.1
 [v2.0]: https://github.com/brandonmbehring-dev/claude-best-practices/compare/v1.0...v2.0

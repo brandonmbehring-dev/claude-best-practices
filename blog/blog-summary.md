@@ -6,7 +6,7 @@
 
 After using Claude Code daily across 20+ projects for over a year, I compiled my hard-won patterns and cross-referenced them against Anthropic's official documentation. Some matched. Some surprised me. Some things the docs don't mention at all.
 
-This post extracts the highest-impact practices from a full handbook (v2.2, 90+ pages). Every practice is tagged:
+This post extracts the highest-impact practices from a full handbook (v2.3, 90+ pages). Every practice is tagged:
 
 - **[Official]** — Anthropic's documented recommendation
 - **[Practitioner]** — Discovered through extensive daily use
@@ -202,6 +202,20 @@ Three exercises from the handbook, completable in 10 minutes each:
 1. **Audit one feature engineering function** against the four principles: silently drops NaN rows? Too long? Mutates its input DataFrame? Vague error messages?
 2. **Run `/init`** on your current project. Add deny rules for `.env*`, `data/raw/**`, and credentials. Start a session and verify Claude reads your CLAUDE.md.
 3. **Take your last 3 prompts** and rewrite them with precise verbs (validate schema, fit on train split, check no leakage) and verification criteria. Estimate how many correction rounds each rewrite would have saved.
+
+---
+
+## Quick Start Guide
+
+New in v2.3: the **Quick Start Guide** is a standalone 7-page PDF that takes you from installation to professional workflow in 60 minutes. It teaches Claude Code skills and software engineering practices simultaneously through a three-act structure:
+
+1. **Safety** (Minutes 0-15) — Install, explore your codebase, learn safety nets (Esc, rewind, permission dialogs), make your first edit with a precise prompt
+2. **Understanding** (Minutes 15-35) — Write your first AI-assisted test, run regression checks, review diffs, commit with a meaningful message
+3. **Ownership** (Minutes 35-60) — Create your project's CLAUDE.md, learn session hygiene, close cleanly with context for next time
+
+Every segment interleaves action ("You type:") with one-sentence annotations explaining *why* the pattern matters. Margin notes carry vocabulary, keyboard shortcuts, and cross-references to handbook chapters — keeping the action flow uninterrupted.
+
+Build it: `make quickstart` → `output/quickstart_guide.pdf`
 
 ---
 
