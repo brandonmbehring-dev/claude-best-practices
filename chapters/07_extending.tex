@@ -241,6 +241,30 @@ hooks \textbf{always execute}.}
 \practitioner{The golden rule: if a standard is non-negotiable, make it a hook.
 If it is advisory, put it in CLAUDE.md.}
 
+\subsection{Notification Hooks}
+
+\official{The \code{Notification} event fires when Claude needs human
+attention.\sourceurl{https://code.claude.com/docs/en/common-workflows}}
+Use it for desktop alerts during long-running tasks:
+
+\begin{minted}{json}
+{
+  "hooks": {
+    "Notification": [{
+      "hooks": [{
+        "type": "command",
+        "command": "notify-send 'Claude Code' 'Needs attention'",
+        "description": "Desktop alert when Claude needs input"
+      }]
+    }]
+  }
+}
+\end{minted}
+
+\margintip{On macOS, replace \code{notify-send} with
+\code{osascript -e 'display notification \"...\"'}.
+On Windows WSL, use \code{powershell.exe} with toast notifications.}
+
 % -------------------------------------------------------------------
 \section{MCP: External Tool Integration}
 \label{sec:mcp}
@@ -271,6 +295,20 @@ Key concepts:
     Claude uses on-demand search to keep context efficient.
 \end{description}
 
+\official{Permission rules can use wildcards for MCP tool scoping:\sourceurl{https://code.claude.com/docs/en/permissions}}
+
+\begin{minted}{json}
+{
+  "permissions": {
+    "allow": ["mcp__github__*"],
+    "deny": ["mcp__github__delete_*"]
+  }
+}
+\end{minted}
+
+\margintip{The \code{mcp\_\_server\_\_*} syntax allows all tools from a server.
+Combine with specific deny rules for fine-grained control.}
+
 \begin{warnbox}[MCP Security]
 Verify server provenance before installation.
 Prefer servers from the official registry.
@@ -291,9 +329,12 @@ They bundle multiple extension types into a single installable unit,
 avoiding manual configuration.
 
 \begin{description}
-  \item[Code intelligence plugins] For typed languages, these give Claude
-    precise symbol navigation and automatic error detection after edits.
-    If you work with TypeScript, Rust, Go, or Java, install one immediately.
+  \item[Code intelligence plugins] \official{For typed languages, install a code
+    intelligence plugin immediately.\sourceurl{https://code.claude.com/docs/en/common-workflows}}
+    These give Claude precise ``go to definition'' and ``find references''
+    capabilities, plus automatic error detection after edits.
+    Supported languages include TypeScript, Rust, Go, Java, and Python (via Pyright).
+    The improvement in code navigation accuracy is substantial.
   \item[Service integration plugins] Connect to external tools
     (Notion, Figma, monitoring) without writing MCP servers.
 \end{description}

@@ -20,6 +20,19 @@ single highest-leverage practice.\sourceurl{https://code.claude.com/docs/en/best
 This aligns exactly with what practitioners discover independently:
 the projects that succeed are the ones with verification at every layer.}
 
+\begin{whybox}[Why Verification Is the Highest-Leverage Practice]
+Claude Code's creator, Boris Cherny, suggests that verification improves
+code quality by 2--3$\times$---a plausible but hard-to-measure claim
+that aligns with practitioner experience. The mechanism is straightforward:
+when Claude can run tests, check types, and validate output against
+concrete criteria, it catches its own mistakes before you see them.
+The verification loop turns a single-pass generation into an iterative
+refinement process.
+
+Without verification criteria, you are the only quality gate.
+With them, Claude becomes a self-correcting system.
+\end{whybox}
+
 \subsection{The 6-Layer Validation Architecture}
 
 Layer defenses so that no single failure mode goes undetected:

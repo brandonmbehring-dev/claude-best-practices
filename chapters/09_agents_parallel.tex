@@ -88,21 +88,68 @@ Parallelism trades cost for speed.}
 \label{sec:worktrees}
 
 \marginnote[Official]{The \code{--worktree} flag creates an isolated copy
-of your repository for parallel work.\sourceurl{https://code.claude.com/docs/en/overview}}
-
-\begin{minted}{bash}
-# Start parallel work on two features
-claude --worktree "Implement caching layer"
-claude --worktree "Add rate limiting"
-\end{minted}
-
-Each worktree gets its own git branch, a complete isolated copy of the
-repository, can be merged independently, and is cleaned up automatically
-if no changes are made.
+of your repository for parallel work.\sourceurl{https://code.claude.com/docs/en/common-workflows}}
 
 Worktrees solve the fundamental problem of parallel file modifications:
 two agents editing the same files will conflict. Worktrees give each
-agent its own copy.
+agent its own isolated copy of the repository.
+
+\begin{fullwidth}
+\begin{beforeafter}
+\before
+\begin{minted}{bash}
+# Manual: create worktree, remember to clean up
+git worktree add ../feature-cache -b feature-cache
+cd ../feature-cache && claude
+# ... work ...
+cd - && git worktree remove ../feature-cache
+\end{minted}
+
+\after
+\begin{minted}{bash}
+# Automatic: Claude manages the worktree lifecycle
+claude --worktree "Implement caching layer"
+claude --worktree "Add rate limiting"
+\end{minted}
+\end{beforeafter}
+\end{fullwidth}
+
+Each worktree gets its own git branch and a complete isolated copy of the
+repository. Cleanup is automatic: if no changes are made, the worktree
+is removed silently. If changes exist, you are prompted to merge or discard.
+
+\subsection{Subagent Worktrees}
+
+\official{Subagents can also run in isolated worktrees using the
+\code{isolation} frontmatter key:}
+
+\begin{minted}{markdown}
+# .claude/agents/parallel-reviewer.md
+---
+name: parallel-reviewer
+tools: [Read, Grep, Glob]
+isolation: worktree
+---
+Review the code for correctness and edge cases.
+Report findings with file:line references.
+\end{minted}
+
+When \code{isolation: worktree} is set, the subagent operates on
+its own copy of the repository. This is essential for agents that
+modify files---without isolation, two agents editing the same file
+will produce conflicts.
+
+\begin{warnbox}[Worktree Housekeeping]
+Add \code{.claude/worktrees/} to your \code{.gitignore}.
+Claude stores worktree metadata there; it should not be committed.
+If orphaned worktrees accumulate (e.g., after a crash), run
+\code{git worktree prune} to clean them up.
+\end{warnbox}
+
+\margintip{Worktrees trade disk space for isolation.
+Each worktree is a full copy of the repository.
+For large repositories, be mindful of disk usage when running
+many parallel agents.}
 
 % -------------------------------------------------------------------
 \section{The Writer/Reviewer Pattern}

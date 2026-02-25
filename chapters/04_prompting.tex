@@ -32,8 +32,9 @@ Over time, develop a shared vocabulary between you and Claude.}
 \end{tabular}
 \end{fullwidth}
 
-\margintip{Precision compounds. A team that develops shared vocabulary communicates
-3$\times$ more efficiently with Claude after one month.}
+\margintip{Precision compounds. Practitioners report that shared vocabulary
+can reduce correction rounds by 2--3$\times$---a plausible estimate,
+though hard to measure precisely and workload-dependent.}
 
 The pattern for building vocabulary:
 \begin{enumerate}
@@ -85,7 +86,25 @@ Verify: no future-dated features in test set.
 \subsection{Rich Inputs}
 
 \official{Use \code{@file} to include files, paste screenshots,
-pipe data from \code{stdin}.} Real data beats verbal descriptions.
+pipe data from \code{stdin}.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+Real data beats verbal descriptions.
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{7cm}@{}}
+\toprule
+\textbf{Method} & \textbf{When to Use} \\
+\midrule
+\code{@file} or \code{@dir/} & Load file or directory content before Claude responds.
+  Preferred over describing code. \\
+Image paste & Copy/paste or drag-and-drop screenshots, diagrams,
+  error messages directly into the prompt. \\
+\code{cat file | claude} & Pipe data from other tools. Useful for logs,
+  command output, or data samples. \\
+URL allowlisting & Use \code{/permissions} to allow frequently-used doc sites.
+  Claude can then fetch reference material directly. \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
 
 \begin{minted}{text}
 Look at @src/features/customer.py
@@ -95,8 +114,17 @@ but has no validation for missing values.
 Add validation following existing patterns.
 \end{minted}
 
-\margintip{Including the actual files is always better than describing them.
-Claude reads code more accurately than it interprets descriptions of code.}
+\margintip{\code{@} references load content before Claude responds---more
+efficient than asking Claude to \code{Read} the file itself, and it ensures
+the context is available from the first reasoning step.}
+
+\begin{minted}{bash}
+# Pipe error logs for diagnosis
+tail -100 app.log | claude -p "Diagnose the errors"
+
+# Pipe test output for analysis
+pytest tests/ -v 2>&1 | claude -p "Summarize failures"
+\end{minted}
 
 % -------------------------------------------------------------------
 \section{Extended Thinking}
@@ -141,8 +169,8 @@ where speed dominates.
 \section{Cost Optimization}
 \label{sec:cost}
 
-\margincost{Prompt caching: 90\% savings on cached reads. Batch API: 50\% discount.
-Combined: 70\%+ savings.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-caching}}
+\margincost{Prompt caching: up to 90\% on cached reads. Batch API: 50\% discount.
+Combined: up to 70\%+ savings (workload-dependent).\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-caching}}
 
 \subsection{Prompt Caching}
 
@@ -161,7 +189,7 @@ Combined: 70\%+ savings.\sourceurl{https://platform.claude.com/docs/en/build-wit
 processing.\sourceurl{https://platform.claude.com/docs/en/docs/build-with-claude/batch-processing}}
 Submit up to 100,000 requests per batch (256~MB max).
 Most batches complete within 1 hour; results available within 24 hours.
-Combinable with caching for 70\%+ total savings.
+Combinable with caching for up to 70\%+ total savings (workload-dependent).
 
 Best for: bulk migrations, code review across many files, documentation generation.
 
@@ -232,9 +260,9 @@ Use Haiku for bulk operations and simple formatting tasks.}
 
 \begin{keyinsight}
 The most cost-effective pattern is not choosing the cheapest model---it is
-structuring your workflow to maximize cache hits. A well-organized CLAUDE.md
-with stable tool definitions can reduce per-session costs by 60--80\%
-through caching alone.
+structuring your workflow to maximize cache hits. With stable, repeated content,
+a well-organized CLAUDE.md and tool definitions can reduce per-session costs
+by up to 60--80\% through caching.
 \end{keyinsight}
 
 % -------------------------------------------------------------------

@@ -57,8 +57,28 @@ done
 \end{beforeafter}
 \end{fullwidth}
 
-\margintip{Always test on 3--5 files before scaling.
-The prompt that works on your first file may fail on edge cases in file 47.}
+\official{The \code{--allowedTools} flag scopes what Claude can do in unattended
+mode.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+Use glob patterns for fine-grained control:
+
+\begin{minted}{bash}
+# Allow Read and Edit only (safest for code modifications)
+--allowedTools "Read,Edit"
+
+# Allow Bash but only for specific commands
+--allowedTools 'Read,Edit,Bash(git commit *)'
+\end{minted}
+
+\begin{warnbox}[Test Before Scaling]
+Always test your fan-out prompt on 2--3 files before running at scale.
+A prompt that works on \code{src/utils.py} may produce unexpected results
+on \code{src/models/network.py}. Review the first few outputs manually,
+then scale with confidence.
+\end{warnbox}
+
+\margintip{Combine \code{--allowedTools} with \code{--output-format json}
+for pipeline-friendly output. Parse results with \code{jq} for automated
+quality checks before committing.}
 
 \subsection{Permissions in Headless Mode}
 

@@ -68,6 +68,47 @@ signal-to-noise drops sharply.
 proactively \code{/compact} or \code{/clear}.}
 
 % -------------------------------------------------------------------
+\section{The Status Line: Zero-Cost Monitoring}
+\label{sec:statusline}
+
+\marginnote[Official]{The status line runs entirely locally---zero API tokens
+consumed. Fully customizable via script.\sourceurl{https://code.claude.com/docs/en/statusline}}
+
+\official{Claude Code displays a configurable status line showing session
+metrics in real time.} By default it shows the active model, git branch,
+session cost, and context window usage percentage.
+
+You can extend it with a custom script whose output is appended
+to the default display:
+
+\begin{minted}{bash}
+# ~/.claude/statusline.sh — runs locally, never sent to API
+#!/bin/bash
+echo "env: ${APP_ENV:-dev}"
+\end{minted}
+
+The status line is your early-warning system for context degradation.
+When context usage crosses 60\%, proactively \code{/compact} or
+\code{/clear}---do not wait for quality to degrade before acting.
+
+\begin{tipbox}[What to Watch]
+\begin{description}
+  \item[Context usage \%] The single most important metric.
+    Watch for the 60--70\% threshold where quality drops non-linearly.
+  \item[Session cost] Tracks spend in real time. Catches expensive
+    operations before they compound.
+  \item[Git branch] Confirms you are working in the right context,
+    especially when switching between worktrees (\cref{sec:worktrees}).
+  \item[Model] Confirms which model is active---important after
+    \code{--model} overrides or skill-level model switches.
+\end{description}
+\end{tipbox}
+
+\practitioner{The status line costs nothing and prevents the most common
+failure mode: context degradation discovered only after quality has
+already dropped. Enable it on day one.}
+
+% -------------------------------------------------------------------
 \section{The Two-Failure Rule (Revisited)}
 \label{sec:two-failure}
 
@@ -118,6 +159,36 @@ earlier context intact---more surgical than \code{/compact}.
   \item[\code{claude --from-pr 123}] Start a session with PR context pre-loaded.
   \item[\code{/rename "feature-auth"}] Give descriptive names for later retrieval.
 \end{description}
+
+\subsection{Session Navigation}
+
+The session picker (invoked via \code{claude --resume}) supports
+keyboard navigation:
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Key} & \textbf{Action} \\
+\midrule
+\code{$\uparrow$/$\downarrow$} & Navigate session list \\
+\code{P} & Preview session content without opening \\
+\code{R} & Rename session inline \\
+\code{/} & Search sessions by name or content \\
+\code{Enter} & Open selected session \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\begin{tipbox}[Session Naming Conventions]
+Treat sessions like branches---one logical workstream per session.
+Use descriptive names that include the task type:
+\code{/rename "fix-null-handling-pipeline"},
+\code{/rename "feat-recency-features"},
+\code{/rename "debug-cv-leakage"}.
+The \code{--from-pr} flag is especially powerful for code review:
+\code{claude --from-pr 142} starts a session with the full PR diff
+and metadata pre-loaded, saving manual context setup.
+\end{tipbox}
 
 \subsection{The CURRENT\_WORK.md Pattern}
 

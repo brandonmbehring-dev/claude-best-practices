@@ -18,6 +18,7 @@
 \code{/hooks} & Configure lifecycle hooks interactively \\
 \code{/mcp} & Manage MCP server connections \\
 \code{/memory} & View and manage auto-memory \\
+\code{/debug} & Show debug info: model, session, config, connection status \\
 \code{/permissions} & View and modify permission rules \\
 \code{/status} & Show version, model, and account info \\
 \code{/help} & Show available commands \\
@@ -52,7 +53,7 @@
 \toprule
 \textbf{Shortcut} & \textbf{Action} \\
 \midrule
-\code{Shift+Tab} & Cycle permission modes (Normal $\rightarrow$ Auto-Accept $\rightarrow$ Plan) \\
+\code{Shift+Tab} & Cycle permission modes (Normal $\rightarrow$ Auto-Accept $\rightarrow$ Plan)\footnote{Two additional modes---\code{dontAsk} and \code{bypassPermissions}---are configurable via settings but not available through the keyboard cycle. See \url{https://code.claude.com/docs/en/permissions}.} \\
 \code{Ctrl+G} & Open plan in external text editor \\
 \code{Alt+T} & Toggle extended thinking \\
 \code{Ctrl+C} & Cancel current generation \\
