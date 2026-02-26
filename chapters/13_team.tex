@@ -59,6 +59,21 @@ Managed settings deploy to system-level paths and cannot be overridden
 by project or user settings (see \cref{sec:settings} for the full 5-level
 precedence hierarchy). They are the IT equivalent of hooks---non-negotiable.
 
+\begin{tipbox}[Hook Precedence and Debugging]
+When hooks are configured at multiple levels, they all run---managed,
+project, and local hooks execute for the same event. If hooks conflict
+(e.g., a managed hook requires formatting that a local hook undoes),
+managed takes priority.
+
+To debug unexpected hook behavior:
+\begin{itemize}
+  \item Check which hooks are active: review \code{settings.json} at each level
+  \item Use \code{/hooks} to view the merged hook configuration
+  \item Check hook exit codes: non-zero exit blocks the triggering action
+  \item Test hooks in isolation before deploying to managed settings
+\end{itemize}
+\end{tipbox}
+
 % -------------------------------------------------------------------
 \section{Onboarding New Team Members}
 \label{sec:onboarding}
@@ -78,6 +93,32 @@ precedence hierarchy). They are the IT equivalent of hooks---non-negotiable.
 The goal: a new developer should be productive with Claude
 within their first day, without reading a setup guide.
 The configuration in version control should be self-documenting.
+
+% -------------------------------------------------------------------
+\section{Shared Extensions at Scale}
+\label{sec:shared-extensions}
+
+In \cref{ch:extending}, you learned the extension hierarchy:
+commands, skills, hooks, and MCP servers. At team scale, these
+mechanisms need governance:
+
+\begin{description}
+  \item[Shared skills] Commit team skills to \code{.claude/skills/} in the repo.
+    Quality dashboards, pre-release checklists, and onboarding workflows
+    benefit the entire team. Use \code{context: fork} for expensive skills
+    so they do not consume teammates' context budgets.
+  \item[Managed MCP] IT-approved MCP servers deployed via managed settings
+    (\cref{sec:managed-settings}). Prevents ad-hoc server installation
+    while providing standardized access to team databases, ticketing systems,
+    and monitoring tools.
+  \item[Shared hook libraries] Common hooks (auto-format, test gates, lint)
+    maintained in a central repository and imported via the hub-and-spoke
+    pattern (\cref{sec:hub-and-spoke}). Update once, all projects inherit.
+\end{description}
+
+\practitioner{The extension hierarchy scales naturally: commands and skills
+in the repo for the team, hooks in \code{settings.json} for enforcement,
+managed MCP for IT-controlled integrations.}
 
 % -------------------------------------------------------------------
 \section{Code Review Patterns with Claude}

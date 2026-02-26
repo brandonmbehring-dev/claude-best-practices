@@ -35,6 +35,64 @@ for attention with accumulated noise. Past a threshold,
 signal-to-noise drops sharply.
 \end{whybox}
 
+% --- Context degradation stacked bar diagram ---
+\begin{figure}[H]
+\begin{fullwidth}
+\centering
+\begin{tikzpicture}[
+  bar/.style={minimum height=0.7cm, anchor=south west, font=\scriptsize\bfseries, align=center},
+  lbl/.style={font=\footnotesize, text=DarkText, anchor=east},
+  pct/.style={font=\tiny, text=DarkText},
+]
+  \def\barwidth{9cm}
+  \def\barheight{0.7cm}
+
+  % --- Fresh session (15 min) ---
+  \node[lbl] at (-0.2, 0.35) {Fresh};
+  % CLAUDE.md: 10%
+  \node[bar, fill=WarmBlue!40, minimum width=0.10*\barwidth, text=white] (f1) at (0,0) {CLAUDE.md};
+  % Task context: 15%
+  \node[bar, fill=WarmGreen!50, minimum width=0.15*\barwidth] (f2) at (0.10*\barwidth,0) {Task};
+  % Free: 75%
+  \node[bar, fill=black!5, minimum width=0.75*\barwidth, text=black!40] (f3) at (0.25*\barwidth,0) {Available};
+  \node[pct] at (0.10*\barwidth + 0.5*0.75*\barwidth, -0.2) {75\% free};
+
+  % --- Working session (45 min) ---
+  \node[lbl] at (-0.2, 1.55) {Working};
+  % CLAUDE.md: 10%
+  \node[bar, fill=WarmBlue!40, minimum width=0.10*\barwidth, text=white] at (0,1.2) {CLAUDE.md};
+  % Task context: 35%
+  \node[bar, fill=WarmGreen!50, minimum width=0.35*\barwidth] at (0.10*\barwidth,1.2) {Task context};
+  % Noise: 15%
+  \node[bar, fill=WarmRose!50, minimum width=0.15*\barwidth] at (0.45*\barwidth,1.2) {Noise};
+  % Free: 40%
+  \node[bar, fill=black!5, minimum width=0.40*\barwidth, text=black!40] at (0.60*\barwidth,1.2) {Available};
+  \node[pct] at (0.60*\barwidth + 0.5*0.40*\barwidth, 1.0) {40\% free};
+
+  % --- Degraded session (90+ min) ---
+  \node[lbl] at (-0.2, 2.75) {Degraded};
+  % CLAUDE.md: 10%
+  \node[bar, fill=WarmBlue!40, minimum width=0.10*\barwidth, text=white] at (0,2.4) {CLAUDE.md};
+  % Task context: 25%
+  \node[bar, fill=WarmGreen!50, minimum width=0.25*\barwidth] at (0.10*\barwidth,2.4) {Task};
+  % Noise: 40%
+  \node[bar, fill=WarmRose!50, minimum width=0.40*\barwidth] at (0.35*\barwidth,2.4) {Noise (errors, retries, old tasks)};
+  % Free: 25%
+  \node[bar, fill=black!5, minimum width=0.25*\barwidth, text=black!40] at (0.75*\barwidth,2.4) {};
+  \node[pct] at (0.75*\barwidth + 0.5*0.25*\barwidth, 2.2) {25\% free};
+
+  % Threshold line at 60%
+  \draw[dashed, WarmRose!80, thick] (0.60*\barwidth, -0.3) -- (0.60*\barwidth, 3.3)
+    node[above, font=\tiny\itshape, text=WarmRose!80] {$\sim$60\% threshold};
+
+\end{tikzpicture}
+\caption{Context composition over time. Noise (old errors, abandoned approaches)
+  grows fastest, crowding signal. The 60\% threshold marks where quality drops
+  non-linearly.}
+\label{fig:context-degradation}
+\end{fullwidth}
+\end{figure}
+
 % -------------------------------------------------------------------
 \section{The Full Context Toolkit}
 \label{sec:context-toolkit}
@@ -88,7 +146,7 @@ echo "env: ${APP_ENV:-dev}"
 \end{minted}
 
 The status line is your early-warning system for context degradation.
-When context usage crosses 60\%, proactively \code{/compact} or
+When context usage enters the 60--70\% range, proactively \code{/compact} or
 \code{/clear}---do not wait for quality to degrade before acting.
 
 \begin{tipbox}[What to Watch]
@@ -253,6 +311,45 @@ in future sessions without explicit re-prompting.
   \item[Unverified conclusions] Patterns seen once, not confirmed
   \item[Duplicates of CLAUDE.md] Memory supplements configuration, does not replace it
 \end{description}
+
+\begin{fullwidth}
+\begin{beforeafter}[Memory Entries]
+\before
+\begin{minted}{markdown}
+# Memory
+The project uses pandas. We had a bug
+once. Config is in settings.yaml. I like
+using polars. Testing is important.
+\end{minted}
+
+\after
+\begin{minted}{markdown}
+# Architecture Decision
+Feature pipelines use polars (not pandas)
+since 2026-01. Migration complete for
+src/features/. Tests still use pandas
+fixtures — convert as encountered.
+
+# Known Gotcha
+scikit-learn ColumnTransformer silently
+drops columns not in the transformer list.
+Always verify output columns match schema
+after pipeline.fit_transform().
+\end{minted}
+\end{beforeafter}
+\end{fullwidth}
+
+\begin{tipbox}[Memory vs.\ CLAUDE.md vs.\ CURRENT\_WORK.md]
+Three persistence mechanisms, each for a different purpose:
+\begin{description}
+  \item[CLAUDE.md] Project rules that apply every session. Actionable instructions.
+  \item[Memory] Lessons and patterns that emerged organically. Supplements CLAUDE.md.
+  \item[CURRENT\_WORK.md] Transient state: what you are doing right now. Updated every session.
+\end{description}
+If a memory entry becomes a rule, promote it to CLAUDE.md and delete the memory.
+If a memory entry becomes stale (the bug was fixed, the pattern was abandoned),
+delete it---stale memories are noise.
+\end{tipbox}
 
 \practitioner{The test for whether something belongs in memory:
 ``Will this still be true and useful in three months?''

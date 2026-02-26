@@ -49,6 +49,8 @@ better outcomes over the project's lifetime:}
   \item \textbf{Review and trim CLAUDE.md.}
     Remove instructions Claude consistently follows without being told.
     Add instructions for rules Claude keeps violating.
+  \item \textbf{Transition from exploration to development phase}
+    (\cref{sec:phases}). Add explicit graduation criteria to CLAUDE.md.
   \item \textbf{Add skills} for repeated multi-step workflows.
   \item \textbf{Set up memory} for cross-session persistence.
   \item \textbf{Document architecture} as actionable instructions, not prose.
@@ -144,8 +146,8 @@ That is intentional. They exist to detect \emph{changes}, not to assert \emph{co
 
 \subsection{Golden Master Testing for Pipelines}
 
-For data pipelines, a golden master captures the exact output of the original
-code so that refactored code can be verified against it.
+\practitioner{For data pipelines, a golden master captures the exact output of the original
+code so that refactored code can be verified against it.}
 
 \begin{enumerate}
   \item \textbf{Capture}: Run the original pipeline on sample data.
@@ -176,6 +178,20 @@ that incorrect behavior. Fix bugs \emph{after} migration, with explicit tests
 for the fix. The golden master's job is to guarantee that the migration
 itself changed nothing.
 \end{whybox}
+
+\begin{decisionbox}[Characterization Tests vs.\ Golden Masters]
+\textbf{Characterization tests}: for individual functions.
+``Document exactly what this function does today.''
+Best when: refactoring a function's internals without changing its API.
+
+\textbf{Golden masters}: for pipelines and multi-step workflows.
+``Capture the exact output of this pipeline on sample data.''
+Best when: migrating pipeline code (e.g., pandas to polars, notebook to module).
+
+\textbf{Both}: during pipeline migration.
+Characterization tests verify each function; golden masters verify
+the composed pipeline produces identical output.
+\end{decisionbox}
 
 \margintip{Use \code{atol}/\code{rtol} for floats, exact match for categoricals,
 \code{check\_like=True} for column-order independence.}

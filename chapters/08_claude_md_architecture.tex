@@ -140,8 +140,10 @@ Keep \code{settings.local.json} for personal preferences (model choice, output s
 \section{CLAUDE.md Length and Attention}
 \label{sec:length}
 
-\marginwarning{Beyond $\sim$300--500 lines, attention per rule tends to decrease.
-This is heuristic, not a hard threshold---but the effect is real.}
+\marginwarning{Keep core CLAUDE.md under $\sim$300 lines. Beyond that, attention per rule
+tends to decrease. This is heuristic, not a hard threshold---but the effect is real.
+(Total config including \code{@imports} may reach 500 lines safely since imports load
+only when relevant.)}
 
 \practitioner{When CLAUDE.md grows long:}
 

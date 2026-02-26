@@ -139,7 +139,9 @@ hiding as implementation details.}
 
 \practitioner{Property-based tests are particularly powerful as thinking tools.
 Instead of testing specific inputs, they test \emph{invariants}---properties
-that must hold for all inputs.}
+that must hold for all inputs. (These are the same property-based tests
+from the sixth layer of \cref{ch:testing}'s validation architecture,
+applied here as a thinking tool rather than a verification gate.)}
 
 \begin{minted}{text}
 Prompt: "What properties should always be true
@@ -182,7 +184,7 @@ and what breaks when it does?''
 The second prompt names the assumptions explicitly, then asks Claude
 to stress-test them. This is not code review---it is assumption review.
 
-\begin{tipbox}[The Pre-Mortem Prompt]
+\begin{tipbox}[The Pre-Mortem Prompt \practitioner{}]
 ``Imagine this feature has failed in production six months from now.
 What are the three most likely causes?
 Work backwards from failure to the design flaw that enabled it.''
@@ -192,7 +194,7 @@ and can change the design. Ask Claude to run one before every
 architecture decision.
 \end{tipbox}
 
-\begin{tipbox}[The Feynman Prompt]
+\begin{tipbox}[The Feynman Prompt \practitioner{}]
 ``Explain my auth flow as if I just joined the team and need to modify it.
 Where did you have to guess because the code does not make intent clear?''
 

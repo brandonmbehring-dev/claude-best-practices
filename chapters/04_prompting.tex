@@ -36,6 +36,16 @@ Over time, develop a shared vocabulary between you and Claude.}
 can reduce correction rounds by 2--3$\times$---a plausible estimate,
 though hard to measure precisely and workload-dependent.}
 
+\begin{whybox}[Why Precision Vocabulary Compounds]
+Precision is not just about saving correction rounds in a single session.
+It builds a shared language between you and Claude. When your CLAUDE.md
+says ``validate schema'' and your prompts say ``validate schema,''
+Claude interprets both consistently. This alignment compounds:
+your prompts become shorter, your CLAUDE.md rules more effective,
+and your correction rate drops---not linearly, but exponentially
+as the vocabulary stabilizes.
+\end{whybox}
+
 The pattern for building vocabulary:
 \begin{enumerate}
   \item After each interaction, note how the request could have been clearer.
@@ -163,7 +173,16 @@ where you want to see the thought process.
 \textbf{Disable} when: the task is simple (formatting, boilerplate),
 latency matters more than depth, or you are running bulk operations
 where speed dominates.
+
+\textbf{Budget note}: Thinking tokens add to your bill and consume
+context budget. In a long session with context already at 50\%,
+heavy thinking can push you past the degradation threshold faster.
+Monitor \code{/context} when using extended thinking in long sessions.
 \end{decisionbox}
+
+\margincost{Thinking tokens are billed as output tokens. Deep thinking
+on a complex problem can generate thousands of thinking tokens---visible
+in session cost but not in the response.}
 
 % -------------------------------------------------------------------
 \section{Cost Optimization}

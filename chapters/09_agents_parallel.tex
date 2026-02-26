@@ -19,6 +19,10 @@ how to design agent workflows, and how to run work in parallel.
 \marginnote[Official]{Define in \code{.claude/agents/}. Each agent runs with its
 own context, isolated from the main session.\sourceurl{https://code.claude.com/docs/en/sub-agents}}
 
+\marginnote[Vocab]{In this handbook, \textbf{subagent} means an isolated worker
+with its own context. \textbf{Agent team} means a collaborative group
+that shares a task list and can message each other.}
+
 \official{Subagents are purpose-built Claude instances that run in isolated context.}
 They receive a task, execute it with their own tool set, and return results
 to the parent session.
@@ -146,10 +150,10 @@ If orphaned worktrees accumulate (e.g., after a crash), run
 \code{git worktree prune} to clean them up.
 \end{warnbox}
 
-\margintip{Worktrees trade disk space for isolation.
-Each worktree is a full copy of the repository.
-For large repositories, be mindful of disk usage when running
-many parallel agents.}
+\margincost{Worktrees trade disk space for isolation.
+Each worktree shares git objects but duplicates the working tree.
+A 500\,MB repo spawning 4 worktrees may use $\sim$1\,GB additional disk.
+Run \code{git worktree prune} to clean up stale entries.}
 
 % -------------------------------------------------------------------
 \section{The Writer/Reviewer Pattern}
@@ -198,6 +202,10 @@ Best suited for:
   \item Cross-functional coordination (feature engineering + model training + evaluation + data validation)
   \item Complex multi-module changes that need coordination
 \end{itemize}
+
+\practitioner{Prefer parallel subagents for independent tasks that share no state.
+Use Agent Teams when agents need to coordinate mid-task---e.g., one agent discovers
+a schema change that another agent must respect.}
 
 \begin{warnbox}[Research Preview]
 Agent Teams are a research preview feature. The API and behavior

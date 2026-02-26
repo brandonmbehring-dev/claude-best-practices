@@ -19,9 +19,15 @@ digital:
 	latexmk $(LATEXMK_FLAGS) -output-directory=$(OUTDIR) $(MAIN).tex
 
 # Quick start guide (standalone ~6 page PDF)
-quickstart:
+# Depends on handbook .aux for xr-hyper cross-references.
+# If handbook hasn't been built yet, build it first.
+quickstart: $(OUTDIR)/$(MAIN).aux
 	@mkdir -p $(OUTDIR)
 	latexmk $(LATEXMK_FLAGS) -output-directory=$(OUTDIR) $(QUICKSTART).tex
+
+$(OUTDIR)/$(MAIN).aux: $(MAIN).tex
+	@mkdir -p $(OUTDIR)
+	latexmk $(LATEXMK_FLAGS) -output-directory=$(OUTDIR) $(MAIN).tex
 
 # Build everything: validate first, then build, then informational check
 all: validate digital quickstart check

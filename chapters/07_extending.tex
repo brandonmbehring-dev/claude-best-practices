@@ -316,6 +316,26 @@ Review permissions each server requires.
 Use Managed MCP for enterprise policy enforcement.
 \end{warnbox}
 
+\practitioner{Before installing any MCP server, run this 3-step audit:}
+
+\begin{enumerate}
+  \item \textbf{Check the README and manifest.}
+    What tools does the server expose? Does it request network access,
+    filesystem access, or credentials? A GitHub MCP server should not
+    need filesystem write access.
+  \item \textbf{Review requested permissions.}
+    After \code{claude mcp add}, run \code{/permissions} to see what
+    the server can do. Deny anything beyond its stated purpose.
+    Use \code{mcp\_\_server\_\_*} allows with specific deny rules
+    for destructive operations.
+  \item \textbf{Test in a sandboxed session.}
+    Enable \code{/sandbox} or use a throwaway worktree for the first run.
+    Verify the server behaves as documented before granting production access.
+\end{enumerate}
+
+\marginnote[Cross-Ref]{For Managed MCP and enterprise policy enforcement,
+see \cref{sec:managed-settings}.}
+
 % -------------------------------------------------------------------
 \section{Plugins: Community Extensions}
 \label{sec:plugins}
