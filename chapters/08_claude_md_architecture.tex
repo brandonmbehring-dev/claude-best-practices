@@ -176,9 +176,9 @@ changes the quality of every interaction.
 \begin{fullwidth}
 \centering
 \begin{tikzpicture}[
-  layer/.style={draw=PrimaryBlue, fill=PrimaryBlue!8, rounded corners=3pt,
+  layer/.style={draw=WarmBlue, fill=WarmBlue!8, rounded corners=3pt,
     minimum width=10cm, minimum height=1.1cm, font=\small, align=center},
-  label/.style={font=\footnotesize\itshape, text=PrimaryBlue!70!black},
+  label/.style={font=\footnotesize\itshape, text=WarmBlue!70!black},
   >=Stealth
 ]
   \node[layer] (output) at (0,0) {\textbf{Output Styles} --- Communication patterns, tone, protocols};
@@ -186,7 +186,7 @@ changes the quality of every interaction.
   \node[layer] (rules) at (0,3.0) {\textbf{Rules} --- Conditional context (paths: frontmatter)};
   \node[layer] (claude) at (0,4.5) {\textbf{CLAUDE.md} --- Project knowledge, build commands, architecture};
 
-  \draw[->, thick, PrimaryBlue!60] (5.5,0) -- (5.5,4.5)
+  \draw[->, thick, WarmBlue!60] (5.5,0) -- (5.5,4.5)
     node[midway, right, label] {Higher priority};
 
   \node[label, anchor=east] at (-5.3,4.5) {Global + Project};

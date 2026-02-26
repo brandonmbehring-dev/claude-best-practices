@@ -186,10 +186,10 @@ itself changed nothing.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-  phasebox/.style={draw=PrimaryBlue, fill=PrimaryBlue!8, rounded corners=6pt,
+  phasebox/.style={draw=WarmBlue, fill=WarmBlue!8, rounded corners=6pt,
     minimum width=2.5cm, minimum height=1.2cm, font=\small\bfseries, align=center},
   note/.style={font=\scriptsize, text=DarkText, align=center},
-  arr/.style={->, very thick, PrimaryBlue!60},
+  arr/.style={->, very thick, WarmBlue!60},
   >=Stealth
 ]
   \node[phasebox] (extract) at (0,2.5) {1. Extract\\[-2pt]\normalfont\scriptsize Isolate target};
@@ -202,10 +202,10 @@ itself changed nothing.
   \draw[arr] (harden) -- (promote);
   \draw[arr] (promote) -- (extract) node[midway, left, note] {Next\\module};
 
-  \node[font=\footnotesize\itshape, text=TipGreen!80!black, align=center] at (1.75,1.25)
+  \node[font=\footnotesize\itshape, text=WarmGreen!80!black, align=center] at (1.75,1.25)
     {Commit after\\each step};
 
-  \node[font=\scriptsize, text=PrimaryBlue!70] at (1.75,-0.8)
+  \node[font=\scriptsize, text=WarmBlue!70] at (1.75,-0.8)
     {Each step $\approx$ 25 min $\cdot$ Always shippable};
 \end{tikzpicture}
 \caption{The incremental refactoring cycle. Each step is independently shippable.}

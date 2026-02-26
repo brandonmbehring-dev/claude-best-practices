@@ -412,17 +412,17 @@ Use for: databases, APIs, third-party tools, cross-project knowledge bases.
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[
-  box/.style={draw=PrimaryBlue, fill=PrimaryBlue!8, rounded corners=3pt,
+  box/.style={draw=WarmBlue, fill=WarmBlue!8, rounded corners=3pt,
     minimum width=3cm, minimum height=0.9cm, font=\small, align=center},
   desc/.style={font=\footnotesize, text=DarkText, align=left},
-  arr/.style={->, thick, PrimaryBlue!60},
+  arr/.style={->, thick, WarmBlue!60},
   >=Stealth
 ]
   % Boxes arranged vertically
   \node[box] (cmd) at (0,0) {\textbf{Commands}};
   \node[box] (skill) at (0,1.8) {\textbf{Skills}};
-  \node[box, fill=PrimaryBlue!12] (hook) at (0,3.6) {\textbf{Hooks}};
-  \node[box, fill=PrimaryBlue!16] (mcp) at (0,5.4) {\textbf{MCP Servers}};
+  \node[box, fill=WarmBlue!12] (hook) at (0,3.6) {\textbf{Hooks}};
+  \node[box, fill=WarmBlue!16] (mcp) at (0,5.4) {\textbf{MCP Servers}};
 
   % Descriptions
   \node[desc, anchor=west] at (2.2,0) {Prompt template, inline context\\
@@ -440,9 +440,9 @@ Use for: databases, APIs, third-party tools, cross-project knowledge bases.
   \draw[arr] (hook) -- (mcp);
 
   % Side labels
-  \node[font=\footnotesize\itshape, text=PrimaryBlue!70, rotate=90, anchor=south]
+  \node[font=\footnotesize\itshape, text=WarmBlue!70, rotate=90, anchor=south]
     at (-2.2,2.7) {Increasing capability $\rightarrow$};
-  \node[font=\footnotesize\itshape, text=WarningOrange!80, rotate=90, anchor=north]
+  \node[font=\footnotesize\itshape, text=WarmRose!80, rotate=90, anchor=north]
     at (-2.8,2.7) {$\leftarrow$ Increasing setup};
 \end{tikzpicture}
 \caption{Match extension mechanism to task requirements.

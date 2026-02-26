@@ -105,24 +105,22 @@
 \vfuzz=2pt
 
 % =============================================================================
-% COLORS
+% COLORS — Warm Tol Hybrid palette (5-hue system)
+% Tol Bright relationships + Anthropic warmth. Colorblind-safe.
 % =============================================================================
 \RequirePackage[dvipsnames,svgnames,x11names,table]{xcolor}
 
-\definecolor{PrimaryBlue}{HTML}{0066CC}
-\definecolor{NoteBlue}{HTML}{3498DB}
-\definecolor{WarningOrange}{HTML}{E67E22}
-\definecolor{TipGreen}{HTML}{27AE60}
-\definecolor{CodeBg}{HTML}{F5F5F5}
-\definecolor{CodeFrame}{HTML}{CCCCCC}
-\definecolor{DarkText}{HTML}{222222}
-\definecolor{OfficialPurple}{HTML}{7B2D8E}
-\definecolor{PractitionerTeal}{HTML}{008080}
-\definecolor{ConvergenceGold}{HTML}{B8860B}
-\definecolor{EnterpriseNavy}{HTML}{003366}
-\definecolor{CostRed}{HTML}{CC3333}
-\definecolor{ExerciseIndigo}{HTML}{5B2C6F}
-\definecolor{WhyAmber}{HTML}{D4AC0D}
+% --- Base palette (5 hues) ---
+\definecolor{WarmBlue}{HTML}{3B6FA0}     % Structural: headings, links, info
+\definecolor{WarmRose}{HTML}{C06858}     % Attention: warnings, alerts
+\definecolor{WarmGreen}{HTML}{4A7E3F}    % Positive: tips, practitioner
+\definecolor{WarmPlum}{HTML}{8A4E82}     % Authority: official, exercises
+\definecolor{WarmGold}{HTML}{C09840}     % Insight: convergence, reasoning
+
+% --- Warm neutrals (Anthropic-derived) ---
+\definecolor{CodeBg}{HTML}{F7F5F0}
+\definecolor{CodeFrame}{HTML}{B5B3AA}
+\definecolor{DarkText}{HTML}{1A1A19}
 
 % =============================================================================
 % CODE LISTINGS (minted)
@@ -143,14 +141,14 @@
   autogobble=true
 }
 
-\usemintedstyle{friendly}
+\usemintedstyle{warmtol}
 
 \RequirePackage{listings}
 \lstset{
   basicstyle=\ttfamily\footnotesize,
-  keywordstyle=\color{PrimaryBlue},
+  keywordstyle=\color{WarmBlue},
   commentstyle=\color{gray},
-  stringstyle=\color{WarningOrange},
+  stringstyle=\color{WarmRose},
   showstringspaces=false,
   breaklines=true,
   frame=single,
@@ -182,7 +180,7 @@
   \pkgmarginnote{%
     \inmarginnotetrue
     \footnotesize\raggedright%
-    \color{PrimaryBlue!70!black}%
+    \color{WarmBlue!70!black}%
     #1%
     \color{DarkText}%
     \inmarginnotefalse
@@ -205,7 +203,7 @@
   breakable=false,
   enhanced,
   colframe=#2,
-  colback=#2!3,
+  colback=#2!5,
   coltitle=DarkText,
   fonttitle=\bfseries\small,
   title=#1,
@@ -228,7 +226,7 @@
 \renewcommand{\marginnote}[2][Note]{%
   \pkgmarginnote{%
     \inmarginnotetrue
-    \begin{marginbox}[#1]{NoteBlue}#2\end{marginbox}%
+    \begin{marginbox}[#1]{WarmBlue}#2\end{marginbox}%
     \inmarginnotefalse
     \vspace{2pt}%
   }%
@@ -237,7 +235,7 @@
 \newcommand{\marginwarning}[2][Warning]{%
   \pkgmarginnote{%
     \inmarginnotetrue
-    \begin{marginbox}[#1]{WarningOrange}#2\end{marginbox}%
+    \begin{marginbox}[#1]{WarmRose}#2\end{marginbox}%
     \inmarginnotefalse
     \vspace{2pt}%
   }%
@@ -246,7 +244,7 @@
 \newcommand{\margintip}[2][Tip]{%
   \pkgmarginnote{%
     \inmarginnotetrue
-    \begin{marginbox}[#1]{TipGreen}#2\end{marginbox}%
+    \begin{marginbox}[#1]{WarmGreen}#2\end{marginbox}%
     \inmarginnotefalse
     \vspace{2pt}%
   }%
@@ -255,7 +253,7 @@
 \newcommand{\marginofficial}[1]{%
   \pkgmarginnote{%
     \inmarginnotetrue
-    \begin{marginbox}[Official]{OfficialPurple}#1\end{marginbox}%
+    \begin{marginbox}[Official]{WarmPlum}#1\end{marginbox}%
     \inmarginnotefalse
     \vspace{2pt}%
   }%
@@ -264,7 +262,7 @@
 \newcommand{\margincost}[1]{%
   \pkgmarginnote{%
     \inmarginnotetrue
-    \begin{marginbox}[Cost]{CostRed}#1\end{marginbox}%
+    \begin{marginbox}[Cost]{WarmRose!75!black}#1\end{marginbox}%
     \inmarginnotefalse
     \vspace{2pt}%
   }%
@@ -273,7 +271,7 @@
 \newcommand{\marginenterprise}[1]{%
   \pkgmarginnote{%
     \inmarginnotetrue
-    \begin{marginbox}[Enterprise]{EnterpriseNavy}#1\end{marginbox}%
+    \begin{marginbox}[Enterprise]{WarmBlue!55!black}#1\end{marginbox}%
     \inmarginnotefalse
     \vspace{2pt}%
   }%
@@ -282,7 +280,7 @@
 \newcommand{\margintemplate}[1]{%
   \pkgmarginnote{%
     \inmarginnotetrue
-    \begin{marginbox}[Template]{PractitionerTeal}#1\end{marginbox}%
+    \begin{marginbox}[Template]{WarmGreen}#1\end{marginbox}%
     \inmarginnotefalse
     \vspace{2pt}%
   }%
@@ -311,29 +309,29 @@
 
 \newtcolorbox{notebox}[1][Note]{
   callout-compact,
-  colframe=NoteBlue,
-  colback=NoteBlue!3,
+  colframe=WarmBlue,
+  colback=WarmBlue!5,
   title=#1
 }
 
 \newtcolorbox{warnbox}[1][Warning]{
   callout-compact,
-  colframe=WarningOrange,
-  colback=WarningOrange!3,
+  colframe=WarmRose,
+  colback=WarmRose!5,
   title=#1
 }
 
 \newtcolorbox{tipbox}[1][Tip]{
   callout-compact,
-  colframe=TipGreen,
-  colback=TipGreen!3,
+  colframe=WarmGreen,
+  colback=WarmGreen!5,
   title=#1
 }
 
 \newtcolorbox{officialbox}[1][Anthropic Official]{
   callout-compact,
-  colframe=OfficialPurple,
-  colback=OfficialPurple!3,
+  colframe=WarmPlum,
+  colback=WarmPlum!5,
   title=#1
 }
 
@@ -342,8 +340,8 @@
 % Before/After contrast box
 \newtcolorbox{beforeafter}[1][Before \& After]{
   callout-compact,
-  colframe=PrimaryBlue,
-  colback=PrimaryBlue!3,
+  colframe=WarmBlue,
+  colback=WarmBlue!5,
   title=#1
 }
 \newcommand{\before}{\par\textbf{Before:}\par}
@@ -352,24 +350,24 @@
 % Try This — practice exercises (<10 min, reader's own project)
 \newtcolorbox{trybox}[1][Try This]{
   callout-compact,
-  colframe=ExerciseIndigo,
-  colback=ExerciseIndigo!3,
+  colframe=WarmPlum!55!WarmRose,
+  colback=WarmPlum!55!WarmRose!5,
   title=#1
 }
 
 % Why Box — reasoning/rationale (answers "why", not "what")
 \newtcolorbox{whybox}[1][Why This Matters]{
   callout-compact,
-  colframe=WhyAmber,
-  colback=WhyAmber!3,
+  colframe=WarmGold,
+  colback=WarmGold!5,
   title=#1
 }
 
 % Key Box — crystallized takeaway (reader should memorize this)
 \newtcolorbox{keybox}[1][Key Idea]{
   callout-compact,
-  colframe=PrimaryBlue,
-  colback=PrimaryBlue!3,
+  colframe=WarmBlue,
+  colback=WarmBlue!5,
   title=#1,
   leftrule=4pt
 }
@@ -377,8 +375,8 @@
 % Decision Box — decision framework (when to choose X over Y)
 \newtcolorbox{decisionbox}[1][Decision Framework]{
   callout-compact,
-  colframe=PractitionerTeal,
-  colback=PractitionerTeal!3,
+  colframe=WarmGreen!80!black,
+  colback=WarmGreen!80!black!5,
   title=#1
 }
 
@@ -394,8 +392,8 @@
 \newtcolorbox{partintro}{
   breakable,
   enhanced,
-  colframe=PrimaryBlue!50,
-  colback=PrimaryBlue!3,
+  colframe=WarmBlue!50,
+  colback=WarmBlue!5,
   arc=3pt,
   leftrule=0pt,
   rightrule=0pt,
@@ -414,13 +412,13 @@
 % =============================================================================
 % Inline labels for tagging practices
 \newcommand{\official}[1]{%
-  {\color{OfficialPurple}\textbf{[Official]}}~#1%
+  {\color{WarmPlum}\textbf{[Official]}}~#1%
 }
 \newcommand{\practitioner}[1]{%
-  {\color{PractitionerTeal}\textbf{[Practitioner]}}~#1%
+  {\color{WarmGreen}\textbf{[Practitioner]}}~#1%
 }
 \newcommand{\convergence}[1]{%
-  {\color{ConvergenceGold}\textbf{[Convergence]}}~#1%
+  {\color{WarmGold}\textbf{[Convergence]}}~#1%
 }
 
 % =============================================================================
@@ -488,8 +486,8 @@
 \RequirePackage[
   colorlinks=true,
   linkcolor=black,
-  urlcolor=PrimaryBlue,
-  citecolor=TipGreen!80!black,
+  urlcolor=WarmBlue,
+  citecolor=WarmGreen!80!black,
   pdfusetitle,
   bookmarks=true,
   bookmarksnumbered=true,
@@ -527,9 +525,9 @@
 % =============================================================================
 % HEADING STYLES (KOMA-Script, Tufte italic)
 % =============================================================================
-\@ifundefined{chapter}{}{\addtokomafont{chapter}{\color{PrimaryBlue}\itshape}}
-\addtokomafont{section}{\color{PrimaryBlue!90!black}\itshape}
-\addtokomafont{subsection}{\color{PrimaryBlue!80!black}\itshape}
+\@ifundefined{chapter}{}{\addtokomafont{chapter}{\color{WarmBlue}\itshape}}
+\addtokomafont{section}{\color{WarmBlue!90!black}\itshape}
+\addtokomafont{subsection}{\color{WarmBlue!80!black}\itshape}
 
 \@ifundefined{chapter}{}{%
   \RedeclareSectionCommand[
@@ -569,12 +567,16 @@
 % =============================================================================
 % COVER PAGE
 % =============================================================================
+% Cover title color: WarmBlue (default) or WarmRose variant
+% To build the rose variant, add \covertitlerose before \makeguidecover
+\providecommand{\covertitlecolor}{WarmBlue}
+\newcommand{\covertitlerose}{\renewcommand{\covertitlecolor}{WarmRose}}
 \newcommand{\makeguidecover}{%
   \begin{titlepage}
     \centering
     \vspace*{2cm}
 
-    {\Huge\bfseries\color{PrimaryBlue}\guidetitle\par}
+    {\Huge\bfseries\color{\covertitlecolor}\guidetitle\par}
 
     \vspace{0.5cm}
     {\Large\guidesubtitle\par}
@@ -618,7 +620,7 @@
 
 % Maturity level indicator
 \newcommand{\maturitylevel}[1]{%
-  {\color{PrimaryBlue}\textbf{L#1}}%
+  {\color{WarmBlue}\textbf{L#1}}%
 }
 
 % Source footnote (for Anthropic URLs)

@@ -27,7 +27,7 @@
 
 % --- Title ---
 \begin{center}
-  {\LARGE\bfseries\color{PrimaryBlue}Claude Code Quick Start}\\[4pt]
+  {\LARGE\bfseries\color{WarmBlue}Claude Code Quick Start}\\[4pt]
   {\large Your First 60 Minutes: From Setup to Professional Workflow}\\[6pt]
   {\normalsize Brandon Behring \quad|\quad February 2026}\\[2pt]
   {\footnotesize For data scientists and developers new to Claude Code}
@@ -149,12 +149,11 @@ You type: "Add a one-line docstring to build_features()
 
 Claude reads the function, writes the docstring, and shows you a diff. A permission dialog appears. Read the diff --- does it match the function's actual behavior? If yes, approve.
 
-\smallskip
-\marginnote[Vocab]{\textbf{Tool use} --- each file read, edit, or command Claude runs is a tool call. You just saw three: read the file, write the docstring, show the diff.}
-
 \begin{tipbox}
 Notice how Claude broke this into steps: read the function, understand it, write the docstring, ask for approval. That's an \emph{agent loop} --- the same pattern you'd use when designing agents for your team.
 \end{tipbox}
+
+\marginnote[Vocab]{\textbf{Tool use} --- each file read, edit, or command Claude runs is a tool call. You just saw three: read the file, write the docstring, show the diff.}
 
 \begin{warnbox}[Precision Matters]
 \textbf{Vague:} ``Add some documentation''\\
@@ -218,10 +217,7 @@ tests/test_features.py::test_missing_keys PASSED
 
 Your code now has a regression test it didn't have five minutes ago. If tests \emph{fail} --- even better. Claude just found a bug. The test caught a real issue. This is exactly why we test.
 
-\marginnote[Cross-Ref]{For the full TDD workflow and 6-layer validation architecture, see Ch6.}
-
-\smallskip
-\margintip{Tests constrain implementation. When Claude writes code to pass \emph{your} tests, the ``looks correct but is subtly wrong'' failure mode is caught automatically.}
+\margintip{Tests constrain implementation. When Claude writes code to pass \emph{your} tests, the ``looks correct but is subtly wrong'' failure mode is caught automatically. Full TDD workflow: Ch6.}
 
 \begin{whybox}[Why Testing Is the Core Skill]
 AI-generated code has a specific failure mode: it \emph{looks correct}. Clean syntax, reasonable names, plausible logic. The bugs are subtle, not obvious. Your ability to define what ``correct'' means --- through tests --- is now more valuable than your ability to write the implementation.
@@ -231,10 +227,10 @@ AI-generated code has a specific failure mode: it \emph{looks correct}. Clean sy
 \begin{center}
 \begin{tikzpicture}[
   node distance=1.2cm,
-  box/.style={draw=PrimaryBlue, fill=PrimaryBlue!6, rounded corners=3pt,
+  box/.style={draw=WarmBlue, fill=WarmBlue!6, rounded corners=3pt,
     font=\small\bfseries, minimum width=1.5cm, minimum height=0.65cm,
     align=center},
-  arr/.style={-{Stealth[length=5pt]}, thick, PrimaryBlue!70!black},
+  arr/.style={-{Stealth[length=5pt]}, thick, WarmBlue!70!black},
 ]
   \node[box] (prompt) {Prompt};
   \node[box, right=of prompt] (reason) {Reason};
@@ -341,11 +337,9 @@ Claude generates a starter CLAUDE.md from your project structure. Review it --- 
 - Every public function must have a docstring
 \end{minted}
 
-\margintip{Keep CLAUDE.md under 300 lines. Move module-specific rules to \code{.claude/rules/} with path filters.}
+\margintip{Keep CLAUDE.md under 300 lines. Move module-specific rules to \code{.claude/rules/} with path filters. Full architecture: Ch8.}
 
 Here's what a mature CLAUDE.md looks like after a few sessions of refinement:
-
-\marginnote[Cross-Ref]{For the full CLAUDE.md architecture (rules, settings, hooks), see Ch8.}
 
 \begin{minted}{markdown}
 # Demand Forecasting
@@ -396,16 +390,13 @@ You type: /rename first-session-demand-forecast
 You type: /context
 \end{minted}
 
-\marginwarning{When context usage crosses 60\%, quality drops non-linearly. Proactively \code{/compact} or \code{/clear}.}
-
-\smallskip
-\marginnote[Cross-Ref]{For the full context toolkit (status line, CURRENT\_WORK.md, auto-memory), see Ch5.}
-
 \textbf{Step 3 --- Clear for next task:}
 
 \begin{minted}{text}
 You type: /clear
 \end{minted}
+
+\marginwarning{When context crosses 60\%, quality drops. \code{/compact} or \code{/clear} proactively. Full context toolkit: Ch5.}
 
 Fresh context for the next task. The session is saved --- resume anytime.
 
@@ -450,10 +441,10 @@ Everything you practiced today --- specification, verification, collaboration de
 \begin{center}
 \begin{tikzpicture}[
   node distance=0.4cm and 1.0cm,
-  wfstep/.style={draw=PrimaryBlue, fill=PrimaryBlue!6, rounded corners=3pt,
+  wfstep/.style={draw=WarmBlue, fill=WarmBlue!6, rounded corners=3pt,
     font=\small, minimum width=5cm, minimum height=0.8cm, align=left},
-  num/.style={font=\bfseries\small\color{PrimaryBlue}},
-  arr/.style={-{Stealth[length=5pt]}, thick, PrimaryBlue!50},
+  num/.style={font=\bfseries\small\color{WarmBlue}},
+  arr/.style={-{Stealth[length=5pt]}, thick, WarmBlue!50},
 ]
   \node[wfstep] (s1) {Install + explore};
   \node[wfstep, below=of s1] (s2) {Safety net + first edit};
