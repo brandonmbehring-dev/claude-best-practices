@@ -1,4 +1,5 @@
 output/
+!output/*.pdf
 *.aux
 *.log
 *.out
@@ -20,3 +21,8 @@ _minted-*/
 *.swo
 *~
 .DS_Store
+
+# warmtol_pygments build artifacts
+warmtol_pygments/__pycache__/
+warmtol_pygments/build/
+warmtol_pygments/*.egg-info/

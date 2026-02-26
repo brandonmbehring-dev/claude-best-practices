@@ -6,6 +6,15 @@
 
 What Anthropic recommends, what practitioners discover, and where they converge.
 
+## Read the Guide
+
+| Document | Pages | |
+|----------|-------|-|
+| **Best Practices Handbook** | 94 | [Download PDF](output/claude_best_practices.pdf) |
+| **Quickstart Guide** | 8 | [Download PDF](output/quickstart_guide.pdf) |
+
+Click a link to preview in GitHub's PDF viewer, then use the download button for a local copy.
+
 ## What This Is
 
 A comprehensive guide to using Claude effectively, covering:
@@ -28,8 +37,9 @@ Every practice is tagged:
 
 | Format | Location | Description |
 |--------|----------|-------------|
-| PDF Handbook | `output/claude_best_practices.pdf` | Full 94-page Tufte-style guide |
-| Release PDFs | [GitHub Releases](https://github.com/brandonmbehring-dev/claude-best-practices/releases) | Download built PDFs |
+| PDF Handbook | [`output/claude_best_practices.pdf`](output/claude_best_practices.pdf) | Full 94-page Tufte-style guide |
+| Quickstart | [`output/quickstart_guide.pdf`](output/quickstart_guide.pdf) | 8-page getting-started guide |
+| Release PDFs | [GitHub Releases](https://github.com/brandonmbehring-dev/claude-best-practices/releases) | Tagged release snapshots |
 | Blog Summary | `blog/blog-summary.md` | 12-page Markdown extract |
 | Templates | `templates/` | Copy-paste starter files |
 | Changelog | [CHANGELOG.md](CHANGELOG.md) | Version history |
