@@ -6,7 +6,7 @@ QUICKSTART = quickstart_guide
 OUTDIR = output
 LATEXMK_FLAGS = -lualatex -shell-escape -interaction=nonstopmode -file-line-error
 
-.PHONY: pilot digital quickstart all check check-strict validate validate-json validate-hooks validate-includes validate-no-deprecated check-urls clean
+.PHONY: pilot digital quickstart all check check-strict validate validate-json validate-hooks validate-includes validate-no-deprecated validate-doc-claims check-urls clean
 
 # Quick test build (single pass, no refs/index)
 pilot:
@@ -33,7 +33,7 @@ $(OUTDIR)/$(MAIN).aux: $(MAIN).tex
 all: validate digital quickstart check
 
 # Umbrella: run all validation guards (blocks on failure)
-validate: validate-json validate-hooks validate-includes validate-no-deprecated
+validate: validate-json validate-hooks validate-includes validate-no-deprecated validate-doc-claims
 
 # --- Quality checks ---
 
@@ -137,6 +137,42 @@ validate-no-deprecated:
 	  echo "$$HITS"; exit 1; \
 	fi; \
 	echo "validate-no-deprecated: PASS"
+
+# Validate doc claims against source of truth (chapter counts, mode names, etc.)
+validate-doc-claims:
+	@echo "=== Doc-claims validation ==="
+	@FAIL=0; \
+	ACTUAL=$$(grep -c '\\input{chapters/' $(MAIN).tex); \
+	for f in $(QUICKSTART).tex blog/blog-summary.md; do \
+	  if [ -f "$$f" ]; then \
+	    CLAIMS=$$(grep -oP '\d+ chapters' "$$f" | grep -oP '\d+'); \
+	    for c in $$CLAIMS; do \
+	      if [ "$$c" != "$$ACTUAL" ]; then \
+	        echo "FAIL: $$f claims $$c chapters, actual is $$ACTUAL"; FAIL=1; \
+	      fi; \
+	    done; \
+	  fi; \
+	done; \
+	AP_ACTUAL=$$(grep -c '\\antipattern{' chapters/11_antipatterns.tex 2>/dev/null || echo 0); \
+	AP_CLAIMS=$$(grep -oP '(six|seven|eight|nine|\d+)\s+(traps|anti.?patterns)' $(QUICKSTART).tex blog/blog-summary.md 2>/dev/null || true); \
+	if [ -n "$$AP_CLAIMS" ]; then \
+	  echo "  Anti-pattern count in source: $$AP_ACTUAL"; \
+	  echo "  Claims found: $$AP_CLAIMS"; \
+	fi; \
+	STALE=$$(grep -rn 'Normal mode\|Auto-Accept' $(QUICKSTART).tex chapters/ appendices/ 2>/dev/null || true); \
+	if [ -n "$$STALE" ]; then \
+	  echo "FAIL: Stale permission mode names found:"; \
+	  echo "$$STALE"; FAIL=1; \
+	fi; \
+	echo "  --- Version-sensitive content (review per edition) ---"; \
+	grep -rn 'Opus [0-9]\|Sonnet [0-9]\|Haiku [0-9]' $(QUICKSTART).tex chapters/ appendices/ 2>/dev/null || echo "  (none found)"; \
+	REFS=$$(grep -rn 'Ch[0-9]\|chapter [0-9]' $(QUICKSTART).tex blog/ 2>/dev/null || true); \
+	if [ -n "$$REFS" ]; then \
+	  echo "  WARN: Hardcoded chapter references:"; \
+	  echo "$$REFS"; \
+	fi; \
+	if [ "$$FAIL" -eq 1 ]; then exit 1; fi; \
+	echo "validate-doc-claims: PASS"
 
 # Informational: spot-check critical URLs (never blocks build)
 CRITICAL_URLS = \

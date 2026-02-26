@@ -62,7 +62,7 @@ By the end of this hour, you will have:
   \item[Session] Your conversation with Claude Code, persisted across terminal restarts.
   \item[Tool use] When Claude runs a command, reads a file, or edits code on your behalf.
   \item[CLAUDE.md] A file where you give Claude persistent instructions about your project.
-  \item[Permission] Whether Claude asks before acting or acts autonomously. Normal mode (the default) always asks first.
+  \item[Permission] Whether Claude asks before acting or acts autonomously. Default mode always asks first.
 \end{description}
 
 % =====================================================================
@@ -70,13 +70,13 @@ By the end of this hour, you will have:
 
 \subsection{Install and Launch (Minutes 0--5)}
 
+Install Claude Code following the instructions at
+\href{https://claude.ai/download}{claude.ai/download}, then launch it in your project:
+
 \begin{minted}{bash}
-npm install -g @anthropic-ai/claude-code
 cd your-project
 claude
 \end{minted}
-
-\margintip{Requires Node.js 18+. If you don't have it: \code{nvm install 18}.}
 
 \marginnote[Vocab]{\textbf{Session} --- your conversation with Claude, persisted across terminal restarts. Resume anytime with \code{claude -{}-continue}.}
 
@@ -140,7 +140,7 @@ Before we ask Claude to change anything --- your safety nets:
 \begin{description}[leftmargin=2.2cm, style=sameline, font=\bfseries\ttfamily, itemsep=2pt]
   \item[Esc] Stop Claude mid-action. Context preserved, nothing lost.
   \item[Esc+Esc] Open rewind menu. Restore conversation, code, or both.
-  \item[Approval] In Normal mode (the default), Claude always asks before editing. You approve or reject every change.
+  \item[Approval] In Default mode, Claude always asks before editing. You approve or reject every change.
 \end{description}
 \end{keybox}
 
@@ -153,7 +153,13 @@ You type: "Add a one-line docstring to build_features()
           describing what it does and what it returns."
 \end{minted}
 
-\marginofficial{Five permission modes exist. \code{Shift+Tab} cycles through Normal, Auto-Accept, and Plan.\sourceurl{https://code.claude.com/docs/en/permissions}}
+\marginofficial{Five permission modes.
+\code{Shift+Tab} cycles Default,
+Accept Edits, Plan.
+\code{dontAsk} and
+\code{bypassPermissions}
+via settings/CLI.
+\sourceurl{https://code.claude.com/docs/en/permissions}}
 
 Claude reads the function, writes the docstring, and shows you a diff. A permission dialog appears. Read the diff --- does it match the function's actual behavior? If yes, approve.
 
@@ -436,7 +442,7 @@ In one hour, you:
   \item Closed cleanly with a named session (professional habit)
 \end{itemize}
 
-Everything you practiced today --- specification, verification, collaboration design --- is the foundation of effective AI-assisted development. The skills transfer directly to building agents, designing pipelines, and working with AI tools beyond Claude Code. The handbook's 15 chapters deepen every practice you touched in this hour.
+Everything you practiced today --- specification, verification, collaboration design --- is the foundation of effective AI-assisted development. The skills transfer directly to building agents, designing pipelines, and working with AI tools beyond Claude Code. The handbook's 16 chapters deepen every practice you touched in this hour.
 
 \textbf{Where to go next:}
 \begin{description}[leftmargin=3cm, style=sameline, font=\bfseries]
@@ -502,7 +508,7 @@ Everything you practiced today --- specification, verification, collaboration de
 \code{/rewind} & Restore conversation, code, or both to a checkpoint \\
 \code{Esc} & Stop Claude mid-action (context preserved) \\
 \code{Esc + Esc} & Open rewind menu (restore or summarize from checkpoint) \\
-\code{Shift+Tab} & Cycle modes (Normal $\rightarrow$ Auto-Accept $\rightarrow$ Plan) \\
+\code{Shift+Tab} & Cycle modes (Default $\rightarrow$ Accept Edits $\rightarrow$ Plan)\footnotemark \\
 \code{Alt+T} & Toggle extended thinking \\
 \code{/debug} & Inspect model, session, and configuration state \\
 \code{/status} & Show version, account, and plan info \\
@@ -513,12 +519,14 @@ Everything you practiced today --- specification, verification, collaboration de
 \end{center}
 \end{fullwidth}
 
+\footnotetext{\code{dontAsk} and \code{bypassPermissions} available via settings.}
+
 \vfill
 
 \begin{center}
 \footnotesize
 \textit{Extracted from ``Best Practices for Using Claude'' (v2.3+).}\\
-\textit{Full handbook: 15 chapters covering foundations through enterprise deployment.}\\[4pt]
+\textit{Full handbook: 16 chapters covering foundations through enterprise deployment.}\\[4pt]
 Licensed under CC~BY~4.0 \quad|\quad Content verified against Anthropic docs, February 2026
 \end{center}
 

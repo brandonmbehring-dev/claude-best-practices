@@ -204,7 +204,7 @@ in an external text editor for detailed review, or start directly
 in Plan Mode from the command line with \code{claude --permission-mode plan}.
 
 \marginnote[Official]{Five permission modes exist:
-Normal, Auto-Accept, Plan (keyboard-cyclable via \code{Shift+Tab}),
+Default, Accept Edits, Plan (keyboard-cyclable via \code{Shift+Tab}),
 plus \code{dontAsk} and \code{bypassPermissions} (settings-only).
 \sourceurl{https://code.claude.com/docs/en/permissions}}
 
@@ -215,7 +215,7 @@ plus \code{dontAsk} and \code{bypassPermissions} (settings-only).
     how we compute temporal features.''
   \item \textbf{Plan} (Plan Mode): ``I want to add recency features.
     What files need to change? Create a plan.''
-  \item \textbf{Implement} (Normal Mode): ``Implement the plan.
+  \item \textbf{Implement} (Default Mode): ``Implement the plan.
     Write tests first, then code. Run the test suite.''
   \item \textbf{Commit}: ``Commit with a descriptive message.''
 \end{enumerate}
