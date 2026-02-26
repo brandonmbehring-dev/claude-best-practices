@@ -180,7 +180,18 @@ CRITICAL_URLS = \
   https://code.claude.com/docs/en/best-practices \
   https://code.claude.com/docs/en/settings \
   https://code.claude.com/docs/en/skills \
-  https://code.claude.com/docs/en/mcp
+  https://code.claude.com/docs/en/mcp \
+  https://code.claude.com/docs/en/overview \
+  https://code.claude.com/docs/en/memory \
+  https://code.claude.com/docs/en/sub-agents \
+  https://code.claude.com/docs/en/agent-teams \
+  https://code.claude.com/docs/en/plugins \
+  https://code.claude.com/docs/en/sandboxing \
+  https://code.claude.com/docs/en/common-workflows \
+  https://code.claude.com/docs/en/statusline \
+  https://platform.claude.com/docs/en/build-with-claude/extended-thinking \
+  https://platform.claude.com/docs/en/build-with-claude/prompt-caching \
+  https://platform.claude.com/docs/en/agent-sdk/overview
 
 check-urls:
 	@echo "=== URL spot-check (informational) ==="

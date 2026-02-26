@@ -86,9 +86,9 @@ signal-to-noise drops sharply.
     node[above, font=\tiny\itshape, text=WarmRose!80] {$\sim$60\% threshold};
 
 \end{tikzpicture}
-\caption{Context composition over time. Noise (old errors, abandoned approaches)
-  grows fastest, crowding signal. The 60\% threshold marks where quality drops
-  non-linearly.}
+\caption{Context composition over time (illustrative proportions). Noise (old errors,
+  abandoned approaches) grows fastest, crowding signal. The $\sim$60\% threshold
+  marks where quality drops non-linearly.}
 \label{fig:context-degradation}
 \end{fullwidth}
 \end{figure}
@@ -99,7 +99,7 @@ signal-to-noise drops sharply.
 
 \begin{description}
   \item[\code{/clear}] Wipe context and start fresh. Use between unrelated tasks.
-    Cost: 30 seconds. Benefit: full attention on the next task.
+    Cost: $\sim$30 seconds. Benefit: full attention on the next task.
 
   \item[\code{/compact}] Summarize conversation while preserving key decisions.
     Less aggressive than \code{/clear}; retains important context.
@@ -123,7 +123,8 @@ signal-to-noise drops sharply.
 \end{description}
 
 \margintip{Watch the token counter. When it approaches 60--70\% of the window,
-proactively \code{/compact} or \code{/clear}.}
+proactively \code{/compact} or \code{/clear}.
+This threshold is a heuristic from observed quality degradation, not a hard cutoff.}
 
 % -------------------------------------------------------------------
 \section{The Status Line: Zero-Cost Monitoring}
@@ -133,7 +134,7 @@ proactively \code{/compact} or \code{/clear}.}
 consumed. Fully customizable via script.\sourceurl{https://code.claude.com/docs/en/statusline}}
 
 \official{Claude Code displays a configurable status line showing session
-metrics in real time.} By default it shows the active model, git branch,
+metrics in real time.\sourceurl{https://code.claude.com/docs/en/statusline}} By default it shows the active model, git branch,
 session cost, and context window usage percentage.
 
 You can extend it with a custom script whose output is appended
@@ -187,7 +188,7 @@ takes $\sim$200 tokens and produces a better result.
 \subsection{Customizing Compaction}
 
 \official{You can control what survives compaction by adding instructions
-to CLAUDE.md:}
+to CLAUDE.md:\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
 \begin{minted}{markdown}
 ## Compaction Rules
@@ -209,7 +210,7 @@ earlier context intact---more surgical than \code{/compact}.
 \marginnote[Official]{Named sessions: \code{/rename}, \code{--continue},
 \code{--resume}, \code{--from-pr}.\sourceurl{https://code.claude.com/docs/en/overview}}
 
-\official{Sessions persist across terminal restarts.} Key commands:
+\official{Sessions persist across terminal restarts.\sourceurl{https://code.claude.com/docs/en/overview}} Key commands:
 
 \begin{description}
   \item[\code{claude --continue}] Resume the most recent session.
@@ -282,7 +283,7 @@ Write tests verifying no leakage across CV folds.
 \end{fullwidth}
 
 \margintip{Update CURRENT\_WORK.md at the start and end of every session.
-60 seconds invested saves 10 minutes of re-discovery.}
+60 seconds invested saves $\sim$10 minutes of re-discovery.}
 
 % -------------------------------------------------------------------
 \section{Auto-Memory and Cross-Session Persistence}
@@ -291,7 +292,7 @@ Write tests verifying no leakage across CV folds.
 \marginnote[Official]{Claude records and recalls memories across sessions
 automatically. Memory files persist in \code{\textasciitilde/.claude/projects/*/memory/}.\sourceurl{https://code.claude.com/docs/en/memory}}
 
-\official{Claude maintains auto-memory that persists across conversations.}
+\official{Claude maintains auto-memory that persists across conversations.\sourceurl{https://code.claude.com/docs/en/memory}}
 It records patterns, decisions, and lessons learned, making them available
 in future sessions without explicit re-prompting.
 
@@ -363,7 +364,7 @@ If yes, store it. If uncertain, wait for confirmation.}
 before implementation.\sourceurl{https://code.claude.com/docs/en/overview}}
 
 \official{The recommended workflow for complex tasks:
-Explore $\rightarrow$ Plan $\rightarrow$ Implement $\rightarrow$ Commit.}
+Explore $\rightarrow$ Plan $\rightarrow$ Implement $\rightarrow$ Commit.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
 Plan Mode lets Claude analyze your codebase without modifying anything.
 Use it for architecture discussions, impact analysis, and strategy decisions.

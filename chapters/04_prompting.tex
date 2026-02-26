@@ -144,7 +144,7 @@ pytest tests/ -v 2>&1 | claude -p "Summarize failures"
 with effort controls.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/extended-thinking}}
 
 \official{Extended thinking lets Claude reason through complex problems
-before responding.} On Opus 4.6, thinking is \textbf{adaptive}---the model
+before responding.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/extended-thinking}} On Opus 4.6, thinking is \textbf{adaptive}---the model
 decides how much to think based on problem complexity.
 
 \subsection{Effort Controls}
@@ -156,7 +156,7 @@ decides how much to think based on problem complexity.
   \item[\code{max}] Maximum effort. Best for: strategic decisions, novel problems.
 \end{description}
 
-\official{Interleaved thinking}: Claude can think between tool calls,
+\official{Interleaved thinking\sourceurl{https://platform.claude.com/docs/en/build-with-claude/extended-thinking}}: Claude can think between tool calls,
 enabling nuanced multi-step workflows where each step's reasoning
 informs the next.
 
@@ -193,7 +193,7 @@ Combined: up to 70\%+ savings (workload-dependent).\sourceurl{https://platform.c
 
 \subsection{Prompt Caching}
 
-\official{Prompt caching reduces input costs by 90\% for repeated content.}
+\official{Prompt caching reduces input costs by 90\% for repeated content.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-caching}}
 
 \begin{description}
   \item[Ephemeral (5-minute TTL)] Automatic for content appearing in
@@ -205,7 +205,7 @@ Combined: up to 70\%+ savings (workload-dependent).\sourceurl{https://platform.c
 \subsection{Batch API}
 
 \official{50\% discount for asynchronous
-processing.\sourceurl{https://platform.claude.com/docs/en/docs/build-with-claude/batch-processing}}
+processing.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/batch-processing}}
 Submit up to 100,000 requests per batch (256~MB max).
 Most batches complete within 1 hour; results available within 24 hours.
 Combinable with caching for up to 70\%+ total savings (workload-dependent).

@@ -20,7 +20,7 @@ Understanding when to use each is the difference between a tool and a workflow.
 or \code{.claude/commands/} (project).
 Invoked as \code{/command-name}.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
-\official{Commands are Markdown files that expand into prompts when invoked.}
+\official{Commands are Markdown files that expand into prompts when invoked.\sourceurl{https://code.claude.com/docs/en/skills}}
 They accept arguments via \code{\$ARGUMENTS} and can reference files with \code{@path}.
 
 \begin{minted}{markdown}
@@ -56,7 +56,7 @@ Skills take precedence if names conflict.\sourceurl{https://code.claude.com/docs
 \marginnote[Official]{Each skill lives in its own directory as
 \code{SKILL.md}.\sourceurl{https://code.claude.com/docs/en/skills}}
 
-\official{Skills combine domain knowledge with executable workflows.}
+\official{Skills combine domain knowledge with executable workflows.\sourceurl{https://code.claude.com/docs/en/skills}}
 Unlike commands (which are prompt templates), skills can:
 
 \begin{itemize}
@@ -123,7 +123,7 @@ allowed-tools: [Bash, Read, Glob]
 \subsection{Dynamic Context}
 
 \marginnote[Official]{The \code{!`command`} syntax runs shell commands
-at skill load time, injecting live data into the prompt.}
+at skill load time, injecting live data into the prompt.\sourceurl{https://code.claude.com/docs/en/skills}}
 
 Skills can execute shell commands \emph{before} their content reaches Claude.
 This injects live project state into the prompt:
@@ -180,7 +180,7 @@ This bridges skills and subagents (\cref{ch:agents}).
 
 \marginnote[Official]{Skill descriptions consume $\sim$2\% of context window
 (fallback: 16{,}000 characters).
-Use \code{/context} to check for excluded skills.}
+Use \code{/context} to check for excluded skills.\sourceurl{https://code.claude.com/docs/en/skills}}
 
 Permission rules can target skills specifically:
 
@@ -273,7 +273,7 @@ On Windows WSL, use \code{powershell.exe} with toast notifications.}
 tools and data sources.\sourceurl{https://code.claude.com/docs/en/mcp}}
 
 \official{The Model Context Protocol (MCP) connects Claude to
-external services, databases, APIs, and custom tools.}
+external services, databases, APIs, and custom tools.\sourceurl{https://code.claude.com/docs/en/mcp}}
 
 \begin{minted}{bash}
 # Add an MCP server
@@ -344,7 +344,7 @@ see \cref{sec:managed-settings}.}
 Plugins bundle skills, hooks, subagents, and MCP into installable
 units.\sourceurl{https://code.claude.com/docs/en/plugins}}
 
-\official{Plugins are pre-packaged extensions from the community and Anthropic.}
+\official{Plugins are pre-packaged extensions from the community and Anthropic.\sourceurl{https://code.claude.com/docs/en/plugins}}
 They bundle multiple extension types into a single installable unit,
 avoiding manual configuration.
 
@@ -378,7 +378,7 @@ and network access at the OS level.\sourceurl{https://code.claude.com/docs/en/sa
 
 \official{Sandboxing provides OS-level isolation that restricts
 filesystem and network access, allowing Claude to work more freely
-within defined boundaries.}
+within defined boundaries.\sourceurl{https://code.claude.com/docs/en/sandboxing}}
 
 With sandboxing enabled, Claude can run commands without per-action
 permission prompts because the sandbox prevents access beyond

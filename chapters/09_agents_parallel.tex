@@ -23,7 +23,7 @@ own context, isolated from the main session.\sourceurl{https://code.claude.com/d
 with its own context. \textbf{Agent team} means a collaborative group
 that shares a task list and can message each other.}
 
-\official{Subagents are purpose-built Claude instances that run in isolated context.}
+\official{Subagents are purpose-built Claude instances that run in isolated context.\sourceurl{https://code.claude.com/docs/en/sub-agents}}
 They receive a task, execute it with their own tool set, and return results
 to the parent session.
 
@@ -125,7 +125,7 @@ is removed silently. If changes exist, you are prompted to merge or discard.
 \subsection{Subagent Worktrees}
 
 \official{Subagents can also run in isolated worktrees using the
-\code{isolation} frontmatter key:}
+\code{isolation} frontmatter key:\sourceurl{https://code.claude.com/docs/en/sub-agents}}
 
 \begin{minted}{markdown}
 # .claude/agents/parallel-reviewer.md
@@ -159,7 +159,7 @@ Run \code{git worktree prune} to clean up stale entries.}
 \section{The Writer/Reviewer Pattern}
 \label{sec:writer-reviewer}
 
-\official{Use separate sessions to avoid confirmation bias:}
+\official{Use separate sessions to avoid confirmation bias:\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
 \begin{enumerate}
   \item \textbf{Writer session}: Makes changes based on requirements.
@@ -194,7 +194,7 @@ and can message each other.\sourceurl{https://code.claude.com/docs/en/agent-team
 
 \official{Agent Teams extend subagents with collaboration:
 shared task lists, direct messaging between agents,
-and team lead orchestration.}
+and team lead orchestration.\sourceurl{https://code.claude.com/docs/en/agent-teams}}
 
 Best suited for:
 \begin{itemize}
