@@ -49,6 +49,29 @@ Report findings with severity ratings
 Skills use \code{allowed-tools} (hyphenated). The inconsistency is intentional---they
 follow different specification standards.}
 
+\subsection{Subagent Frontmatter Reference}
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Key} & \textbf{Purpose} \\
+\midrule
+\code{name} & Display name. Lowercase, hyphens. \\
+\code{description} & What the agent does. Used for auto-dispatch. \\
+\code{tools} & Tools permitted (note: \emph{not} \code{allowed-tools}). \\
+\code{model} & Override model (\code{sonnet}, \code{opus}, \code{haiku}). \\
+\code{isolation} & Set to \code{worktree} for isolated file system (\cref{sec:worktrees}). \\
+\code{memory} & Persistent memory scope: \code{user}, \code{project}, or \code{local}. \\
+\code{background} & Run in background; parent notified on completion. \\
+\code{skills} & List of skills available to the subagent. \\
+\code{mcpServers} & MCP servers the subagent can access. \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\marginnote[Official]{Manage subagent configurations with the \code{/agents}
+command.\sourceurl{https://code.claude.com/docs/en/sub-agents}}
+
 \subsection{Built-In Subagents}
 
 Claude Code ships with several built-in subagent types that can be invoked
@@ -60,6 +83,18 @@ via the Task tool without custom definitions:
   \item[Bash] Command execution specialist.
   \item[General-purpose] Multi-tool agent for complex tasks.
 \end{description}
+
+\subsection{Continuing Subagent Work}
+
+\official{To continue or resume a stopped subagent, use \code{SendMessage}
+with the agent's ID or name.\sourceurl{https://code.claude.com/docs/en/sub-agents}}
+The subagent resumes with its full context preserved.
+Transcripts persist in \code{\textasciitilde/.claude/projects/\{project\}/\{session\}/subagents/}.
+
+\practitioner{In practice, ask Claude to ``continue the review agent'' or
+``resume agent X''---Claude translates this to \code{SendMessage} internally.
+Each new \code{Agent} invocation starts fresh; \code{SendMessage} is
+the only way to preserve prior context.}
 
 % -------------------------------------------------------------------
 \section{When to Delegate}
@@ -208,8 +243,8 @@ Use Agent Teams when agents need to coordinate mid-task---e.g., one agent discov
 a schema change that another agent must respect.}
 
 \begin{warnbox}[Research Preview]
-Agent Teams are a research preview feature. The API and behavior
-may change. Use for exploration, not production workflows.
+Agent Teams require \code{CLAUDE\_CODE\_EXPERIMENTAL\_AGENT\_TEAMS=1}.
+The API and behavior may change. Use for exploration, not production workflows.
 \end{warnbox}
 
 % -------------------------------------------------------------------
@@ -217,12 +252,14 @@ may change. Use for exploration, not production workflows.
 
 \begin{itemize}
   \item Subagents: isolated context, independent tools, return results to parent
-  \item Subagent frontmatter key: \code{tools} (not \code{allowed\_tools})
+  \item Subagent frontmatter: \code{tools}, \code{isolation}, \code{memory}, \code{background}, \code{skills}, \code{mcpServers}
+  \item Continue a subagent: \code{SendMessage} (not a new \code{Agent} invocation)
+  \item Manage configurations: \code{/agents} command
   \item Worktrees: isolated file systems for parallel file modifications
   \item Writer/Reviewer: separate sessions prevent confirmation bias
   \item Delegate when: independent, context-heavy, parallelizable, needs fresh perspective
   \item Do directly when: quick, context-dependent, sequential, simple
-  \item Agent Teams: research preview for multi-agent collaboration
+  \item Agent Teams: experimental (\code{CLAUDE\_CODE\_EXPERIMENTAL\_AGENT\_TEAMS=1})
 \end{itemize}
 
 % -------------------------------------------------------------------

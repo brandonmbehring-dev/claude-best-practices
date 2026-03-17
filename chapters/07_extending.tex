@@ -218,12 +218,15 @@ hooks \textbf{always execute}.}
 \textbf{Event} & \textbf{Matcher Target} & \textbf{Use Case} \\
 \midrule
 \code{SessionStart} & How session started & Load context, run health check \\
+\code{InstructionsLoaded} & (no matcher) & When CLAUDE.md or rules files are loaded \\
 \code{UserPromptSubmit} & (no matcher) & Transform or validate user input \\
 \code{PreToolUse} & Tool name & Validate inputs, block operations \\
 \code{PermissionRequest} & Tool name & Auto-allow/deny by rule \\
 \code{PostToolUse} & Tool name & Auto-lint, log results, trigger follow-up \\
 \code{PostToolUseFailure} & Tool name & Error handling, retry logic \\
 \code{Notification} & Notification type & Route to Slack, email, or dashboard \\
+\code{Elicitation} & (no matcher) & MCP server requests structured user input \\
+\code{ElicitationResult} & (no matcher) & User responds to an elicitation dialog \\
 \code{SubagentStart} & Agent type & Initialize subagent-specific config \\
 \code{SubagentStop} & Agent type & Process subagent results \\
 \code{Stop} & (no matcher) & Run cleanup when Claude finishes \\
@@ -233,6 +236,7 @@ hooks \textbf{always execute}.}
 \code{WorktreeCreate} & (no matcher) & Custom worktree setup logic \\
 \code{WorktreeRemove} & (no matcher) & Custom worktree cleanup logic \\
 \code{PreCompact} & Trigger type & Save state before context compaction \\
+\code{PostCompact} & (no matcher) & Process results after compaction completes \\
 \code{SessionEnd} & Why session ended & Save state, update logs \\
 \bottomrule
 \end{tabular}
@@ -240,6 +244,47 @@ hooks \textbf{always execute}.}
 
 \practitioner{The golden rule: if a standard is non-negotiable, make it a hook.
 If it is advisory, put it in CLAUDE.md.}
+
+\subsection{Handler Types}
+
+\marginnote[Official]{Not all events support all handler types.
+8 events support all 4; the remainder are command-only.\sourceurl{https://code.claude.com/docs/en/hooks}}
+
+Hooks support four handler types. Command timeout is 10 minutes (increased
+from 60 seconds in earlier releases).
+
+\begin{description}
+  \item[\code{command}] Shell script. Receives JSON on stdin, returns JSON on stdout.
+    The original and most common type.
+  \item[\code{http}] POST JSON to a URL (30-second default timeout).
+    Best for: webhooks, external service notifications, CI triggers.
+  \item[\code{prompt}] Single-turn LLM evaluation returning yes/no.
+    Best for: policy checks that need judgment, not just pattern matching.
+  \item[\code{agent}] Multi-turn subagent with full tool access.
+    Best for: complex validation workflows that read files, run commands,
+    or reason across multiple steps.
+\end{description}
+
+\begin{minted}{json}
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "validate-bash-input.sh"
+        },
+        {
+          "type": "http",
+          "url": "https://hooks.internal/audit-log",
+          "timeout": 5000
+        }
+      ]
+    }]
+  }
+}
+\end{minted}
 
 \subsection{Notification Hooks}
 

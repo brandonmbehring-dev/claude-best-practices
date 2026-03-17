@@ -149,12 +149,23 @@ decides how much to think based on problem complexity.
 
 \subsection{Effort Controls}
 
+\marginnote[Official]{Set effort: \code{/effort low|medium|high|max|auto},
+model picker slider, or \code{CLAUDE\_CODE\_EFFORT\_LEVEL} env
+var.\sourceurl{https://code.claude.com/docs/en/model-config}}
+
 \begin{description}
   \item[\code{low}] Minimal thinking. Best for: simple lookups, formatting, boilerplate.
   \item[\code{medium}] Moderate analysis. Best for: standard coding tasks, code reviews.
+    \emph{Default for Max/Team subscribers on Opus~4.6.}
   \item[\code{high}] Deep reasoning. Best for: architecture decisions, complex debugging.
-  \item[\code{max}] Maximum effort. Best for: strategic decisions, novel problems.
+  \item[\code{max}] Deepest reasoning with no token constraint.
+    \textbf{Opus~4.6 only, session-scoped} (does not persist across sessions).
+    Best for: strategic decisions, novel problems requiring exhaustive analysis.
 \end{description}
+
+\practitioner{The keyword \code{ultrathink} in any prompt escalates to \code{high}
+effort for one turn---useful for ad-hoc deep analysis without changing
+your session default.}
 
 \official{Interleaved thinking\sourceurl{https://platform.claude.com/docs/en/build-with-claude/extended-thinking}}: Claude can think between tool calls,
 enabling nuanced multi-step workflows where each step's reasoning
