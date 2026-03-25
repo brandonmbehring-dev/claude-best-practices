@@ -6,7 +6,7 @@
 
 After using Claude Code daily across 20+ projects for over a year, I compiled my hard-won patterns and cross-referenced them against Anthropic's official documentation. Some matched. Some surprised me. Some things the docs don't mention at all.
 
-This post extracts the highest-impact practices from a full handbook (v2.3, 90+ pages). Every practice is tagged:
+This post extracts the highest-impact practices from a full handbook (v2.5, 109 pages). Every practice is tagged:
 
 - **[Official]** — Anthropic's documented recommendation
 - **[Practitioner]** — Discovered through extensive daily use
@@ -101,7 +101,7 @@ Write tests verifying no leakage across CV folds.
 
 ### Plan Before You Build
 
-**[Convergence]** The Explore → Plan → Implement → Commit workflow. Use `Shift+Tab` to enter Plan Mode where Claude reasons but cannot edit files. Review the plan with `Ctrl+G` in your editor, then switch back to implement.
+**[Convergence]** The Explore → Plan → Implement → Commit workflow. Use `Shift+Tab` to cycle to Plan Mode where Claude reasons but cannot edit files. Use `Ctrl+G` to open prompts in your default text editor for detailed editing, then switch back to implement.
 
 ### Session Management
 
@@ -125,6 +125,18 @@ Write tests verifying no leakage across CV folds.
 - **@-file references** — `@src/config.ts` injects file content
 - **Piping** — `cat data.json | claude "analyze this"`
 - **URL allowlisting** — permit Claude to fetch specific documentation URLs
+
+### 1M Context Strategy (New in v2.5)
+
+**[Convergence]** Percentage-based heuristics were calibrated for 200K windows. At 1M, the same percentages represent vastly different absolute quantities. Lead with **durable artifacts** (`CURRENT_WORK.md`, plan docs, git commits) as primary persistence; compaction supplements, not replaces.
+
+- **`/compact <focus>`** — direct summarization toward specific context
+- **PreCompact hook** — serialize critical state to disk before auto-compaction
+- **`/btw`** — zero-context-cost side questions (answer in dismissible overlay, never enters history)
+
+### Fast Mode (New in v2.5)
+
+**[Official]** Same Opus 4.6, 2.5x faster, $30/$150 MTok (research preview). Toggle with `/fast` or `Alt+O`. Falls back to standard Opus on rate limit.
 
 ### Extending Claude
 
@@ -158,6 +170,17 @@ Do directly when: quick, context-dependent, sequential, simple.
 
 **[Official]** Run parallel sessions that can't interfere with each other. `--worktree` creates an isolated git worktree — each agent gets its own branch, its own working directory, its own context. Merge when done.
 
+### `/batch`: Parallel Codebase Changes (New in v2.5)
+
+**[Official]** `/batch` is a bundled skill that researches the codebase, decomposes work into 5-30 independent units, and spawns one background agent per unit in an isolated git worktree. Each agent implements, tests, and opens a PR. Best for complex changes where decomposition requires understanding the codebase.
+
+### Automation & Pipelines (New in v2.5)
+
+- **Agent SDK** — same tools as Claude Code, programmable in Python (`claude-agent-sdk`) and TypeScript (`@anthropic-ai/claude-agent-sdk`)
+- **Scheduled tasks** — three tiers: Cloud (`/schedule`, runs on Anthropic infra), Desktop (local machine), `/loop` (session-scoped polling)
+- **GitHub Actions** — `anthropics/claude-code-action@v1`, triggered by `@claude` in PR/issue comments
+- **Remote Control** — `/remote-control` connects claude.ai/code to a local session
+
 ### Fan-Out with Tool Scoping
 
 **[Practitioner]** `--allowedTools` restricts what each subagent can touch. Glob patterns (`Edit,Bash(npm test*)`) let you scope agents to specific tools — one writes code, another only runs tests, a third only reads. Prevents cross-contamination in parallel workflows.
@@ -187,11 +210,11 @@ Do directly when: quick, context-dependent, sequential, simple.
 
 ### Enterprise at Scale
 
-Certifications: SOC 2 Type II, ISO 27001, ISO 42001, FedRAMP High, HIPAA BAA.
+Certifications: SOC 2 Type II, ISO 27001, ISO 42001, HIPAA BAA. Government authorizations: FedRAMP High, IL5.
 
 Enterprise/API data is **never** used for model training by default.
 
-Cost optimization: prompt caching (90%) + Batch API (50%) = 70%+ combined savings.
+Cost optimization: prompt caching (90%) + Batch API (50%) = 70%+ combined savings (workload-dependent).
 
 ---
 
@@ -207,7 +230,7 @@ Three exercises from the handbook, completable in 10 minutes each:
 
 ## Quick Start Guide
 
-New in v2.3: the **Quick Start Guide** is a standalone 7-page PDF that takes you from installation to professional workflow in 60 minutes. It teaches Claude Code skills and software engineering practices simultaneously through a three-act structure:
+New in v2.5: the **Quick Start Guide** is a standalone 7-page PDF that takes you from installation to professional workflow in 60 minutes. It teaches Claude Code skills and software engineering practices simultaneously through a three-act structure:
 
 1. **Safety** (Minutes 0-15) — Install, explore your codebase, learn safety nets (Esc, rewind, permission dialogs), make your first edit with a precise prompt
 2. **Understanding** (Minutes 15-35) — Write your first AI-assisted test, run regression checks, review diffs, commit with a meaningful message
@@ -221,12 +244,12 @@ Build it: `make quickstart` → `output/quickstart_guide.pdf`
 
 ## Get the Full Handbook
 
-This post is extracted from a 94-page handbook with TikZ diagrams, before/after examples, decision frameworks, and copy-paste templates.
+This post is extracted from a 109-page handbook with TikZ diagrams, before/after examples, decision frameworks, and copy-paste templates.
 
 **Want the templates?** Download from the repo's releases page.
 
 ---
 
-*Content verified against Anthropic documentation as of February 2026. Licensed CC BY 4.0.*
+*Content verified against Anthropic documentation as of March 2026. Licensed CC BY 4.0.*
 
 *Generated with Claude Code.*

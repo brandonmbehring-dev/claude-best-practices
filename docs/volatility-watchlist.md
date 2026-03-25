@@ -12,7 +12,7 @@ Items that drift over time and need periodic manual verification.
 
 ### Certifications & Compliance
 - **Claims in:** `chapters/14_enterprise.tex`
-- **Check:** SOC 2 Type II, HIPAA BAA, FedRAMP (in progress)
+- **Check:** SOC 2 Type II, HIPAA BAA, FedRAMP High, IL5
 - **Action:** Re-verify status on anthropic.com/trust
 
 ### Government Programs
@@ -24,7 +24,7 @@ Items that drift over time and need periodic manual verification.
 
 ### Pricing
 - **Claims in:** `chapters/14_enterprise.tex` (cost comparison table)
-- **Source:** https://docs.anthropic.com/en/docs/about-claude/models
+- **Source:** https://platform.claude.com/docs/en/about-claude/pricing
 - **Action:** Verify $/MTok figures for all listed models
 - **Risk:** Pricing changes with every model generation
 
@@ -81,7 +81,7 @@ Key insights preserved:
 - Permission mode model has 6 modes, not 3 (addressed: footnote + margin note added)
 - Numeric claims needed conditional language (addressed: "up to", "workload-dependent")
 - Quickstart benefits from "First 60 Minutes" time-marker framing (addressed)
-- All 44 handbook URLs returned HTTP 200 at time of audit
+- All handbook URLs returned HTTP 200 at time of v2.2 audit (39 unique URLs verified again for v2.5)
 
 ## Validation Commands
 
