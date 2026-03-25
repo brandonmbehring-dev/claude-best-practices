@@ -206,12 +206,26 @@ When compacting, always preserve:
 - Architecture decisions from this session
 \end{minted}
 
+For targeted compaction, run \code{/compact} with a focus argument:
+
+\begin{minted}{text}
+/compact Focus on the API changes
+/compact Preserve test results, discard exploration
+\end{minted}
+
+\official{Run \code{/compact <focus>} to direct summarization toward specific
+context.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+This is strategic pre-compaction: instead of waiting for auto-compaction
+to summarize \emph{everything}, you surgically remove noise while
+preserving signal. Use it when switching sub-tasks within a long session.
+
 For partial compaction, use \code{Esc + Esc} or \code{/rewind},
 select a message checkpoint, and choose \textbf{Summarize from here}.
 This condenses messages from that point forward while keeping
-earlier context intact---more surgical than \code{/compact}.
+earlier context intact---more surgical than a full \code{/compact}.
 
 \begin{warnbox}[Extended Thinking Blocks Are Compaction-Resistant]
+\label{warn:thinking-compaction}
 Extended thinking blocks are immutable after generation---auto-compaction
 cannot summarize or truncate them. Heavy thinking sessions create
 compaction-resistant context growth. Mitigations:
@@ -223,6 +237,87 @@ compaction-resistant context growth. Mitigations:
     thinking tokens are billed as output tokens and consume context budget.
 \end{itemize}
 \end{warnbox}
+
+% -------------------------------------------------------------------
+\section{Strategy for 1M Context Windows}
+\label{sec:1m-strategy}
+
+\marginnote[Official]{Opus 4.6 offers a 1M-token context
+window---5$\times$ the previous 200K limit. Auto-compaction
+still triggers near the limit, but sessions run far longer
+before it fires.\sourceurl{https://code.claude.com/docs/en/how-claude-code-works}}
+
+\convergence{Percentage-based heuristics were calibrated for 200K windows.
+At 1M, the same percentages represent vastly different absolute
+quantities---and absolute noise, not the percentage, drives quality loss.}
+
+The 1M window is a qualitative shift.
+With 200K tokens, aggressive context management was survival.
+With 1M, you have room to breathe---but also room
+to accumulate far more noise before any alarm fires.
+
+\begin{fullwidth}
+\begin{tabular}{@{}lrrp{5.5cm}@{}}
+\toprule
+\textbf{Metric} & \textbf{200K Window} & \textbf{1M Window} & \textbf{Implication} \\
+\midrule
+60\% full & 120K tokens & 600K tokens & 600K of noise is qualitatively worse \\
+Auto-compaction & $\sim$166K & $\sim$830K & Sessions run $\sim$5$\times$ longer before trigger \\
+Practical ceiling & $\sim$140K & $\sim$700K & Absolute token count, not \%, determines quality \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\subsection{PreCompact Hook for State Preservation}
+
+\official{The \code{PreCompact} hook fires before compaction begins.
+Matchers: \code{manual} (user-triggered) or \code{auto}
+(system-triggered). The hook cannot block
+compaction.\sourceurl{https://code.claude.com/docs/en/hooks}}
+
+Use it to serialize critical state to disk before compaction discards detail:
+
+\begin{minted}{json}
+{
+  "hooks": {
+    "PreCompact": [{
+      "matcher": "auto",
+      "hooks": [{
+        "type": "command",
+        "command": ".claude/hooks/pre-compact-backup.sh"
+      }]
+    }]
+  }
+}
+\end{minted}
+
+\margintip{Keep PreCompact hooks fast---they run synchronously
+during compaction. A simple file copy or log append is ideal.}
+
+\subsection{Decision Framework for 1M}
+
+\begin{description}
+  \item[< 30\% ($<$300K tokens)] Context healthy. Work freely.
+    No compaction needed.
+  \item[30--60\% (300K--600K)] Optional strategic compaction if switching
+    tasks. Good time for \code{/compact <focus>} to shed completed sub-tasks.
+  \item[60--80\% (600K--800K)] Proactive compaction recommended.
+    Quality degradation begins in this range (\cref{sec:context-degradation}).
+    Use \code{/compact} or \code{/clear} if the current task is complete.
+  \item[> 80\% ($>$800K)] Auto-compaction imminent.
+    Consider \code{/clear} and resuming with a fresh prompt.
+    Recover context from durable artifacts (\cref{subsec:durable-artifacts}).
+\end{description}
+
+\marginnote[Cross-Ref]{Extended thinking blocks resist
+compaction (p.\,\pageref{warn:thinking-compaction}).
+Heavy thinking sessions may need \code{/clear}
+rather than \code{/compact}.}
+
+\practitioner{The single best habit for 1M windows: invest 60 seconds
+writing durable artifacts (\code{CURRENT\_WORK.md}, plan docs, git commits)
+\emph{before} compacting or clearing. Compaction supplements persistence;
+it does not replace it.}
 
 % -------------------------------------------------------------------
 \section{Session Management}
@@ -271,6 +366,7 @@ and metadata pre-loaded, saving manual context setup.
 \end{tipbox}
 
 \subsection{Durable Artifacts: The Primary Persistence Strategy}
+\label{subsec:durable-artifacts}
 
 \convergence{Compaction alone is insufficient for multi-session work.\sourceurl{https://www.anthropic.com/engineering/long-running-agents}}
 Leave clear artifacts that survive compaction, session boundaries, and
@@ -427,6 +523,8 @@ see \cref{ch:thinking-partner}.}
   \item \code{/clear} between tasks, \code{/compact} within long tasks
   \item \code{/context} to visualize usage, \code{/rewind} to undo missteps
   \item Two-failure rule: \code{/clear} + better prompt beats a third correction
+  \item \code{/compact <focus>} for surgical pre-compaction; PreCompact hook for state backup
+  \item For 1M windows: think in absolute tokens, not percentages (\cref{sec:1m-strategy})
   \item CURRENT\_WORK.md for cross-session context at project root
   \item Auto-memory for cross-session patterns
   \item Plan Mode (Shift+Tab) before complex implementations
