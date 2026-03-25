@@ -19,3 +19,6 @@ WorktreeCreate
 WorktreeRemove
 SessionStart
 SessionEnd
+StopFailure
+CwdChanged
+FileChanged

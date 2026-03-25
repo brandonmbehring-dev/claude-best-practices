@@ -2,28 +2,106 @@
 \chapter{Command and Hook Reference}
 \label{app:reference}
 
+\marginnote[Official]{Complete command list verified 2026-03-25 against
+\sourceurl{https://code.claude.com/docs/en/commands}}
+
 \section{Built-In Commands}
+
+Built-in commands execute fixed logic directly.
+Type \code{/} to see all available commands.
+Not all commands are visible to every user---some depend on
+platform, plan, or environment.
 
 \begin{fullwidth}
 \begin{tabular}{@{}lp{8cm}@{}}
 \toprule
 \textbf{Command} & \textbf{Description} \\
 \midrule
+\multicolumn{2}{@{}l}{\textit{Session \& Context}} \\
+\code{/clear} & Clear context, start fresh. Aliases: \code{/reset}, \code{/new} \\
+\code{/compact [instructions]} & Summarize conversation with optional focus instructions \\
+\code{/rewind} & Roll back to a previous checkpoint, or summarize from a selected message. Alias: \code{/checkpoint} \\
+\code{/context} & Visualize current context usage as a colored grid \\
+\code{/btw <question>} & Ask a side question without adding to conversation history \\
+\code{/rename [name]} & Give current session a descriptive name \\
+\code{/resume [session]} & Resume a conversation by ID or name. Alias: \code{/continue} \\
+\code{/branch [name]} & Branch the current conversation at this point. Alias: \code{/fork} \\
+\code{/export [filename]} & Export the current conversation as plain text \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Model \& Reasoning}} \\
+\code{/model [model]} & Select or change the AI model \\
+\code{/effort [level]} & Set effort: \code{low}, \code{medium}, \code{high}, \code{max}, \code{auto} (reset to default) \\
+\code{/fast [on|off]} & Toggle fast mode (same Opus 4.6, 2.5$\times$ faster, higher cost)\footnotemark \\
+\code{/plan} & Enter Plan Mode from the prompt \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Configuration \& Extensions}} \\
 \code{/init} & Auto-generate CLAUDE.md from project structure \\
-\code{/clear} & Clear context, start fresh \\
-\code{/compact} & Summarize conversation, preserve key decisions \\
-\code{/rewind} & Roll back to a previous checkpoint \\
-\code{/context} & Visualize current context usage \\
-\code{/rename "name"} & Give current session a descriptive name \\
-\code{/hooks} & Configure lifecycle hooks interactively \\
-\code{/mcp} & Manage MCP server connections \\
-\code{/memory} & View and manage auto-memory \\
+\code{/config} & Open Settings interface (theme, model, output style). Alias: \code{/settings} \\
+\code{/memory} & View and manage CLAUDE.md files and auto-memory \\
+\code{/permissions} & View and modify permission rules. Alias: \code{/allowed-tools} \\
+\code{/hooks} & View hook configurations for tool events \\
+\code{/mcp} & Manage MCP server connections and OAuth \\
 \code{/plugin} & Browse and install community plugins \\
-\code{/sandbox} & Enable OS-level sandboxing \\
-\code{/debug} & Show debug info: model, session, config, connection status \\
-\code{/permissions} & View and modify permission rules \\
-\code{/status} & Show version, model, and account info \\
+\code{/skills} & List available skills \\
+\code{/agents} & Manage subagent configurations \\
+\code{/sandbox} & Toggle OS-level sandboxing \\
+\code{/statusline} & Configure the status line display \\
+\code{/vim} & Toggle between Vim and Normal editing modes \\
+\code{/theme} & Change the color theme \\
+\code{/color [color]} & Set prompt bar color for the current session \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Development \& Review}} \\
+\code{/diff} & Interactive diff viewer (uncommitted changes + per-turn diffs) \\
+\code{/pr-comments [PR]} & Fetch and display PR comments. Auto-detects current branch \\
+\code{/security-review} & Analyze pending changes for security vulnerabilities \\
+\code{/add-dir <path>} & Add a working directory to the current session \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Scheduling \& Remote}} \\
+\code{/schedule [description]} & Create, update, or list Cloud scheduled tasks \\
+\code{/remote-control} & Make session available for remote control from claude.ai \\
+\code{/install-github-app} & Set up Claude GitHub Actions for a repository \\
+\code{/desktop} & Continue session in the Desktop app (macOS/Windows) \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Account \& Info}} \\
+\code{/cost} & Show token usage statistics (API users) \\
+\code{/stats} & Visualize daily usage, session history, and streaks \\
+\code{/insights} & Generate a session analysis report \\
+\code{/status} & Show version, model, account, and connectivity \\
+\code{/usage} & Show plan usage limits and rate limit status \\
+\code{/doctor} & Diagnose and verify Claude Code installation \\
+\code{/tasks} & List and manage background tasks \\
+\code{/login} / \code{/logout} & Sign in or out of your Anthropic account \\
+\code{/voice} & Toggle push-to-talk voice dictation \\
 \code{/help} & Show available commands \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\footnotetext{Fast mode is a research preview. Same Opus 4.6 model, \$30/\$150 MTok pricing,
+falls back to standard on rate limit. Requires extra usage enabled.
+See \url{https://code.claude.com/docs/en/fast-mode}.}
+
+\section{Bundled Skills}
+
+\marginnote[Official]{Bundled skills are prompt-driven: they give Claude
+a playbook and let it orchestrate using tools.
+Unlike built-in commands, skills can spawn
+subagents and adapt to your codebase.\sourceurl{https://code.claude.com/docs/en/skills}}
+
+Bundled skills ship with Claude Code and appear alongside built-in commands
+when you type \code{/}. They are not fixed logic---they are prompt-based
+workflows that Claude executes.
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Skill} & \textbf{Description} \\
+\midrule
+\code{/batch <instruction>} & Parallel codebase changes: researches, decomposes into 5--30 units, spawns one background agent per unit in an isolated worktree. Each agent implements, tests, and opens a PR. \\
+\code{/loop [interval] <prompt>} & Run a prompt repeatedly on an interval (default 10 min). Session-scoped polling for deploys, PRs, or recurring checks. \\
+\code{/simplify [focus]} & Review recently changed files for reuse, quality, and efficiency. Spawns 3 parallel review agents. \\
+\code{/debug [description]} & Troubleshoot your Claude Code session by reading the debug log. \\
+\code{/claude-api} & Load Claude API and Agent SDK reference for your project's language. \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
@@ -42,70 +120,113 @@
 \code{-p "prompt"} & Headless mode (non-interactive, single prompt) \\
 \code{--output-format} & Output format: \code{json}, \code{stream-json}, \code{text} \\
 \code{--allowedTools} & Restrict available tools (comma-separated) \\
+\code{--disallowedTools} & Deny specific tools (comma-separated) \\
 \code{--model} & Override model: \code{opus}, \code{sonnet}, \code{haiku} \\
+\code{--permission-mode} & Set permission mode for the session \\
 \code{--output-style} & Override output style \\
+\code{--add-dir <path>} & Add additional working directories \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
 
 \section{Keyboard Shortcuts}
 
+\marginnote[Official]{Shortcuts verified 2026-03-25. macOS Option/Alt
+shortcuts require configuring Option as Meta in your
+terminal.\sourceurl{https://code.claude.com/docs/en/interactive-mode}}
+
 \begin{fullwidth}
 \begin{tabular}{@{}lp{8cm}@{}}
 \toprule
 \textbf{Shortcut} & \textbf{Action} \\
 \midrule
-\code{Shift+Tab} & Cycle permission modes (Default $\rightarrow$ Accept Edits $\rightarrow$ Plan)\footnote{Two additional modes---\code{dontAsk} and \code{bypassPermissions}---are configurable via settings but not available through the keyboard cycle. See \url{https://code.claude.com/docs/en/permissions}.} \\
-\code{Ctrl+G} & Open plan in external text editor \\
+\code{Shift+Tab} / \code{Alt+M} & Cycle through enabled permission modes (\code{default}, \code{acceptEdits}, \code{plan}, and any modes you have enabled such as \code{auto} or \code{bypassPermissions}) \\
+\code{Ctrl+G} & Open prompt or custom response in your default text editor \\
 \code{Alt+T} & Toggle extended thinking \\
+\code{Alt+O} & Toggle fast mode \\
+\code{Alt+P} & Switch model without clearing prompt \\
 \code{Ctrl+C} & Cancel current generation \\
-\code{Ctrl+B} & Background a running task \\
-\code{Ctrl+O} & Toggle verbose mode (show hook output) \\
+\code{Ctrl+B} & Background a running task (tmux users press twice) \\
+\code{Ctrl+O} & Toggle verbose output (show tool details, expand MCP calls) \\
+\code{Ctrl+T} & Toggle task list display \\
+\code{Ctrl+R} & Reverse search through command history \\
+\code{Ctrl+V} & Paste image from clipboard \\
 \code{Esc} & Stop Claude mid-action (context preserved) \\
-\code{Esc + Esc} & Open rewind menu (restore conversation, code, or both) \\
+\code{Esc + Esc} & Open rewind menu (restore conversation, code, or both; or summarize from a selected message) \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
 
-\section{Hook Events (17 Total)}
+\section{Hook Events (24 Total)}
+
+\marginnote[Official]{Event list verified 2026-03-25. Matchers are specific
+enum values, not arbitrary regex.\sourceurl{https://code.claude.com/docs/en/hooks}}
 
 \begin{fullwidth}
-\begin{tabular}{@{}lp{3cm}p{5cm}@{}}
+{\small
+\begin{tabular}{@{}lp{4cm}p{3.5cm}@{}}
 \toprule
-\textbf{Event} & \textbf{Matcher Target} & \textbf{Typical Use} \\
+\textbf{Event} & \textbf{Matcher Values} & \textbf{Typical Use} \\
 \midrule
-\code{SessionStart} & How started & Load context, run health check \\
+\code{SessionStart} & \code{startup}, \code{resume}, \code{clear}, \code{compact} & Load context, health check \\
+\code{InstructionsLoaded} & \code{session\_start}, \code{nested\_traversal}, \code{path\_glob\_match}, \code{include}, \code{compact} & Log which files load \\
 \code{UserPromptSubmit} & (no matcher) & Transform or validate input \\
-\code{PreToolUse} & Tool name & Validate inputs, block operations \\
+\code{PreToolUse} & Tool name & Validate inputs, block ops \\
 \code{PermissionRequest} & Tool name & Auto-allow/deny by rule \\
-\code{PostToolUse} & Tool name & Auto-lint, log, trigger follow-up \\
-\code{PostToolUseFailure} & Tool name & Error handling, retry logic \\
-\code{Notification} & Notification type & Route to Slack, email \\
-\code{SubagentStart} & Agent type & Initialize agent config \\
-\code{SubagentStop} & Agent type & Process agent results \\
-\code{Stop} & (no matcher) & Run cleanup tasks \\
+\code{PostToolUse} & Tool name & Auto-lint, log, follow-up \\
+\code{PostToolUseFailure} & Tool name & Error handling, retry \\
+\code{Notification} & \code{permission\_prompt}, \code{idle\_prompt}, \code{auth\_success}, \code{elicitation\_dialog} & Route alerts \\
+\code{Elicitation} & MCP server name & MCP requests user input \\
+\code{ElicitationResult} & MCP server name & User responds to dialog \\
+\code{SubagentStart} & Agent type/name & Init agent config \\
+\code{SubagentStop} & Agent type/name & Process agent results \\
+\code{Stop} & (no matcher) & Run cleanup \\
+\code{StopFailure} & \code{rate\_limit}, \code{authentication\_failed}, \code{billing\_error}, \code{server\_error}, \code{max\_output\_tokens}, \code{unknown} & Handle session failures \\
 \code{TeammateIdle} & (no matcher) & Notify when agent idles \\
 \code{TaskCompleted} & (no matcher) & Post-task automation \\
-\code{ConfigChange} & Config source & React to settings changes \\
+\code{ConfigChange} & \code{user\_settings}, \code{project\_settings}, \code{local\_settings}, \code{policy\_settings}, \code{skills} & React to config changes \\
+\code{CwdChanged} & (no matcher) & Respond to dir change \\
+\code{FileChanged} & Filename basename & React to file changes \\
 \code{WorktreeCreate} & (no matcher) & Custom worktree setup \\
 \code{WorktreeRemove} & (no matcher) & Custom worktree cleanup \\
-\code{PreCompact} & Trigger type & Save state before compaction \\
-\code{SessionEnd} & Why ended & Save state, update logs \\
+\code{PreCompact} & \code{manual}, \code{auto} & Save state before compaction \\
+\code{PostCompact} & \code{manual}, \code{auto} & Restore state after compaction \\
+\code{SessionEnd} & \code{clear}, \code{resume}, \code{logout}, \code{prompt\_input\_exit}, \code{other} & Save state, update logs \\
 \bottomrule
 \end{tabular}
+}
 \end{fullwidth}
 
-{\footnotesize \textit{Matchers are regex patterns. Tool events match on tool name
-(e.g., \code{Bash}, \code{Edit|Write}). Events marked ``no matcher'' always fire.}}
-
-\section{Hook Types}
+\section{Hook Types (4 Total)}
 
 \begin{description}
   \item[\code{command}] Runs a shell command (most common). Exit 0 = proceed, exit 2 = block.
+    10-minute timeout (configurable).
+  \item[\code{http}] POST JSON to a URL (30-second default timeout).
+    Best for: webhooks, external service notifications, CI triggers.
   \item[\code{prompt}] Single-turn LLM evaluation (Haiku by default).\newline
     Returns \code{\{"ok": true/false\}}.
   \item[\code{agent}] Multi-turn subagent with tool access (up to 50 turns, 60s default timeout).
 \end{description}
+
+\section{Permission Modes (6 Total)}
+
+\marginnote[Official]{Modes verified 2026-03-25.\sourceurl{https://code.claude.com/docs/en/permissions}}
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+\textbf{Mode} & \textbf{Description} \\
+\midrule
+\code{default} & Prompts for permission on first use of each tool \\
+\code{acceptEdits} & Auto-accepts file edit permissions for the session \\
+\code{plan} & Claude can analyze but not modify files or run commands \\
+\code{auto} & Auto-approves with background safety classifier (research preview) \\
+\code{dontAsk} & Auto-denies tools unless pre-approved via \code{/permissions} or allow rules \\
+\code{bypassPermissions} & Skips permission prompts. Use only in isolated environments \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
 
 \section{Settings Precedence (5 Levels)}
 
