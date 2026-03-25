@@ -93,6 +93,13 @@ signal-to-noise drops sharply.
 \end{fullwidth}
 \end{figure}
 
+\marginnote[Warning]{Two distinct thresholds exist:
+\textbf{Quality degradation} ($\sim$60--70\%, practitioner heuristic)
+and \textbf{auto-compaction trigger} ($\sim$83\%, system-level).
+Do not wait for auto-compaction---by that point, quality has already suffered.
+For 1M windows, think in absolute tokens: 600K tokens of noise is worse
+than 120K regardless of the percentage.}
+
 % -------------------------------------------------------------------
 \section{The Full Context Toolkit}
 \label{sec:context-toolkit}
@@ -124,7 +131,8 @@ signal-to-noise drops sharply.
 
 \margintip{Watch the token counter. When it approaches 60--70\% of the window,
 proactively \code{/compact} or \code{/clear}.
-This threshold is a heuristic from observed quality degradation, not a hard cutoff.}
+This is a practitioner heuristic from observed quality degradation, not a hard cutoff.
+Auto-compaction triggers later ($\sim$83\%) but quality has already dropped by then.}
 
 % -------------------------------------------------------------------
 \section{The Status Line: Zero-Cost Monitoring}
@@ -191,7 +199,7 @@ takes $\sim$200 tokens and produces a better result.
 to CLAUDE.md:\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
 \begin{minted}{markdown}
-## Compaction Rules
+## Compact instructions
 When compacting, always preserve:
 - The full list of modified files
 - Any test commands and their results
@@ -202,6 +210,19 @@ For partial compaction, use \code{Esc + Esc} or \code{/rewind},
 select a message checkpoint, and choose \textbf{Summarize from here}.
 This condenses messages from that point forward while keeping
 earlier context intact---more surgical than \code{/compact}.
+
+\begin{warnbox}[Extended Thinking Blocks Are Compaction-Resistant]
+Extended thinking blocks are immutable after generation---auto-compaction
+cannot summarize or truncate them. Heavy thinking sessions create
+compaction-resistant context growth. Mitigations:
+\begin{itemize}
+  \item Use \code{/clear} after deep thinking sessions rather than compacting.
+  \item Delegate thinking-heavy analysis to subagents (\cref{ch:agents})---their
+    thinking context does not persist in your session.
+  \item Monitor context with \code{/context} during extended thinking sessions;
+    thinking tokens are billed as output tokens and consume context budget.
+\end{itemize}
+\end{warnbox}
 
 % -------------------------------------------------------------------
 \section{Session Management}
@@ -249,7 +270,17 @@ The \code{--from-pr} flag is especially powerful for code review:
 and metadata pre-loaded, saving manual context setup.
 \end{tipbox}
 
-\subsection{The CURRENT\_WORK.md Pattern}
+\subsection{Durable Artifacts: The Primary Persistence Strategy}
+
+\convergence{Compaction alone is insufficient for multi-session work.\sourceurl{https://www.anthropic.com/engineering/long-running-agents}}
+Leave clear artifacts that survive compaction, session boundaries, and
+context limits:
+\begin{description}
+  \item[\code{CURRENT\_WORK.md}] Goal, modified files, blockers, next step.
+  \item[Plan documents] For tasks spanning multiple sessions (\cref{sec:plans}).
+  \item[Git commits] Persistent, verified state. Commit early and often.
+  \item[Compaction] A supplement, not the primary strategy.
+\end{description}
 
 \practitioner{Maintain a \code{CURRENT\_WORK.md} file at project root.
 It provides 30-second context resume after any interruption.}

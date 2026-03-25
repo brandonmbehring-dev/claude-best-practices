@@ -352,7 +352,9 @@ Claude generates a starter CLAUDE.md from your project structure. Review it --- 
 - Every public function must have a docstring
 \end{minted}
 
-\margintip{Keep CLAUDE.md under 300 lines. Move module-specific rules to \code{.claude/rules/} with path filters. Full architecture: \emph{\nameref{hb-ch:architecture}}.}
+\margintip{Anthropic recommends under 200 lines per file, under $\sim$500 total.
+Aim for $\sim$300 per core file; offload the rest to rules files and \code{@imports}.
+Full architecture: \emph{\nameref{hb-ch:architecture}}.}
 
 Here's what a mature CLAUDE.md looks like after a few sessions of refinement:
 

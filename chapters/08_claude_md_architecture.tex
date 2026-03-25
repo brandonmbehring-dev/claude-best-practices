@@ -116,6 +116,33 @@ Claude's context fills with irrelevant instructions, and important
 rules from CLAUDE.md get deprioritized.
 \end{warnbox}
 
+\subsection{Advanced Rules Patterns}
+
+\official{Additional rules capabilities:\sourceurl{https://code.claude.com/docs/en/memory}}
+
+\begin{description}
+  \item[User-level rules] Place \code{.md} files in
+    \code{\textasciitilde/.claude/rules/} for personal rules that apply across all projects
+    (e.g., communication preferences, personal tooling conventions).
+  \item[Brace expansion] Path patterns support brace expansion:
+    \code{paths: \{src,tests\}/**/*.py} matches files in both directories.
+  \item[Symlinks] Symlink shared rule files across projects instead of duplicating.
+    Useful when hub-and-spoke \code{@imports} are not sufficient.
+  \item[\code{claudeMdExcludes}] In \code{settings.json}, list directory patterns
+    where CLAUDE.md files should \emph{not} be loaded. Essential for monorepos
+    where dependency directories contain their own CLAUDE.md files:
+\end{description}
+
+\begin{minted}{json}
+{
+  "claudeMdExcludes": [
+    "node_modules",
+    "vendor",
+    "third_party"
+  ]
+}
+\end{minted}
+
 % -------------------------------------------------------------------
 \section{Settings: 5-Level Precedence}
 \label{sec:settings}
@@ -140,10 +167,16 @@ Keep \code{settings.local.json} for personal preferences (model choice, output s
 \section{CLAUDE.md Length and Attention}
 \label{sec:length}
 
-\marginwarning{Keep core CLAUDE.md under $\sim$300 lines. Beyond that, attention per rule
-tends to decrease. This is heuristic, not a hard threshold---but the effect is real.
-(Total config including \code{@imports} may reach 500 lines safely since imports load
-only when relevant.)}
+\marginwarning{Anthropic recommends under
+\textbf{200 lines per file} for adherence\sourceurl{https://code.claude.com/docs/en/memory}
+and under \textbf{$\sim$500 lines total} for
+cost.\sourceurl{https://code.claude.com/docs/en/costs}
+Our recommendation: $\sim$300 lines per core
+file as a practitioner middle ground.}
+
+\marginnote[Tip]{Offload to skills, rules files, and \code{@imports} to stay
+within the 200-line per-file target while keeping total effective config
+under $\sim$500 lines.}
 
 \practitioner{When CLAUDE.md grows long:}
 

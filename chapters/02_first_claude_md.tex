@@ -28,6 +28,8 @@ unless you write it down.
 Claude loads \code{CLAUDE.md} files from multiple locations, merging them in order:
 
 \begin{enumerate}
+  \item \textbf{Managed policy} (\code{managed-settings.json} CLAUDE.md) --- IT-deployed,
+    highest priority (enterprise only)
   \item \code{\textasciitilde/.claude/CLAUDE.md} --- global defaults (applies to all projects)
   \item Project root \code{CLAUDE.md} or \code{.claude/CLAUDE.md} --- project-level instructions
   \item Parent and child directory \code{CLAUDE.md} files --- subdirectory overrides
