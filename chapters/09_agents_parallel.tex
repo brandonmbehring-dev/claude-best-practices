@@ -24,7 +24,7 @@ with its own context. \textbf{Agent team} means a collaborative group
 that shares a task list and can message each other.}
 
 \official{Subagents are purpose-built Claude instances that run in isolated context.\sourceurl{https://code.claude.com/docs/en/sub-agents}}
-They receive a task, execute it with their own tool set, and return results
+\index{subagents}They receive a task, execute it with their own tool set, and return results
 to the parent session.
 
 \begin{minted}{markdown}
@@ -50,6 +50,7 @@ Skills use \code{allowed-tools} (hyphenated). The inconsistency is intentional--
 follow different specification standards.}
 
 \subsection{Subagent Frontmatter Reference}
+\index{subagents!frontmatter}
 
 \begin{fullwidth}
 \begin{tabular}{@{}lp{8cm}@{}}
@@ -74,7 +75,7 @@ command.\sourceurl{https://code.claude.com/docs/en/sub-agents}}
 
 \subsection{Built-In Subagents}
 
-Claude Code ships with several built-in subagent types that can be invoked
+Claude Code ships with several built-in subagent types\index{subagents!built-in types} that can be invoked
 via the Task tool without custom definitions:
 
 \begin{description}
@@ -88,6 +89,7 @@ via the Task tool without custom definitions:
 
 \official{To continue or resume a stopped subagent, use \code{SendMessage}
 with the agent's ID or name.\sourceurl{https://code.claude.com/docs/en/sub-agents}}
+\index{subagents!SendMessage}
 The subagent resumes with its full context preserved.
 Transcripts persist in \code{\textasciitilde/.claude/projects/\{project\}/\{session\}/subagents/}.
 
@@ -100,7 +102,7 @@ the only way to preserve prior context.}
 \section{When to Delegate}
 \label{sec:delegation-decision}
 
-\begin{decisionbox}[Delegate or Do Directly?]
+\index{delegation!when to delegate}\begin{decisionbox}[Delegate or Do Directly?]
 \textbf{Delegate when:}
 \begin{itemize}
   \item The task is independent of your current work
@@ -129,7 +131,7 @@ Parallelism trades cost for speed.}
 \marginnote[Official]{The \code{--worktree} flag creates an isolated copy
 of your repository for parallel work.\sourceurl{https://code.claude.com/docs/en/common-workflows}}
 
-Worktrees solve the fundamental problem of parallel file modifications:
+Worktrees\index{worktrees} solve the fundamental problem of parallel file modifications:
 two agents editing the same files will conflict. Worktrees give each
 agent its own isolated copy of the repository.
 
@@ -161,6 +163,7 @@ is removed silently. If changes exist, you are prompted to merge or discard.
 
 \official{Subagents can also run in isolated worktrees using the
 \code{isolation} frontmatter key:\sourceurl{https://code.claude.com/docs/en/sub-agents}}
+\index{worktrees!isolation}
 
 \begin{minted}{markdown}
 # .claude/agents/parallel-reviewer.md
@@ -193,6 +196,7 @@ Run \code{git worktree prune} to clean up stale entries.}
 % -------------------------------------------------------------------
 \section{The Writer/Reviewer Pattern}
 \label{sec:writer-reviewer}
+\index{Writer/Reviewer pattern}
 
 \official{Use separate sessions to avoid confirmation bias:\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
@@ -230,6 +234,7 @@ and can message each other.\sourceurl{https://code.claude.com/docs/en/agent-team
 \official{Agent Teams extend subagents with collaboration:
 shared task lists, direct messaging between agents,
 and team lead orchestration.\sourceurl{https://code.claude.com/docs/en/agent-teams}}
+\index{Agent Teams}
 
 Best suited for:
 \begin{itemize}
@@ -257,6 +262,7 @@ tools.\sourceurl{https://code.claude.com/docs/en/skills}}
 
 \official{\code{/batch} orchestrates large-scale changes across a codebase
 in parallel.\sourceurl{https://code.claude.com/docs/en/skills}}
+\index{batch@\texttt{/batch}}
 It researches the codebase, decomposes the work into 5--30 independent units,
 presents a plan for approval, then spawns one background agent per unit
 in an isolated git worktree. Each agent implements its unit, runs tests,

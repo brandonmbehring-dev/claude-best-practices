@@ -174,7 +174,8 @@ validate-doc-claims:
 	if [ "$$FAIL" -eq 1 ]; then exit 1; fi; \
 	echo "validate-doc-claims: PASS"
 
-# Informational: spot-check critical URLs (never blocks build)
+# Informational: check all sourceurl citations (never blocks build)
+# Auto-extracted from \sourceurl{} in .tex files (40 unique URLs as of v2.6)
 CRITICAL_URLS = \
   https://code.claude.com/docs/en/hooks \
   https://code.claude.com/docs/en/best-practices \
@@ -191,7 +192,31 @@ CRITICAL_URLS = \
   https://code.claude.com/docs/en/statusline \
   https://platform.claude.com/docs/en/build-with-claude/extended-thinking \
   https://platform.claude.com/docs/en/build-with-claude/prompt-caching \
-  https://platform.claude.com/docs/en/agent-sdk/overview
+  https://platform.claude.com/docs/en/agent-sdk/overview \
+  https://code.claude.com/docs/en/commands \
+  https://code.claude.com/docs/en/costs \
+  https://code.claude.com/docs/en/discover-plugins \
+  https://code.claude.com/docs/en/fast-mode \
+  https://code.claude.com/docs/en/github-actions \
+  https://code.claude.com/docs/en/how-claude-code-works \
+  https://code.claude.com/docs/en/interactive-mode \
+  https://code.claude.com/docs/en/model-config \
+  https://code.claude.com/docs/en/permissions \
+  https://code.claude.com/docs/en/remote-control \
+  https://code.claude.com/docs/en/web-scheduled-tasks \
+  https://platform.claude.com/docs/en/about-claude/pricing \
+  https://platform.claude.com/docs/en/build-with-claude/batch-processing \
+  https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview \
+  https://claude.com/solutions/government \
+  https://trust.anthropic.com/ \
+  https://privacy.claude.com/en/articles/10015870-what-certifications-has-anthropic-obtained \
+  https://privacy.claude.com/en/articles/7996885-how-do-you-use-personal-data-in-model-training \
+  https://support.claude.com/en/articles/11845131-use-claude-code-with-your-team-or-enterprise-plan \
+  https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents \
+  https://www.anthropic.com/news/deloitte-anthropic-partnership \
+  https://www.anthropic.com/news/anthropic-accenture-partnership \
+  https://www.anthropic.com/news/snowflake-anthropic-expanded-partnership \
+  https://github.blog/news-insights/product-news/bringing-developer-choice-to-copilot/
 
 check-urls:
 	@echo "=== URL spot-check (informational) ==="
@@ -204,6 +229,14 @@ check-urls:
 	  fi; \
 	done; \
 	echo "check-urls: DONE (informational only)"
+
+# Generate HTML citation dashboard
+citations:
+	@python3 scripts/generate_citation_index.py --output $(OUTDIR)/citation_index.html
+
+# Generate citation dashboard with live URL checking
+citations-check:
+	@python3 scripts/generate_citation_index.py --check --output $(OUTDIR)/citation_index.html
 
 # --- Cleanup ---
 

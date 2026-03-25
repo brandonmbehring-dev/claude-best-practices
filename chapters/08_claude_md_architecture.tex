@@ -14,6 +14,7 @@ the architecture behind configurations that scale.
 
 \section{The Hub-and-Spoke Pattern}
 \label{sec:hub-and-spoke}
+\index{CLAUDE.md!architecture}\index{CLAUDE.md!hub-and-spoke}
 
 \practitioner{For developers managing multiple repositories,
 maintain a central ``hub'' with shared patterns referenced from each project.}
@@ -44,6 +45,7 @@ Update once, all projects inherit.
 
 \official{Use the \code{@path/to/file.md} import syntax to reference
 external files without duplicating content.\sourceurl{https://code.claude.com/docs/en/memory}}
+\index{CLAUDE.md!imports@\texttt{@}-imports}
 
 \begin{whybox}[Why Hub-and-Spoke]
 Duplication across CLAUDE.md files is not just inconvenient---it is
@@ -123,13 +125,13 @@ rules from CLAUDE.md get deprioritized.
 \begin{description}
   \item[User-level rules] Place \code{.md} files in
     \code{\textasciitilde/.claude/rules/} for personal rules that apply across all projects
-    (e.g., communication preferences, personal tooling conventions).
+    (e.g., communication preferences, personal tooling conventions).\index{CLAUDE.md!user rules}
   \item[Brace expansion] Path patterns support brace expansion:
     \code{paths: \{src,tests\}/**/*.py} matches files in both directories.
   \item[Symlinks] Symlink shared rule files across projects instead of duplicating.
     Useful when hub-and-spoke \code{@imports} are not sufficient.
   \item[\code{claudeMdExcludes}] In \code{settings.json}, list directory patterns
-    where CLAUDE.md files should \emph{not} be loaded. Essential for monorepos
+    where CLAUDE.md files should \emph{not} be loaded.\index{CLAUDE.md!claudeMdExcludes} Essential for monorepos
     where dependency directories contain their own CLAUDE.md files:
 \end{description}
 
@@ -149,7 +151,7 @@ rules from CLAUDE.md get deprioritized.
 
 \marginnote[Official]{Settings documentation:\sourceurl{https://code.claude.com/docs/en/settings}}
 
-Claude Code uses a 5-level settings hierarchy.
+Claude Code uses a 5-level settings hierarchy.\index{CLAUDE.md!loading order}
 Higher levels override lower:
 
 \begin{enumerate}
@@ -178,7 +180,7 @@ file as a practitioner middle ground.}
 within the 200-line per-file target while keeping total effective config
 under $\sim$500 lines.}
 
-\practitioner{When CLAUDE.md grows long:}
+\practitioner{When CLAUDE.md grows long:}\index{CLAUDE.md!line count (200/500)}
 
 \begin{enumerate}
   \item Move module-specific rules to \code{.claude/rules/} with \code{paths:}
@@ -197,6 +199,7 @@ or \code{--output-style} flag.\sourceurl{https://code.claude.com/docs/en/best-pr
 
 \official{Output styles customize how Claude structures its responses:
 tone, verbosity, formatting conventions, and problem-solving protocols.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+\index{output styles}
 
 \practitioner{Custom styles are most valuable when they encode
 \emph{decision protocols}, not just formatting preferences.}

@@ -22,11 +22,13 @@ Items that drift over time and need periodic manual verification.
 
 ## On Model Release
 
-### Pricing
-- **Claims in:** `chapters/14_enterprise.tex` (cost comparison table)
+### Pricing Table (Added v2.6, 2026-03-25)
+- **Claims in:** `chapters/14_enterprise.tex` (API Pricing Reference subsection)
 - **Source:** https://platform.claude.com/docs/en/about-claude/pricing
-- **Action:** Verify $/MTok figures for all listed models
-- **Risk:** Pricing changes with every model generation
+- **Snapshot date:** March 2026
+- **Models listed:** Haiku 4.5 ($1/$5), Sonnet 4.6 ($3/$15), Opus 4.6 ($5/$25), Opus 4.6 fast ($30/$150)
+- **Action:** Verify $/MTok figures on every model release. Update snapshot date.
+- **Risk:** HIGH — pricing changes with every model generation. Table has warnbox noting volatility.
 
 ## Monthly Checks
 

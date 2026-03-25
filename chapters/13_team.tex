@@ -26,9 +26,9 @@ and the same hooks.
   \item[\code{CLAUDE.md}] Project knowledge: build commands, architecture, conventions.
     Reviewed in PRs like any other code.
   \item[\code{.claude/settings.json}] Team permissions: deny rules, required hooks.
-    Committed to git.
+    Committed to git.\index{team!settings.json}
   \item[\code{.claude/settings.local.json}] Personal preferences: model choice,
-    output style, personal API tokens. Auto-gitignored.
+    output style, personal API tokens. Auto-gitignored.\index{team!settings.local.json}
 \end{description}
 
 \begin{whybox}[Why Separate Committed and Local Settings]
@@ -46,7 +46,7 @@ Personal preferences (model, style) are local.
 \label{sec:managed-settings}
 
 \official{IT administrators can deploy \code{managed-settings.json}
-files that override all other settings.\sourceurl{https://code.claude.com/docs/en/settings}} This enables:
+files that override all other settings.\sourceurl{https://code.claude.com/docs/en/settings}}\index{team!managed settings} This enables:
 
 \begin{itemize}
   \item Organization-wide deny rules (sensitive file access)
@@ -78,7 +78,7 @@ To debug unexpected hook behavior:
 \section{Onboarding New Team Members}
 \label{sec:onboarding}
 
-\practitioner{Day 1 with Claude for a new team member:}
+\practitioner{Day 1 with Claude for a new team member:}\index{team!onboarding}
 
 \begin{enumerate}
   \item Clone the repo. CLAUDE.md and settings load automatically.

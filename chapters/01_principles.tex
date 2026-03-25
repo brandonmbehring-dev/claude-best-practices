@@ -15,7 +15,7 @@ The principles in this chapter will inform every decision in this handbook.
 \marginnote[Official]{Claude Code is an agentic coding tool that operates directly
 in your terminal.\sourceurl{https://code.claude.com/docs/en/overview}}
 
-Claude Code runs an \textbf{agent loop}: it reads your prompt, reasons about
+Claude Code runs an \textbf{agent loop}\index{agent loop}: it reads your prompt, reasons about
 the task, selects a tool (read a file, edit code, run a command), observes
 the result, and decides what to do next. This cycle repeats until the task
 is complete or Claude asks for clarification.
@@ -23,12 +23,12 @@ is complete or Claude asks for clarification.
 Three properties define the system:
 
 \begin{description}
-  \item[Context window] Everything Claude knows about your task---your prompt,
+  \item[Context window]\index{context window} Everything Claude knows about your task---your prompt,
     files it has read, tool results, conversation history---occupies a finite
     window. When the window fills, older information fades. Context is not
     infinite memory; it is a workspace.
 
-  \item[Tool use] Claude does not type code into a file. It calls tools:
+  \item[Tool use]\index{tool use} Claude does not type code into a file. It calls tools:
     \code{Read}, \code{Edit}, \code{Write}, \code{Bash}, \code{Glob},
     \code{Grep}. Each tool call consumes context (the request and the result)
     and produces observable effects. Understanding this matters because
@@ -60,7 +60,7 @@ and code written by both together.
 
 \subsection{Never Fail Silently}
 
-Every error must be explicitly reported with recovery options.
+Every error must be explicitly reported with recovery options.\index{principles!never fail silently}
 Silent failures are the most expensive kind of bug:
 they produce incorrect results that look correct,
 propagate through downstream systems undetected,
@@ -96,7 +96,7 @@ visible and actionable.
 
 \subsection{Simplicity Over Complexity}
 
-Short functions. Flat structure. Self-documenting code.
+Short functions. Flat structure. Self-documenting code.\index{principles!simplicity}
 A 20-line function with a clear name is superior to a 5-line function
 with three levels of abstraction.
 
@@ -113,7 +113,7 @@ simple patterns propagate accurately; complex patterns propagate errors.
 
 \subsection{Immutability by Default}
 
-Return new data structures; mark mutations explicitly.
+Return new data structures; mark mutations explicitly.\index{principles!immutability}
 Pure functions are easier to test, easier to parallelize,
 and easier for Claude to reason about.
 
@@ -124,7 +124,7 @@ never be surprised by what a function modifies.
 
 \subsection{Fail Fast with Diagnostics}
 
-Stop immediately on problems with full context:
+Stop immediately on problems with full context:\index{principles!fail fast}
 what failed, what was expected, what was received,
 and what the caller can do about it.
 

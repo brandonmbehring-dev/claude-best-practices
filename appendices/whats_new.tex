@@ -1,0 +1,119 @@
+% Appendix: What's New in v2.5
+\chapter{What's New in v2.5}
+\label{app:whats-new}
+
+This appendix summarizes the major changes from v2.3 (February 2026) to v2.5
+(March 2026) for readers upgrading from previous editions.
+
+\section*{New Chapters and Sections}
+
+\begin{description}
+  \item[1M Context Window Strategy (\cref{ch:context})]
+    New section covering how the 5$\times$ larger context window changes the game.
+    Includes a decision framework (four tiers from $<$30\% to $>$80\%),
+    \code{/compact <focus>} for targeted compaction,
+    and a PreCompact hook example for state preservation.
+
+  \item[Durable Artifacts (\cref{ch:context})]
+    Primary persistence strategy: \code{CURRENT\_WORK.md}, plan documents,
+    and git commits outlast compaction and session boundaries.
+    Compaction is positioned as a supplement, not the primary strategy.
+
+  \item[\code{/btw}: Zero-Context-Cost Side Questions (\cref{ch:context})]
+    Ask questions without growing context.
+    The answer appears in a dismissible overlay and never enters conversation history.
+
+  \item[Fast Mode (\cref{ch:prompting})]
+    Same Opus 4.6, 2.5$\times$ faster, \$30/\$150 MTok (research preview).
+    Toggle: \code{/fast} or \code{Alt+O}. Falls back to standard on rate limit.
+
+  \item[\code{/batch}: Parallel Codebase Changes (\cref{ch:agents})]
+    Bundled skill that decomposes work into 5--30 units and spawns parallel
+    agents in isolated worktrees. Each agent implements, tests, and opens a PR.
+
+  \item[Agent SDK (\cref{ch:automation})]
+    Expanded from a decision box to a full subsection with Python and TypeScript
+    examples. Same tools as Claude Code, programmable for production deployment.
+
+  \item[Scheduled Tasks (\cref{ch:automation})]
+    Three tiers: Cloud (\code{/schedule}, runs on Anthropic infrastructure),
+    Desktop (local machine, persistent), and \code{/loop} (session-scoped polling).
+
+  \item[GitHub Actions (\cref{ch:automation})]
+    \code{anthropics/claude-code-action@v1} for AI-powered PR review.
+    Triggered by \code{@claude} in any PR or issue comment.
+
+  \item[Remote Control (\cref{ch:automation})]
+    \code{/remote-control} connects \code{claude.ai/code} or the mobile app
+    to a session running on your machine.
+
+  \item[API Pricing Reference (\cref{ch:enterprise})]
+    Model pricing table with Haiku 4.5, Sonnet 4.6, Opus 4.6, fast mode,
+    and discount combinations. Includes staleness qualifier.
+\end{description}
+
+\section*{Corrected Claims}
+
+\begin{description}
+  \item[Hook events: 21 $\rightarrow$ 24]
+    Added StopFailure, CwdChanged, FileChanged. Full matcher values documented
+    for all 24 events (\cref{ch:extending}).
+
+  \item[Hook handler types: 3 $\rightarrow$ 4]
+    Added \code{http} type for webhooks and CI triggers (\cref{ch:extending}).
+
+  \item[Permission modes: 5 $\rightarrow$ 6]
+    Added \code{auto} (research preview). All six modes documented with
+    correct \code{Shift+Tab} cycling behavior (\cref{ch:first-session}).
+
+  \item[Keyboard shortcuts corrected]
+    \code{Ctrl+G} opens prompts in the default text editor (not ``the plan'').
+    \code{Shift+Tab} cycles through all enabled modes (not a fixed three-mode loop).
+
+  \item[\code{/effort auto} explained]
+    Resets effort to the model's default behavior---does not mean ``dynamic per-turn.''
+
+  \item[60\% degradation threshold qualified]
+    Clarified as a practitioner heuristic ($\sim$60--70\%) distinct from the
+    auto-compaction trigger ($\sim$83\%). For 1M windows, absolute token counts
+    matter more than percentages.
+
+  \item[CLAUDE.md line count: both official numbers cited]
+    Anthropic recommends under 200 lines per file (memory docs) and under
+    $\sim$500 lines total (cost docs). Our 300-line guidance is reframed as a
+    practitioner compromise between the two.
+
+  \item[Caching claims qualified]
+    ``Up to 60--80\%'' savings now includes ``(workload-dependent)'' qualifier.
+    ``Caching beats model downgrading'' now says ``typically saves more.''
+
+  \item[FedRAMP separated from commercial certs]
+    Government authorizations (FedRAMP High, IL5) are now distinct from
+    commercial certifications (SOC 2, ISO 27001, HIPAA BAA) (\cref{ch:enterprise}).
+
+  \item[Two broken URLs fixed]
+    Long-running-agents blog post URL and GitHub Copilot blog post URL
+    updated to current locations.
+\end{description}
+
+\section*{Expanded Content}
+
+\begin{description}
+  \item[Code intelligence plugins (\cref{ch:extending})]
+    Before/after table showing go-to-definition, find-references, and
+    post-edit error detection capabilities.
+
+  \item[Extended thinking + compaction warning (\cref{ch:context})]
+    Thinking blocks are immutable---compaction cannot summarize them.
+    Mitigations: \code{/clear} after deep thinking, or delegate to subagents.
+
+  \item[Appendix C: full command reference]
+    Expanded from 16 to $\sim$50 commands, structured as built-in commands
+    and bundled skills. Keyboard shortcuts corrected and expanded.
+
+  \item[Property-based testing example (\cref{ch:testing})]
+    Concrete Hypothesis example demonstrating schema, null, and range invariants.
+
+  \item[MCP walkthrough (\cref{ch:extending})]
+    Practical before/after showing \code{claude mcp add} with a real server.
+\end{description}

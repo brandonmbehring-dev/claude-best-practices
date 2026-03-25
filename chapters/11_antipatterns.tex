@@ -16,7 +16,7 @@ Each includes the symptom, root cause, prevention,
 % -------------------------------------------------------------------
 \section{Context Overload}
 
-\antipattern{Context Overload}{%
+\index{anti-patterns!context overload}\antipattern{Context Overload}{%
 Claude ignores important rules. Instructions from CLAUDE.md are followed
 inconsistently. Behavior degrades over long sessions.}{%
 Hub-and-spoke architecture (\cref{ch:architecture}).
@@ -65,7 +65,7 @@ Instructions work at session start but fail after 30 minutes.}{%
 % -------------------------------------------------------------------
 \section{The Kitchen Sink Session}
 
-\antipattern{Kitchen Sink Session}{%
+\index{anti-patterns!kitchen sink session}\antipattern{Kitchen Sink Session}{%
 Performance degrades midway through a session. Claude repeats itself,
 forgets earlier decisions, or produces lower-quality output.}{%
 Use \code{/clear} between unrelated tasks.
@@ -89,7 +89,7 @@ so you do not lose context about what you were doing.
 % -------------------------------------------------------------------
 \section{Over-Correcting}
 
-\antipattern{Over-Correcting}{%
+\index{anti-patterns!over-correcting}\antipattern{Over-Correcting}{%
 Three or more rounds of ``no, that's not what I meant'' followed by
 increasingly desperate attempts at the same task.}{%
 Two-failure rule (\cref{sec:two-failure}): after two failed corrections,
@@ -120,7 +120,7 @@ with slight variations.}{%
 % -------------------------------------------------------------------
 \section{The Permanent Prototype}
 
-\antipattern{Permanent Prototype}{%
+\index{anti-patterns!permanent prototype}\antipattern{Permanent Prototype}{%
 Code has been ``working'' for weeks but has no tests, no type hints,
 no error handling. ``We'll add those later'' becomes permanent.}{%
 Define explicit phase transition checklists in CLAUDE.md (\cref{sec:phases}).
@@ -147,7 +147,7 @@ It has users. It has no tests.}{%
 % -------------------------------------------------------------------
 \section{Pipeline Direction Violations}
 
-\antipattern{Pipeline Direction Violations}{%
+\index{anti-patterns!pipeline direction}\antipattern{Pipeline Direction Violations}{%
 Carefully edited downstream artifacts are overwritten when an upstream
 script is re-run.}{%
 Document pipeline flow direction.
@@ -171,7 +171,7 @@ manual YAML edits.}{%
 % -------------------------------------------------------------------
 \section{The Verification Gap}
 
-\antipattern{Verification Gap}{%
+\index{anti-patterns!verification gap}\antipattern{Verification Gap}{%
 AI-generated code accepted without testing. Subtle bugs surface in
 production weeks later.}{%
 Always provide verification criteria (\cref{sec:verification}).
@@ -198,7 +198,7 @@ It ``works'' but you have zero confidence in it.}{%
 % -------------------------------------------------------------------
 \section{The Infinite Exploration}
 
-\antipattern{Infinite Exploration}{%
+\index{anti-patterns!infinite exploration}\antipattern{Infinite Exploration}{%
 You ask Claude to ``investigate'' something without scoping it.
 Claude reads hundreds of files, filling the context window with
 exploration results that crowd out implementation.}{%
@@ -245,7 +245,7 @@ started the actual task.}{%
 % -------------------------------------------------------------------
 \section{Big-Bang Refactoring}
 
-\antipattern{Big-Bang Refactoring}{%
+\index{anti-patterns!big-bang refactoring}\antipattern{Big-Bang Refactoring}{%
 A large rewrite fails partway through, leaving the codebase broken.}{%
 Incremental protocol (\cref{sec:refactoring-protocol}):
 Extract $\rightarrow$ Test $\rightarrow$ Harden $\rightarrow$ Promote.

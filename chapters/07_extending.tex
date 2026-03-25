@@ -56,7 +56,7 @@ Skills take precedence if names conflict.\sourceurl{https://code.claude.com/docs
 \marginnote[Official]{Each skill lives in its own directory as
 \code{SKILL.md}.\sourceurl{https://code.claude.com/docs/en/skills}}
 
-\official{Skills combine domain knowledge with executable workflows.\sourceurl{https://code.claude.com/docs/en/skills}}
+\official{Skills combine domain knowledge with executable workflows.\sourceurl{https://code.claude.com/docs/en/skills}}\index{skills}
 Unlike commands (which are prompt templates), skills can:
 
 \begin{itemize}
@@ -180,7 +180,7 @@ This bridges skills and subagents (\cref{ch:agents}).
 
 \marginnote[Official]{Skill descriptions consume $\sim$2\% of context window
 (fallback: 16{,}000 characters).
-Use \code{/context} to check for excluded skills.\sourceurl{https://code.claude.com/docs/en/skills}}
+Use \code{/context} to check for excluded skills.\sourceurl{https://code.claude.com/docs/en/skills}}\index{skills!budget (2\%)}
 
 Permission rules can target skills specifically:
 
@@ -208,13 +208,13 @@ saves 13 hours per year. Measure value by frequency $\times$ savings.}
 
 \convergence{Hooks are the enforcement layer.
 Unlike CLAUDE.md instructions (which are advisory),
-hooks \textbf{always execute}.}
+hooks \textbf{always execute}.}\index{hooks}
 
 \subsection{Available Lifecycle Events (24 Total)}
 
 \marginnote[Official]{Event list and matcher values verified 2026-03-25.
 Matchers are specific enum values, not arbitrary
-regex.\sourceurl{https://code.claude.com/docs/en/hooks}}
+regex.\sourceurl{https://code.claude.com/docs/en/hooks}}\index{hooks!events (24)}
 
 \begin{fullwidth}
 \begin{tabular}{@{}lp{4.5cm}p{4cm}@{}}
@@ -250,14 +250,14 @@ regex.\sourceurl{https://code.claude.com/docs/en/hooks}}
 \end{fullwidth}
 
 \practitioner{The golden rule: if a standard is non-negotiable, make it a hook.
-If it is advisory, put it in CLAUDE.md.}
+If it is advisory, put it in CLAUDE.md.}\index{hooks!matchers}
 
 \subsection{Handler Types}
 
 \marginnote[Official]{Not all events support all handler types.
 8 events support all 4; the remainder are command-only.\sourceurl{https://code.claude.com/docs/en/hooks}}
 
-Hooks support four handler types. Command timeout is 10 minutes (increased
+Hooks support four handler types.\index{hooks!handler types (4)} Command timeout is 10 minutes (increased
 from 60 seconds in earlier releases).
 
 \begin{description}
@@ -325,7 +325,7 @@ On Windows WSL, use \code{powershell.exe} with toast notifications.}
 tools and data sources.\sourceurl{https://code.claude.com/docs/en/mcp}}
 
 \official{The Model Context Protocol (MCP) connects Claude to
-external services, databases, APIs, and custom tools.\sourceurl{https://code.claude.com/docs/en/mcp}}
+external services, databases, APIs, and custom tools.\sourceurl{https://code.claude.com/docs/en/mcp}}\index{MCP}
 
 \begin{minted}{bash}
 # Add an MCP server
@@ -339,15 +339,47 @@ claude mcp add github --transport stdio -- gh-mcp
 
 Key concepts:
 \begin{description}
-  \item[Servers] Provide tools, resources, and prompts via a standard protocol.
-  \item[Tools] Functions Claude can call (query a database, create a ticket).
+  \item[Servers]\index{MCP!servers} Provide tools, resources, and prompts via a standard protocol.
+  \item[Tools]\index{MCP!tools} Functions Claude can call (query a database, create a ticket).
   \item[Resources] Data Claude can reference via \code{@server:resource/path}.
   \item[Dynamic loading] When tools exceed 10\% of context
     (see \cref{sec:context-degradation} for why this matters),
     Claude uses on-demand search to keep context efficient.
 \end{description}
 
-\official{Permission rules can use wildcards for MCP tool scoping:\sourceurl{https://code.claude.com/docs/en/permissions}}
+\subsection{Practical MCP Walkthrough}
+
+\begin{fullwidth}
+\begin{beforeafter}
+\before
+\begin{minted}{bash}
+# Manual: raw API calls to GitHub
+curl -H "Authorization: token $GH_TOKEN" \
+  https://api.github.com/repos/org/repo/issues
+# Parse JSON, extract what you need, paste into Claude
+\end{minted}
+
+\after
+\begin{minted}{bash}
+# One command: Claude can now query GitHub directly
+claude mcp add github \
+  --transport stdio -- npx @anthropic/mcp-github
+
+# Verify it works
+claude mcp list          # Shows: github (stdio)
+
+# Now in any session, Claude can:
+#   - List/create issues and PRs
+#   - Read repository contents
+#   - Search code across repos
+\end{minted}
+\end{beforeafter}
+\end{fullwidth}
+
+\margintip{MCP servers run locally---your credentials never leave your machine.
+Claude communicates with the server over stdio, not over the network.}
+
+\official{Permission rules can use wildcards for MCP tool scoping:\sourceurl{https://code.claude.com/docs/en/permissions}}\index{MCP!permissions}
 
 \begin{minted}{json}
 {
@@ -396,7 +428,7 @@ see \cref{sec:managed-settings}.}
 Plugins bundle skills, hooks, subagents, and MCP into installable
 units.\sourceurl{https://code.claude.com/docs/en/plugins}}
 
-\official{Plugins are pre-packaged extensions from the community and Anthropic.\sourceurl{https://code.claude.com/docs/en/plugins}}
+\official{Plugins are pre-packaged extensions from the community and Anthropic.\sourceurl{https://code.claude.com/docs/en/plugins}}\index{plugins}
 They bundle multiple extension types into a single installable unit,
 avoiding manual configuration.
 
@@ -456,7 +488,7 @@ and network access at the OS level.\sourceurl{https://code.claude.com/docs/en/sa
 
 \official{Sandboxing provides OS-level isolation that restricts
 filesystem and network access, allowing Claude to work more freely
-within defined boundaries.\sourceurl{https://code.claude.com/docs/en/sandboxing}}
+within defined boundaries.\sourceurl{https://code.claude.com/docs/en/sandboxing}}\index{sandboxing}
 
 With sandboxing enabled, Claude can run commands without per-action
 permission prompts because the sandbox prevents access beyond

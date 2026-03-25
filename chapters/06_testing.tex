@@ -35,7 +35,7 @@ With them, Claude becomes a self-correcting system.
 
 \subsection{The 6-Layer Validation Architecture}
 
-Layer defenses so that no single failure mode goes undetected:
+Layer defenses so that no single failure mode goes undetected:\index{testing!6-layer model}
 
 \begin{enumerate}
   \item \textbf{Type Safety} --- Catch type errors at compile/lint time.
@@ -58,6 +58,30 @@ Layer defenses so that no single failure mode goes undetected:
     Generate random inputs. Catch edge cases you did not think of.
 \end{enumerate}
 
+\practitioner{Property-based tests are underused. A single Hypothesis test
+can replace dozens of hand-written edge-case tests:}\index{testing!property-based}
+
+\begin{minted}{python}
+from hypothesis import given, settings
+from hypothesis import strategies as st
+import pandas as pd
+
+@given(st.lists(
+    st.floats(allow_nan=True, allow_infinity=False),
+    min_size=1, max_size=100
+))
+@settings(max_examples=200)
+def test_feature_builder_invariants(values):
+    df = pd.DataFrame({"amount": values})
+    result = build_features(df)
+    # Schema invariant: output columns never change
+    assert set(result.columns) == {"amount", "log_amount", "is_missing"}
+    # Null invariant: NaN inputs produce is_missing=True
+    assert (df["amount"].isna() == result["is_missing"]).all()
+    # Range invariant: log_amount is never negative
+    assert (result["log_amount"].dropna() >= 0).all()
+\end{minted}
+
 \margintip{Layers 1--2 are cheap to add to any project today.
 Layers 3--4 are the baseline for production.
 Layers 5--6 are for critical systems.}
@@ -68,7 +92,7 @@ Layers 5--6 are for critical systems.}
 
 \practitioner{Not all code needs the same rigor.
 Applying production standards to a prototype kills velocity.
-Applying prototype standards to production kills reliability.}
+Applying prototype standards to production kills reliability.}\index{testing!phase-appropriate}
 
 \begin{fullwidth}
 \begin{tabular}{@{}lp{3cm}p{3cm}p{4cm}@{}}
@@ -112,7 +136,7 @@ For greenfield, this means: provide test cases in your initial prompt,
 not after the code is written.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
 \practitioner{The test-first pattern produces higher-quality code
-than code-first:}
+than code-first:}\index{testing!test-first pattern}
 
 \begin{enumerate}
   \item Describe the \textbf{interface}: inputs, outputs, edge cases.

@@ -44,7 +44,7 @@ rather than root causes.
 
 \practitioner{Structure debugging as hypothesis testing, not error correction.
 Claude is a pair programmer who catches different errors because it has
-no sunk cost in your approach.}
+no sunk cost in your approach.}\index{collaboration!hypothesis debugging}
 
 \begin{fullwidth}
 \begin{beforeafter}[Debugging]
@@ -316,7 +316,7 @@ before and after the docstring.
 
 \official{For larger features, have Claude interview you before implementation.
 Start with a minimal prompt and ask Claude to dig into the hard
-parts.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+parts.\sourceurl{https://code.claude.com/docs/en/best-practices}}\index{collaboration!interview pattern}
 
 \begin{minted}{text}
 I want to build a feature drift monitoring system.
@@ -349,7 +349,7 @@ The result is more complete requirements with less effort.
 When you make an architecture decision \emph{with} Claude,
 the conversation captures not just what you decided but why,
 and what alternatives were considered. An Architecture Decision Record
-(ADR) preserves this reasoning for your future self.
+(ADR)\index{collaboration!ADR} preserves this reasoning for your future self.
 
 \begin{minted}{markdown}
 # ADR-007: Offline Feature Computation

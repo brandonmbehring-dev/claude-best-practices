@@ -1,0 +1,144 @@
+% Appendix: Glossary
+\chapter{Glossary}
+\label{app:glossary}
+
+Key terms used throughout this handbook.
+Chapter references point to the primary discussion of each term.
+
+\begin{description}[style=nextline, leftmargin=2cm]
+
+  \item[Agent loop]
+    The core cycle: prompt $\rightarrow$ reason $\rightarrow$ tool $\rightarrow$ observe $\rightarrow$ repeat.
+    (\cref{ch:principles})
+
+  \item[Agent Teams]
+    Research preview. Multiple agents sharing task lists with direct messaging
+    and team lead orchestration. (\cref{ch:agents})
+
+  \item[Auto-compaction]
+    Automatic context summarization triggered at $\sim$83\% of the context window.
+    (\cref{ch:context})
+
+  \item[Auto mode]
+    Permission mode where a classifier model approves or blocks actions
+    without human prompts. Research preview. (\cref{ch:first-session})
+
+  \item[\code{/batch}]
+    Bundled skill that decomposes large-scale changes into 5--30 independent units,
+    spawns parallel agents in isolated worktrees, each opening a PR.
+    (\cref{ch:agents})
+
+  \item[Batch API]
+    Asynchronous processing at 50\% discount. Up to 100,000 requests per batch.
+    (\cref{ch:prompting})
+
+  \item[\code{/btw}]
+    Zero-context-cost side question. Answer appears in a dismissible overlay
+    and never enters conversation history. (\cref{ch:context})
+
+  \item[CLAUDE.md]
+    Persistent configuration file loaded every session. The single most important
+    configuration artifact. (\cref{ch:first-claude-md}, \cref{ch:architecture})
+
+  \item[Compaction]
+    Summarizing conversation history to free context space.
+    Customizable via \code{CompactInstructions} in CLAUDE.md. (\cref{ch:context})
+
+  \item[\code{/compact <focus>}]
+    Targeted compaction: direct summarization toward specific context.
+    Example: \code{/compact Focus on the API changes}. (\cref{ch:context})
+
+  \item[Context budget]
+    The finite token capacity of a conversation. Performance degrades as it fills.
+    (\cref{ch:context})
+
+  \item[Context window]
+    Total token capacity: 200K (Sonnet) or 1M (Opus 4.6). (\cref{ch:context})
+
+  \item[Convergence]
+    Practice agreed upon by both official Anthropic documentation and
+    independent practitioners. Tagged {\color{WarmGold}\textbf{[Convergence]}} in this handbook.
+    (\cref{ch:principles})
+
+  \item[Durable artifacts]
+    Files that persist across sessions: \code{CURRENT\_WORK.md}, plan documents,
+    git commits. Primary persistence strategy; compaction supplements.
+    (\cref{ch:context})
+
+  \item[Extended thinking]
+    Claude's internal reasoning before responding. Toggle: \code{Alt+T}.
+    Effort levels: \code{low}, \code{medium}, \code{high}, \code{max}, \code{auto}.
+    (\cref{ch:prompting})
+
+  \item[Fan-out]
+    Parallel execution of \code{claude -p} across multiple files.
+    Test on 2--3 files before scaling. (\cref{ch:automation})
+
+  \item[Fast mode]
+    Same Opus 4.6, 2.5$\times$ faster, \$30/\$150 MTok. Research preview.
+    Toggle: \code{/fast} or \code{Alt+O}. (\cref{ch:prompting})
+
+  \item[Hooks]
+    Scripts that run automatically at specific lifecycle events (24 events,
+    4 handler types). Deterministic---unlike CLAUDE.md, which is advisory.
+    (\cref{ch:extending})
+
+  \item[Interleaved thinking]
+    Extended thinking between tool calls in a single turn, enabling
+    nuanced multi-step workflows. (\cref{ch:prompting})
+
+  \item[MCP (Model Context Protocol)]
+    Open standard for connecting Claude to external services, databases,
+    APIs, and custom tools. (\cref{ch:extending})
+
+  \item[Official]
+    Practice documented by Anthropic. Tagged {\color{WarmPlum}\textbf{[Official]}} in this handbook.
+    (\cref{ch:principles})
+
+  \item[Permission modes]
+    Six levels of tool approval: \code{default}, \code{acceptEdits}, \code{plan},
+    \code{auto} (research preview), \code{dontAsk}, \code{bypassPermissions}.
+    (\cref{ch:first-session})
+
+  \item[Plan Mode]
+    Read-only mode for exploration and planning. Claude reasons but cannot
+    edit files. Enter via \code{Shift+Tab}. (\cref{ch:first-session})
+
+  \item[Practitioner]
+    Practice discovered through usage, not documentation.
+    Tagged {\color{WarmGreen}\textbf{[Practitioner]}} in this handbook. (\cref{ch:principles})
+
+  \item[PreCompact hook]
+    Fires before compaction (matchers: \code{manual}, \code{auto}).
+    Used for state preservation---e.g., serializing critical data to disk.
+    (\cref{ch:context})
+
+  \item[Prompt caching]
+    Reusing previously processed prompt content. Cache reads cost 90\% less
+    than standard input tokens. (\cref{ch:prompting})
+
+  \item[Skills]
+    Markdown files in \code{.claude/skills/} that extend Claude with domain
+    knowledge and reusable workflows. Loaded on demand. (\cref{ch:extending})
+
+  \item[Subagent]
+    Isolated Claude instance with its own context and tool set.
+    Returns results to the parent session. (\cref{ch:agents})
+
+  \item[Two-failure rule]
+    After two corrections in one session, \code{/clear} and write a better prompt.
+    Accumulated corrections pollute context. (\cref{ch:first-session})
+
+  \item[Worktree]
+    Isolated git working directory for parallel file modifications.
+    Each agent gets its own branch and working copy. (\cref{ch:agents})
+
+  \item[Writer/Reviewer pattern]
+    Separate sessions for creation and review to prevent confirmation bias.
+    The reviewer has no context about the writer's intent. (\cref{ch:agents})
+
+  \item[Zero Data Retention (ZDR)]
+    No storage of conversation data. Available for API and Enterprise plans.
+    (\cref{ch:enterprise})
+
+\end{description}

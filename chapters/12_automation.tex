@@ -21,6 +21,7 @@ the building blocks. This chapter assembles them into pipelines.
 \code{--output-format json|stream-json|text}.\sourceurl{https://code.claude.com/docs/en/overview}}
 
 \official{Use \code{claude -p} for non-interactive automation.\sourceurl{https://code.claude.com/docs/en/overview}}
+\index{headless mode}
 
 \begin{description}
   \item[\code{-p "prompt"}] Single prompt, no interaction.
@@ -30,6 +31,7 @@ the building blocks. This chapter assembles them into pipelines.
 \end{description}
 
 \subsection{Fan-Out Pattern}
+\index{headless mode!fan-out}
 
 \begin{fullwidth}
 \begin{beforeafter}
@@ -59,6 +61,7 @@ done
 
 \official{The \code{--allowedTools} flag scopes what Claude can do in unattended
 mode.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+\index{headless mode!allowedTools@\texttt{--allowedTools}}
 Use glob patterns for fine-grained control:
 
 \begin{minted}{bash}
@@ -112,6 +115,7 @@ custom tool definitions or programmatic control flow.
 \official{The Agent SDK provides the same tools, agent loop, and context
 management that power Claude Code, programmable in Python and
 TypeScript.\sourceurl{https://platform.claude.com/docs/en/agent-sdk/overview}}
+\index{Agent SDK}
 
 \begin{minted}{bash}
 # Install
@@ -222,13 +226,13 @@ Min interval & 1 hour & 1 minute & 1 minute & \\
 \end{fullwidth}
 
 \begin{description}
-  \item[Cloud (\code{/schedule})] Create from CLI, web, or Desktop app.
+  \item[Cloud (\code{/schedule})] Create from CLI, web, or Desktop app.\index{scheduled tasks!Cloud}
     Runs on Anthropic infrastructure---works even when your machine is off.
     Each run clones the repo fresh, executes the prompt, and creates a session
     you can review.
   \item[Desktop] Schedule tasks that run on your machine with access to
-    local files and MCP servers.
-  \item[\code{/loop}] Bundled skill. Runs a prompt repeatedly on an interval
+    local files and MCP servers.\index{scheduled tasks!Desktop}
+  \item[\code{/loop}] Bundled skill.\index{scheduled tasks!loop@\texttt{/loop}} Runs a prompt repeatedly on an interval
     while the session stays open: \code{/loop 5m check if the deploy finished}.
     Session-scoped---stops when you close the session.
 \end{description}
@@ -246,6 +250,7 @@ as a GitHub Action.\sourceurl{https://code.claude.com/docs/en/github-actions}}
 
 \official{Claude Code GitHub Actions brings AI-powered automation to your
 GitHub workflow.\sourceurl{https://code.claude.com/docs/en/github-actions}}
+\index{GitHub Actions}
 Mention \code{@claude} in any PR or issue comment, and Claude can analyze
 code, create pull requests, implement features, and fix bugs---following
 your CLAUDE.md guidelines.
@@ -283,6 +288,7 @@ jobs:
 
 \official{Remote Control connects claude.ai/code or the Claude mobile app
 to a session running on your machine.\sourceurl{https://code.claude.com/docs/en/remote-control}}
+\index{remote control}
 Start a task at your desk, then pick it up from your phone or another browser.
 Your local filesystem, MCP servers, and project configuration stay available.
 

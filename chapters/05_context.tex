@@ -21,7 +21,7 @@ for cross-session persistence.
 Use \code{/clear} between unrelated tasks. Use \code{/compact}
 for selective summarization.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
-\begin{whybox}[The Non-Linear Cost of Context]
+\begin{whybox}[The Non-Linear Cost of Context]\index{context!degradation}
 Context degradation is not gradual---there is a noticeable threshold
 where Claude begins to lose track of earlier instructions.
 Every token of context spent on irrelevant information
@@ -83,7 +83,7 @@ signal-to-noise drops sharply.
 
   % Threshold line at 60%
   \draw[dashed, WarmRose!80, thick] (0.60*\barwidth, -0.3) -- (0.60*\barwidth, 3.3)
-    node[above, font=\tiny\itshape, text=WarmRose!80] {$\sim$60\% threshold};
+    node[above, font=\tiny\itshape, text=WarmRose!80] {$\sim$60\% threshold};\index{context!60\% threshold}
 
 \end{tikzpicture}
 \caption{Context composition over time (illustrative proportions). Noise (old errors,
@@ -98,17 +98,17 @@ signal-to-noise drops sharply.
 and \textbf{auto-compaction trigger} ($\sim$83\%, system-level).
 Do not wait for auto-compaction---by that point, quality has already suffered.
 For 1M windows, think in absolute tokens: 600K tokens of noise is worse
-than 120K regardless of the percentage.}
+than 120K regardless of the percentage.}\index{context!auto-compaction}
 
 % -------------------------------------------------------------------
 \section{The Full Context Toolkit}
 \label{sec:context-toolkit}
 
 \begin{description}
-  \item[\code{/clear}] Wipe context and start fresh. Use between unrelated tasks.
+  \item[\code{/clear}]\index{sessions!clear@\texttt{/clear}} Wipe context and start fresh. Use between unrelated tasks.
     Cost: $\sim$30 seconds. Benefit: full attention on the next task.
 
-  \item[\code{/compact}] Summarize conversation while preserving key decisions.
+  \item[\code{/compact}] Summarize conversation while preserving key decisions.\index{compaction}
     Less aggressive than \code{/clear}; retains important context.
     Use when a long task genuinely needs accumulated context but the
     window is getting large.
@@ -124,7 +124,7 @@ than 120K regardless of the percentage.}
   \item[\code{/context}] Visualize current context usage.
     Shows how much of the window is consumed and by what.
 
-  \item[\code{/btw}] Ask a side question without growing context.
+  \item[\code{/btw}]\index{btw@\texttt{/btw}} Ask a side question without growing context.
     \official{The answer appears in a dismissible overlay and never enters
     conversation history.\sourceurl{https://code.claude.com/docs/en/interactive-mode}}
     Works even while Claude is processing. No tool access---answers from
@@ -152,7 +152,7 @@ Auto-compaction triggers later ($\sim$83\%) but quality has already dropped by t
 consumed. Fully customizable via script.\sourceurl{https://code.claude.com/docs/en/statusline}}
 
 \official{Claude Code displays a configurable status line showing session
-metrics in real time.\sourceurl{https://code.claude.com/docs/en/statusline}} By default it shows the active model, git branch,
+metrics in real time.\sourceurl{https://code.claude.com/docs/en/statusline}}\index{status line} By default it shows the active model, git branch,
 session cost, and context window usage percentage.
 
 You can extend it with a custom script whose output is appended
@@ -206,7 +206,7 @@ takes $\sim$200 tokens and produces a better result.
 \subsection{Customizing Compaction}
 
 \official{You can control what survives compaction by adding instructions
-to CLAUDE.md:\sourceurl{https://code.claude.com/docs/en/best-practices}}
+to CLAUDE.md:\sourceurl{https://code.claude.com/docs/en/best-practices}}\index{compaction!CompactInstructions}
 
 \begin{minted}{markdown}
 ## Compact instructions
@@ -224,7 +224,7 @@ For targeted compaction, run \code{/compact} with a focus argument:
 \end{minted}
 
 \official{Run \code{/compact <focus>} to direct summarization toward specific
-context.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+context.\sourceurl{https://code.claude.com/docs/en/best-practices}}\index{compaction!compact focus@\texttt{/compact} focus}
 This is strategic pre-compaction: instead of waiting for auto-compaction
 to summarize \emph{everything}, you surgically remove noise while
 preserving signal. Use it when switching sub-tasks within a long session.
@@ -261,7 +261,7 @@ before it fires.\sourceurl{https://code.claude.com/docs/en/how-claude-code-works
 At 1M, the same percentages represent vastly different absolute
 quantities---and absolute noise, not the percentage, drives quality loss.}
 
-The 1M window is a qualitative shift.
+The 1M window is a qualitative shift.\index{context!1M strategy}
 With 200K tokens, aggressive context management was survival.
 With 1M, you have room to breathe---but also room
 to accumulate far more noise before any alarm fires.
@@ -283,7 +283,7 @@ Practical ceiling & $\sim$140K & $\sim$700K & Absolute token count, not \%, dete
 \official{The \code{PreCompact} hook fires before compaction begins.
 Matchers: \code{manual} (user-triggered) or \code{auto}
 (system-triggered). The hook cannot block
-compaction.\sourceurl{https://code.claude.com/docs/en/hooks}}
+compaction.\sourceurl{https://code.claude.com/docs/en/hooks}}\index{compaction!PreCompact hook}
 
 Use it to serialize critical state to disk before compaction discards detail:
 
@@ -339,10 +339,10 @@ it does not replace it.}
 \official{Sessions persist across terminal restarts.\sourceurl{https://code.claude.com/docs/en/overview}} Key commands:
 
 \begin{description}
-  \item[\code{claude --continue}] Resume the most recent session.
+  \item[\code{claude --continue}] Resume the most recent session.\index{sessions!resume}
   \item[\code{claude --resume}] Pick from a list of previous sessions.
   \item[\code{claude --from-pr 123}] Start a session with PR context pre-loaded.
-  \item[\code{/rename "feature-auth"}] Give descriptive names for later retrieval.
+  \item[\code{/rename "feature-auth"}] Give descriptive names for later retrieval.\index{sessions!naming}
 \end{description}
 
 \subsection{Session Navigation}
@@ -378,7 +378,7 @@ and metadata pre-loaded, saving manual context setup.
 \subsection{Durable Artifacts: The Primary Persistence Strategy}
 \label{subsec:durable-artifacts}
 
-\convergence{Compaction alone is insufficient for multi-session work.\sourceurl{https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents}}
+\convergence{Compaction alone is insufficient for multi-session work.\sourceurl{https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents}}\index{durable artifacts}
 Leave clear artifacts that survive compaction, session boundaries, and
 context limits:
 \begin{description}
@@ -429,7 +429,7 @@ Write tests verifying no leakage across CV folds.
 \marginnote[Official]{Claude records and recalls memories across sessions
 automatically. Memory files persist in \code{\textasciitilde/.claude/projects/*/memory/}.\sourceurl{https://code.claude.com/docs/en/memory}}
 
-\official{Claude maintains auto-memory that persists across conversations.\sourceurl{https://code.claude.com/docs/en/memory}}
+\official{Claude maintains auto-memory that persists across conversations.\sourceurl{https://code.claude.com/docs/en/memory}}\index{memory!auto-memory}
 It records patterns, decisions, and lessons learned, making them available
 in future sessions without explicit re-prompting.
 

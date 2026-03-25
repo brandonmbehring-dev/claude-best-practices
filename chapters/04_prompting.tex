@@ -17,7 +17,7 @@ structuring complex prompts, managing cost, and using extended thinking.
 \label{sec:precision}
 
 \practitioner{Track how your requests could be stated more precisely.
-Over time, develop a shared vocabulary between you and Claude.}
+Over time, develop a shared vocabulary between you and Claude.}\index{prompting!precision vocabulary}
 
 \begin{fullwidth}
 \begin{tabular}{@{}p{5cm}p{7cm}@{}}
@@ -63,7 +63,7 @@ see \cref{ch:thinking-partner}.}
 
 \subsection{XML Tags for Multi-Component Prompts}
 
-\official{For complex prompts, use XML tags to separate concerns:\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview}}
+\official{For complex prompts, use XML tags to separate concerns:\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview}}\index{prompting!XML tags}
 
 \begin{minted}{xml}
 <context>
@@ -96,7 +96,7 @@ Verify: no future-dated features in test set.
 \subsection{Rich Inputs}
 
 \official{Use \code{@file} to include files, paste screenshots,
-pipe data from \code{stdin}.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+pipe data from \code{stdin}.\sourceurl{https://code.claude.com/docs/en/best-practices}}\index{rich inputs!file references@\texttt{@file} references}
 Real data beats verbal descriptions.
 
 \begin{fullwidth}
@@ -108,9 +108,9 @@ Real data beats verbal descriptions.
   Preferred over describing code. \\
 Image paste & Copy/paste or drag-and-drop screenshots, diagrams,
   error messages directly into the prompt. \\
-\code{cat file | claude} & Pipe data from other tools. Useful for logs,
+\code{cat file | claude} & Pipe data from other tools.\index{rich inputs!piping} Useful for logs,
   command output, or data samples. \\
-URL allowlisting & Use \code{/permissions} to allow frequently-used doc sites.
+URL allowlisting & Use \code{/permissions} to allow frequently-used doc sites.\index{rich inputs!URL allowlisting}
   Claude can then fetch reference material directly. \\
 \bottomrule
 \end{tabular}
@@ -144,7 +144,7 @@ pytest tests/ -v 2>&1 | claude -p "Summarize failures"
 with effort controls.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/extended-thinking}}
 
 \official{Extended thinking lets Claude reason through complex problems
-before responding.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/extended-thinking}} On Opus 4.6, thinking is \textbf{adaptive}---the model
+before responding.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/extended-thinking}}\index{extended thinking} On Opus 4.6, thinking is \textbf{adaptive}---the model
 decides how much to think based on problem complexity.
 
 \subsection{Effort Controls}
@@ -153,7 +153,7 @@ decides how much to think based on problem complexity.
 model picker slider, or \code{CLAUDE\_CODE\_EFFORT\_LEVEL} env
 var.\sourceurl{https://code.claude.com/docs/en/model-config}}
 
-\begin{description}
+\begin{description}\index{extended thinking!effort levels}
   \item[\code{low}] Minimal thinking. Best for: simple lookups, formatting, boilerplate.
   \item[\code{medium}] Moderate analysis. Best for: standard coding tasks, code reviews.
     \emph{Default for Max/Team subscribers on Opus~4.6.}
@@ -172,7 +172,7 @@ your session default.}
 
 \official{Interleaved thinking\sourceurl{https://platform.claude.com/docs/en/build-with-claude/extended-thinking}}: Claude can think between tool calls,
 enabling nuanced multi-step workflows where each step's reasoning
-informs the next.
+informs the next.\index{extended thinking!interleaved thinking}
 
 \marginnote[Cross-Ref]{Extended thinking is especially valuable during
 collaborative design sessions (\cref{ch:thinking-partner}).}
@@ -211,7 +211,7 @@ Combined: up to 70\%+ savings (workload-dependent).\sourceurl{https://platform.c
 
 \subsection{Prompt Caching}
 
-\official{Prompt caching reduces input costs by 90\% for repeated content.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-caching}}
+\official{Prompt caching reduces input costs by 90\% for repeated content.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-caching}}\index{cost optimization!prompt caching}
 
 \begin{description}
   \item[Ephemeral (5-minute TTL)] Automatic for content appearing in
@@ -223,7 +223,7 @@ Combined: up to 70\%+ savings (workload-dependent).\sourceurl{https://platform.c
 \subsection{Batch API}
 
 \official{50\% discount for asynchronous
-processing.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/batch-processing}}
+processing.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/batch-processing}}\index{cost optimization!Batch API}
 Submit up to 100,000 requests per batch (256~MB max).
 Most batches complete within 1 hour; results available within 24 hours.
 Combinable with caching for up to 70\%+ total savings (workload-dependent).
@@ -248,13 +248,13 @@ Opus 4.6 & Frontier reasoning & Complex architecture, multi-file refactoring \\
 
 \practitioner{Default to Sonnet for development work. Escalate to Opus for
 architecture decisions, complex debugging, and multi-file refactoring.
-Use Haiku for bulk operations and simple formatting tasks.}
+Use Haiku for bulk operations and simple formatting tasks.}\index{cost optimization!model selection}
 
 \subsection{Fast Mode (Research Preview)}
 
 \official{Fast mode makes Opus 4.6 responses 2.5$\times$ faster at higher
 per-token cost (\$30/\$150 per MTok). Same model, same quality---different
-API configuration prioritizing speed.\sourceurl{https://code.claude.com/docs/en/fast-mode}}
+API configuration prioritizing speed.\sourceurl{https://code.claude.com/docs/en/fast-mode}}\index{fast mode}
 
 \begin{description}
   \item[Toggle] \code{/fast} or \code{Alt+O}. A bolt icon

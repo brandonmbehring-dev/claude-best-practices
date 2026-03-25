@@ -15,7 +15,7 @@ The fix takes five minutes.
 \marginnote[Official]{Run \code{/init} to auto-generate a starter CLAUDE.md
 from your project structure.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
-\official{The \code{CLAUDE.md} file is the single most important configuration artifact.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+\official{The \code{CLAUDE.md} file is the single most important configuration artifact.\sourceurl{https://code.claude.com/docs/en/best-practices}}\index{CLAUDE.md}
 Claude reads it at session start and uses it to understand your project's conventions,
 build commands, architecture decisions, and rules of engagement.
 
@@ -42,7 +42,7 @@ advanced architecture come later (\cref{ch:architecture}).
 \section{Generate It: \texttt{/init}}
 \label{sec:init}
 
-The fastest path to a useful CLAUDE.md:
+The fastest path to a useful CLAUDE.md:\index{CLAUDE.md!init command@\texttt{/init} command}
 
 \begin{enumerate}
   \item Open your project in Claude Code.
@@ -58,7 +58,7 @@ What follows are the refinements that make it effective.
 \section{What to Include}
 \label{sec:what-to-include}
 
-\convergence{Include what Claude cannot infer. Exclude what it can.}
+\convergence{Include what Claude cannot infer. Exclude what it can.\sourceurl{https://code.claude.com/docs/en/best-practices}}\index{CLAUDE.md!what to include}
 
 \begin{description}
   \item[Build and test commands] \code{pytest tests/}, \code{mypy src/},
@@ -144,7 +144,7 @@ Positive instructions are clearer, more actionable, and more reliably followed.
 
 \marginnote[Official]{Settings documentation:\sourceurl{https://code.claude.com/docs/en/settings}}
 
-Before Claude touches any code, protect your secrets.
+Before Claude touches any code, protect your secrets.\index{CLAUDE.md!deny rules}
 Create \code{.claude/\allowbreak{}settings.json}:
 
 \begin{minted}{json}

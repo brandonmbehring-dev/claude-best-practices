@@ -20,7 +20,7 @@ By the end of this chapter, you will have:
 \section{The Session Loop}
 \label{sec:session-loop}
 
-A productive session with Claude follows a repeating cycle:
+A productive session with Claude follows a repeating cycle:\index{session!loop}
 
 \begin{keybox}[The Session Loop]
 \begin{enumerate}
@@ -76,14 +76,14 @@ from the inference schema. Diagnose and fix.
 
 The ``before'' makes Claude guess which tests, what kind of failure,
 and what ``fix'' means. The ``after'' gives Claude the information
-it needs to act precisely.
+it needs to act precisely.\index{prompting!be specific}
 
 \subsection{Tell Claude to Think Step by Step}
 
 \marginnote[Official]{Step-by-step prompting is consistently identified as one of the
 three highest-leverage techniques.\sourceurl{https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview}}
 
-For complex tasks, give Claude an explicit reasoning structure:
+For complex tasks, give Claude an explicit reasoning structure:\index{prompting!step by step}
 
 \begin{minted}{text}
 Refactor the feature engineering pipeline:
@@ -104,7 +104,7 @@ in one pass, increasing the risk of subtle regressions.
 \convergence{``Give Claude a way to verify its own work'' is Anthropic's stated
 single highest-leverage practice.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
-Always include how to check the result:
+Always include how to check the result:\index{prompting!verification criteria}
 
 \begin{minted}{text}
 Add input validation to the build_features() function.
@@ -150,7 +150,7 @@ fills with unrelated materials.
 
 Each correction attempt adds noise: the original error, your correction,
 Claude's apology, and its retry. After two rounds, the context is
-dominated by failure patterns rather than the actual task.
+dominated by failure patterns rather than the actual task.\index{context!two-failure rule}
 Starting fresh with a better prompt costs 30 seconds and produces
 better results than a third correction round.
 
@@ -169,9 +169,9 @@ exceeds the cost of starting fresh.
 Correct Claude as soon as you notice it going off track.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
 \begin{description}
-  \item[\code{Esc}] Stop Claude mid-action. Context is preserved,
+  \item[\code{Esc}] Stop Claude mid-action.\index{course correction!Esc} Context is preserved,
     so you can redirect immediately.
-  \item[\code{Esc + Esc}] Open the rewind menu: restore conversation,
+  \item[\code{Esc + Esc}] Open the rewind menu:\index{course correction!rewind} restore conversation,
     code, or both to any previous checkpoint.
   \item[\code{``Undo that''}] Have Claude revert its changes.
   \item[\code{/clear}] Reset context entirely between unrelated tasks.
@@ -197,7 +197,7 @@ You now have the tools to recover from any wrong turn. The next section adds one
 the wrong problem.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
 For complex or unfamiliar tasks, let Claude understand the codebase
-before making changes. Use \code{Shift+Tab} to cycle through
+before making changes.\index{Plan Mode} Use \code{Shift+Tab} to cycle through
 permission modes until you reach Plan Mode---Claude can read files
 and answer questions but cannot modify anything. Use \code{Ctrl+G}
 to open your prompt in your default text editor for detailed editing,
@@ -209,7 +209,7 @@ or start directly in Plan Mode from the command line with
 (cyclable via \code{Shift+Tab}), plus \code{auto}
 (research preview), \code{dontAsk}, and
 \code{bypassPermissions} (settings/CLI).
-\sourceurl{https://code.claude.com/docs/en/permissions}}
+\sourceurl{https://code.claude.com/docs/en/permissions}}\index{permissions!modes}
 
 \official{The recommended workflow for complex tasks has four phases:\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
