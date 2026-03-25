@@ -124,10 +124,20 @@ than 120K regardless of the percentage.}
   \item[\code{/context}] Visualize current context usage.
     Shows how much of the window is consumed and by what.
 
+  \item[\code{/btw}] Ask a side question without growing context.
+    \official{The answer appears in a dismissible overlay and never enters
+    conversation history.\sourceurl{https://code.claude.com/docs/en/interactive-mode}}
+    Works even while Claude is processing. No tool access---answers from
+    what is already in context. Zero cost to your context budget.
+
   \item[Subagents] Delegate context-heavy research to isolated agents.
     Results return to your session; the research context does not.
     See \cref{ch:agents} for the full treatment.
 \end{description}
+
+\margintip{\code{/btw} is the inverse of a subagent: it sees your full
+conversation but has no tools. A subagent has full tools but starts
+with an empty context.}
 
 \margintip{Watch the token counter. When it approaches 60--70\% of the window,
 proactively \code{/compact} or \code{/clear}.

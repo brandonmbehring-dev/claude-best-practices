@@ -402,14 +402,40 @@ avoiding manual configuration.
 
 \begin{description}
   \item[Code intelligence plugins] \official{For typed languages, install a code
-    intelligence plugin immediately.\sourceurl{https://code.claude.com/docs/en/common-workflows}}
+    intelligence plugin immediately.\sourceurl{https://code.claude.com/docs/en/discover-plugins}}
     These give Claude precise ``go to definition'' and ``find references''
     capabilities, plus automatic error detection after edits.
-    Supported languages include TypeScript, Rust, Go, Java, and Python (via Pyright).
-    The improvement in code navigation accuracy is substantial.
   \item[Service integration plugins] Connect to external tools
     (Notion, Figma, monitoring) without writing MCP servers.
 \end{description}
+
+\subsubsection{Why Code Intelligence Matters}
+
+Without a code intelligence plugin, Claude uses text-based search
+(\code{Grep}, \code{Glob}) to navigate code. This works but produces
+false positives and requires reading multiple candidate files.
+With a plugin, Claude gets precise symbol navigation:
+
+\begin{fullwidth}
+\begin{tabular}{@{}lp{5cm}p{5cm}@{}}
+\toprule
+\textbf{Operation} & \textbf{Without Plugin} & \textbf{With Plugin} \\
+\midrule
+Find definition & \code{Grep} for function name, read candidates & Single ``go to definition'' call \\
+Find references & \code{Grep} across codebase, filter false positives & Precise ``find references'' \\
+Post-edit errors & Run compiler manually or wait for tests & Automatic type error detection \\
+\bottomrule
+\end{tabular}
+\end{fullwidth}
+
+\official{Supported languages: TypeScript, Rust, Go, Java, Python (Pyright),
+and more.\sourceurl{https://code.claude.com/docs/en/discover-plugins}}
+Install via \code{/plugin} and search for your language.
+
+\marginnote[Cost]{Code intelligence plugins reduce token usage by replacing
+broad \code{Grep} searches with precise symbol lookups. Fewer file reads
+$=$ smaller context $=$ lower cost per
+message.\sourceurl{https://code.claude.com/docs/en/costs}}
 
 \begin{minted}{bash}
 # Browse available plugins

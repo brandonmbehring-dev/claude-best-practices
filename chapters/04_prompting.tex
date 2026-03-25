@@ -250,6 +250,35 @@ Opus 4.6 & Frontier reasoning & Complex architecture, multi-file refactoring \\
 architecture decisions, complex debugging, and multi-file refactoring.
 Use Haiku for bulk operations and simple formatting tasks.}
 
+\subsection{Fast Mode (Research Preview)}
+
+\official{Fast mode makes Opus 4.6 responses 2.5$\times$ faster at higher
+per-token cost (\$30/\$150 per MTok). Same model, same quality---different
+API configuration prioritizing speed.\sourceurl{https://code.claude.com/docs/en/fast-mode}}
+
+\begin{description}
+  \item[Toggle] \code{/fast} or \code{Alt+O}. A bolt icon
+    appears next to the prompt while active.
+  \item[Cost] Flat pricing across the full 1M context window.
+    Billed to extra usage, not plan limits.
+  \item[Fallback] On rate limit, automatically reverts to standard Opus
+    (icon grays out), then re-enables when cooldown expires.
+  \item[Persistence] On by default across sessions. Admins can require
+    per-session opt-in via \code{fastModePerSessionOptIn}.
+\end{description}
+
+\marginnote[Warning]{Switching to fast mode mid-conversation reprices
+the \emph{entire} cached context at the fast rate. Enable at session
+start for best cost efficiency.}
+
+\begin{decisionbox}[Fast Mode vs.\ Effort Level]
+\textbf{Fast mode}: same quality, lower latency, higher cost.\\
+\textbf{Lower effort}: less thinking, faster responses, potentially lower
+quality on complex tasks.\\
+\textbf{Combine both}: fast mode + low effort for maximum speed on
+straightforward tasks.
+\end{decisionbox}
+
 % -------------------------------------------------------------------
 \section{Visual: Cost Optimization Decision Tree}
 

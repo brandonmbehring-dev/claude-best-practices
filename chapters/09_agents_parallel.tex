@@ -248,6 +248,41 @@ The API and behavior may change. Use for exploration, not production workflows.
 \end{warnbox}
 
 % -------------------------------------------------------------------
+\section{The \code{/batch} Skill: Parallel Codebase Changes}
+\label{sec:batch}
+
+\marginnote[Official]{\code{/batch} is a bundled skill, not a built-in command.
+Claude orchestrates the work using its
+tools.\sourceurl{https://code.claude.com/docs/en/skills}}
+
+\official{\code{/batch} orchestrates large-scale changes across a codebase
+in parallel.\sourceurl{https://code.claude.com/docs/en/skills}}
+It researches the codebase, decomposes the work into 5--30 independent units,
+presents a plan for approval, then spawns one background agent per unit
+in an isolated git worktree. Each agent implements its unit, runs tests,
+and opens a pull request.
+
+\begin{minted}{text}
+/batch migrate src/ from class components to hooks
+/batch add type hints to all Python files in lib/
+/batch update all API endpoints to return JSON:API format
+\end{minted}
+
+\begin{decisionbox}[\code{/batch} vs.\ Fan-Out Script]
+\textbf{\code{/batch}}: Claude researches, decomposes, and coordinates.
+Best for: complex changes where decomposition requires understanding the codebase.
+
+\textbf{Fan-out} (\code{for f in ...; claude -p ...}): you define the units.
+Best for: simple, repetitive changes where you already know the file list
+(\cref{sec:headless}).
+\end{decisionbox}
+
+\margincost{\code{/batch} spawns N agents $\times$ per-agent context.
+A 20-unit batch costs $\sim$20$\times$ a single session.
+Test on 2--3 units before scaling---the initial plan review is your
+checkpoint.}
+
+% -------------------------------------------------------------------
 \section{Quick Reference}
 
 \begin{itemize}
@@ -259,6 +294,7 @@ The API and behavior may change. Use for exploration, not production workflows.
   \item Writer/Reviewer: separate sessions prevent confirmation bias
   \item Delegate when: independent, context-heavy, parallelizable, needs fresh perspective
   \item Do directly when: quick, context-dependent, sequential, simple
+  \item \code{/batch}: Claude decomposes, spawns parallel agents in worktrees, each opens a PR
   \item Agent Teams: experimental (\code{CLAUDE\_CODE\_EXPERIMENTAL\_AGENT\_TEAMS=1})
 \end{itemize}
 
