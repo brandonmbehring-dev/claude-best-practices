@@ -161,6 +161,9 @@ var.\sourceurl{https://code.claude.com/docs/en/model-config}}
   \item[\code{max}] Deepest reasoning with no token constraint.
     \textbf{Opus~4.6 only, session-scoped} (does not persist across sessions).
     Best for: strategic decisions, novel problems requiring exhaustive analysis.
+  \item[\code{auto}] Resets effort to the model's default behavior.
+    Use when you want to undo a manual effort override and let the model
+    choose its own reasoning depth.
 \end{description}
 
 \practitioner{The keyword \code{ultrathink} in any prompt escalates to \code{high}

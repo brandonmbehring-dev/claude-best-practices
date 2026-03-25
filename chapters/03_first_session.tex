@@ -197,15 +197,18 @@ You now have the tools to recover from any wrong turn. The next section adds one
 the wrong problem.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
 For complex or unfamiliar tasks, let Claude understand the codebase
-before making changes. Press \code{Shift+Tab} twice to enter
-Plan Mode---Claude can read files and answer questions
-but cannot modify anything. Use \code{Ctrl+G} to open the plan
-in an external text editor for detailed review, or start directly
-in Plan Mode from the command line with \code{claude --permission-mode plan}.
+before making changes. Use \code{Shift+Tab} to cycle through
+permission modes until you reach Plan Mode---Claude can read files
+and answer questions but cannot modify anything. Use \code{Ctrl+G}
+to open your prompt in your default text editor for detailed editing,
+or start directly in Plan Mode from the command line with
+\code{claude --permission-mode plan}.
 
-\marginnote[Official]{Five permission modes exist:
-Default, Accept Edits, Plan (keyboard-cyclable via \code{Shift+Tab}),
-plus \code{dontAsk} and \code{bypassPermissions} (settings-only).
+\marginnote[Official]{Six permission modes:
+\code{default}, \code{acceptEdits}, \code{plan}
+(cyclable via \code{Shift+Tab}), plus \code{auto}
+(research preview), \code{dontAsk}, and
+\code{bypassPermissions} (settings/CLI).
 \sourceurl{https://code.claude.com/docs/en/permissions}}
 
 \official{The recommended workflow for complex tasks has four phases:\sourceurl{https://code.claude.com/docs/en/best-practices}}
@@ -266,7 +269,7 @@ Notice the structure:
   \item Session loop: prompt $\rightarrow$ observe $\rightarrow$ refine $\rightarrow$ commit
   \item Be specific about \emph{what} you want, not \emph{how} to do it
   \item Include verification criteria in every prompt
-  \item Plan Mode (Shift+Tab $\times$ 2) for complex or unfamiliar tasks
+  \item Plan Mode (Shift+Tab) for complex or unfamiliar tasks
   \item \code{Esc} to stop mid-action, \code{Esc+Esc} to rewind
   \item Use \code{/clear} between unrelated tasks
   \item Two-failure rule: after two corrections, start fresh

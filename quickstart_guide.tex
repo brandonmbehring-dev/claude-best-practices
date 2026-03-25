@@ -140,7 +140,7 @@ Before we ask Claude to change anything --- your safety nets:
 \begin{description}[leftmargin=2.2cm, style=sameline, font=\bfseries\ttfamily, itemsep=2pt]
   \item[Esc] Stop Claude mid-action. Context preserved, nothing lost.
   \item[Esc+Esc] Open rewind menu. Restore conversation, code, or both.
-  \item[Approval] In Default mode, Claude always asks before editing. You approve or reject every change.
+  \item[Approval] In Default mode, Claude prompts for permission on first use of each tool. You approve or reject every change.
 \end{description}
 \end{keybox}
 
@@ -153,10 +153,11 @@ You type: "Add a one-line docstring to build_features()
           describing what it does and what it returns."
 \end{minted}
 
-\marginofficial{Five permission modes.
-\code{Shift+Tab} cycles Default,
-Accept Edits, Plan.
-\code{dontAsk} and
+\marginofficial{Six permission modes.
+\code{Shift+Tab} cycles through
+enabled modes.
+\code{auto} (research preview),
+\code{dontAsk}, and
 \code{bypassPermissions}
 via settings/CLI.
 \sourceurl{https://code.claude.com/docs/en/permissions}}
@@ -508,7 +509,7 @@ Everything you practiced today --- specification, verification, collaboration de
 \code{/rewind} & Restore conversation, code, or both to a checkpoint \\
 \code{Esc} & Stop Claude mid-action (context preserved) \\
 \code{Esc + Esc} & Open rewind menu (restore or summarize from checkpoint) \\
-\code{Shift+Tab} & Cycle modes (Default $\rightarrow$ Accept Edits $\rightarrow$ Plan)\footnotemark \\
+\code{Shift+Tab} & Cycle through enabled permission modes\footnotemark \\
 \code{Alt+T} & Toggle extended thinking \\
 \code{/debug} & Inspect model, session, and configuration state \\
 \code{/status} & Show version, account, and plan info \\
@@ -519,7 +520,7 @@ Everything you practiced today --- specification, verification, collaboration de
 \end{center}
 \end{fullwidth}
 
-\footnotetext{\code{dontAsk} and \code{bypassPermissions} available via settings.}
+\footnotetext{\code{auto} (research preview), \code{dontAsk}, and \code{bypassPermissions} available via settings.}
 
 \vfill
 
