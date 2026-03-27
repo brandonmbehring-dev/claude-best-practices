@@ -43,9 +43,20 @@ Other:
 
 ### Deferred to v2.9+
 
+**Real gaps (verified against 71 official doc pages):**
+- IDE integration section: VS Code + JetBrains workflows (~1 page, Ch. 7)
+- Server-managed settings: public beta, enterprise deployment (~0.5 page, Ch. 14)
+- Environment variables reference: systematic treatment (~1 page, new appendix or Appendix C)
+- Code Review plugin: document replacement for deprecated `/review` (~0.5 page, Ch. 9 or Ch. 12)
+- Additional CLI flags: `--agent`, `--agents`, `--mcp-config`, `--plugin-dir` (reference card)
+
+**Nice-to-have:**
 - Chrome integration (`/chrome` + `--chrome` flag)
 - Channels (`--channels`, research preview)
 - `--json-schema` structured output (prose section)
+- GitLab CI/CD (~0.5 page alongside GitHub Actions)
+- Voice dictation prose (~0.5 page)
+- Claude Code on the web (~0.5 page)
 - Remaining account/marketing commands (~7)
 
 ## v2.6: Content Improvements — COMPLETE
