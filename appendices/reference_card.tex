@@ -92,9 +92,31 @@ See \url{https://code.claude.com/docs/en/fast-mode}.}
 \marginnote[Official]{For the complete list of $\sim$50 built-in commands,
 see \url{https://code.claude.com/docs/en/commands}.}
 
-\noindent\textbf{Deprecated}: \code{/review} has been replaced by the
-\code{code-review} plugin. Install with:
-\code{claude plugin install code-review@claude-plugins-official}.
+\subsection*{Code Review Plugin}
+
+\marginnote[Official]{Replaces deprecated \code{/review}.
+Multi-agent architecture with
+confidence scoring.\sourceurl{https://github.com/anthropics/claude-code/tree/main/plugins/code-review}}
+
+The \code{code-review} plugin uses four parallel agents to review code changes,
+each scoring findings independently on a 0--100 confidence scale (default threshold: 80).
+
+\begin{description}
+  \item[Install:] \code{claude plugin install code-review@claude-plugins-official}
+  \item[Usage:] \code{/code-review [--comment]}
+\end{description}
+
+\noindent The four agents run in parallel:
+\begin{enumerate}
+  \item Two redundant CLAUDE.md compliance checkers (catches project convention violations)
+  \item Bug and logic error detector
+  \item Git-blame history analyzer (understands change context)
+\end{enumerate}
+
+\noindent Each finding is scored by a separate scorer agent.
+Pre-existing issues, linter-catchable problems, and pedantic nitpicks
+are automatically filtered.
+Use \code{--comment} to post results directly on a PR.
 
 \section{Bundled Skills}
 
@@ -148,9 +170,24 @@ workflows that Claude executes.
 \code{--append-system-prompt} & Append to default system prompt \\
 \code{--json-schema} & Validated JSON output matching schema (print mode only) \\
 \code{--enable-auto-mode} & Unlock auto mode in Shift+Tab cycle (Team plan+) \\
+\code{--effort} & Set effort level: \code{low}, \code{medium}, \code{high}, \code{max} \\
+\code{--agent <name>} & Start session with a specific agent definition \\
+\code{--agents <json>} & Define subagents dynamically via inline JSON \\
+\code{--mcp-config <file>} & Load MCP servers from a JSON config file \\
+\code{--strict-mcp-config} & Use \emph{only} MCP servers from \code{--mcp-config} (ignore settings) \\
+\code{--plugin-dir <path>} & Load plugins from a local directory \\
+\code{--tools} & Restrict available tools for the session \\
+\code{--fallback-model} & Auto-fallback model when default is overloaded \\
+\code{--chrome / --no-chrome} & Enable or disable Chrome browser integration \\
+\code{--remote} & Create a web session on claude.ai \\
+\code{--teleport} & Resume a web session locally \\
+\code{--dangerously-skip-permissions} & Skip all permission prompts (CI only) \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}
+
+\marginnote[Official]{Full CLI reference at
+\url{https://code.claude.com/docs/en/cli-reference}.}
 
 \section{Keyboard Shortcuts}
 
@@ -264,3 +301,64 @@ enum values, not arbitrary regex.\sourceurl{https://code.claude.com/docs/en/hook
 
 Higher levels override lower. Deny rules are absolute
 and cannot be overridden by lower levels.
+
+\section{Environment Variables}
+
+\marginnote[Official]{Complete list at
+\url{https://code.claude.com/docs/en/env-vars}.
+Set in shell, \code{settings.json} \code{env} block,
+or CI workflow.}
+
+Environment variables configure Claude Code behavior at the system level.
+Set them in your shell profile, CI workflow, or the \code{env} block in
+\code{settings.json}.
+
+\begin{fullwidth}
+{\small
+\begin{tabular}{@{}lp{7.5cm}@{}}
+\toprule
+\textbf{Variable} & \textbf{Purpose} \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Authentication \& Model}} \\
+\code{ANTHROPIC\_API\_KEY} & API key (overrides subscription billing) \\
+\code{ANTHROPIC\_MODEL} & Default model alias or full model ID \\
+\code{ANTHROPIC\_BASE\_URL} & Proxy or gateway URL \\
+\code{ANTHROPIC\_DEFAULT\_OPUS\_MODEL} & Pin Opus version (e.g., \code{claude-opus-4-6-20250610}) \\
+\code{ANTHROPIC\_DEFAULT\_SONNET\_MODEL} & Pin Sonnet version \\
+\code{ANTHROPIC\_DEFAULT\_HAIKU\_MODEL} & Pin Haiku version \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Context \& Compaction}} \\
+\code{CLAUDE\_AUTOCOMPACT\_PCT\_OVERRIDE} & Auto-compact trigger (1--100, default $\sim$95\%) \\
+\code{CLAUDE\_CODE\_AUTO\_COMPACT\_WINDOW} & Decouple compact window from context window \\
+\code{CLAUDE\_CODE\_DISABLE\_1M\_CONTEXT} & Disable 1M context (use smaller window) \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Output \& Behavior}} \\
+\code{CLAUDE\_CODE\_MAX\_OUTPUT\_TOKENS} & Max tokens per response (Opus: 128K, Sonnet/Haiku: 64K) \\
+\code{CLAUDE\_CODE\_EFFORT\_LEVEL} & Default effort: \code{low}, \code{medium}, \code{high}, \code{max}, \code{auto} \\
+\code{CLAUDE\_CODE\_DISABLE\_FAST\_MODE} & Prevent fast mode activation \\
+\code{CLAUDE\_CODE\_DISABLE\_ADAPTIVE\_THINKING} & Revert to fixed thinking budget \\
+\code{CLAUDE\_CODE\_SIMPLE} & Same as \code{--bare} flag (minimal mode) \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{MCP \& Tools}} \\
+\code{MCP\_TIMEOUT} & MCP server startup timeout in ms \\
+\code{MCP\_TOOL\_TIMEOUT} & Individual MCP tool execution timeout in ms \\
+\code{MAX\_MCP\_OUTPUT\_TOKENS} & Max tokens in MCP responses (default 25000) \\
+\code{ENABLE\_TOOL\_SEARCH} & Tool search mode: \code{auto:N} (N=threshold) \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Caching \& Performance}} \\
+\code{DISABLE\_PROMPT\_CACHING} & Disable prompt caching globally \\
+\code{DISABLE\_PROMPT\_CACHING\_OPUS} & Disable caching for Opus only \\
+\code{DISABLE\_PROMPT\_CACHING\_SONNET} & Disable caching for Sonnet only \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Features \& Experimental}} \\
+\code{CLAUDE\_CODE\_DISABLE\_BACKGROUND\_TASKS} & Disable \code{run\_in\_background} and Ctrl+B \\
+\code{CLAUDE\_CODE\_DISABLE\_GIT\_INSTRUCTIONS} & Remove built-in git instructions from system prompt \\
+\code{CLAUDE\_CODE\_EXPERIMENTAL\_AGENT\_TEAMS} & Enable agent teams \\
+\code{CLAUDE\_CODE\_ENABLE\_TASKS} & Enable task tracking in non-interactive mode \\
+\midrule
+\multicolumn{2}{@{}l}{\textit{Security}} \\
+\code{CLAUDE\_CODE\_SUBPROCESS\_ENV\_SCRUB} & Strip credentials from child process environment \\
+\bottomrule
+\end{tabular}
+}
+\end{fullwidth}

@@ -1,7 +1,7 @@
 # Roadmap — Claude Best Practices Guide
 
-**Current version:** v2.7 (2026-03-26)
-**Next planned:** v2.8
+**Current version:** v2.9 (2026-03-27)
+**Next planned:** v3.0
 
 ---
 
@@ -17,7 +17,14 @@
 - Max output tokens added to pricing table: Opus 128K, Sonnet 64K, Haiku 64K (Ch. 14)
 - What's New appendix restructured with v2.7 section
 
-## v2.8: Reference Card + Feature Gaps — PLANNED
+## v2.9: Env Vars, CLI Flags, Code Review Plugin — COMPLETE
+
+- Environment variables reference: 26 key vars across 7 categories (Appendix C)
+- CLI flags: +13 flags added to reference card (--agent, --agents, --mcp-config, --plugin-dir, --effort, --chrome, --remote, --teleport, --strict-mcp-config, --tools, --fallback-model, --dangerously-skip-permissions)
+- Code-review plugin: expanded from 3-line deprecation notice to full architecture doc (4-agent parallel review with confidence scoring)
+- 124 pages
+
+## v2.8: Reference Card + Feature Gaps — COMPLETE
 
 ### Reference card updates (curated + footnote)
 
@@ -41,23 +48,18 @@ Other:
 | Model comparison table (output limits, context, cutoffs) | Ch. 4 (Prompting) | ~0.5 page |
 | Auto-mode prerequisites and behavior | Ch. 3 (First Session) | ~0.5 page |
 
-### Deferred to v2.9+
+### Deferred to v3.0+
 
-**Real gaps (verified against 71 official doc pages):**
+**Real gaps:**
 - IDE integration section: VS Code + JetBrains workflows (~1 page, Ch. 7)
 - Server-managed settings: public beta, enterprise deployment (~0.5 page, Ch. 14)
-- Environment variables reference: systematic treatment (~1 page, new appendix or Appendix C)
-- Code Review plugin: document replacement for deprecated `/review` (~0.5 page, Ch. 9 or Ch. 12)
-- Additional CLI flags: `--agent`, `--agents`, `--mcp-config`, `--plugin-dir` (reference card)
 
 **Nice-to-have:**
-- Chrome integration (`/chrome` + `--chrome` flag)
 - Channels (`--channels`, research preview)
 - `--json-schema` structured output (prose section)
 - GitLab CI/CD (~0.5 page alongside GitHub Actions)
 - Voice dictation prose (~0.5 page)
 - Claude Code on the web (~0.5 page)
-- Remaining account/marketing commands (~7)
 
 ## v2.6: Content Improvements — COMPLETE
 
