@@ -74,6 +74,64 @@ To debug unexpected hook behavior:
 \end{itemize}
 \end{tipbox}
 
+\subsection*{Delivery Mechanisms}
+
+\marginnote[Enterprise]{Server-managed settings require
+Teams or Enterprise plan. Claude Code 2.1.38+.\sourceurl{https://code.claude.com/docs/en/server-managed-settings}}
+
+\official{Managed settings can be delivered through multiple channels,
+all at the highest priority
+level.\sourceurl{https://code.claude.com/docs/en/server-managed-settings}}
+
+\begin{fullwidth}
+{\small
+\begin{tabular}{@{}lp{7cm}@{}}
+\toprule
+\textbf{Mechanism} & \textbf{Description} \\
+\midrule
+Server-managed & Delivered from Anthropic servers via Claude.ai admin console (Teams/Enterprise). Fetched at startup, polled hourly. \\
+macOS MDM & \code{com.anthropic.claudecode} managed preferences domain (Jamf, Kandji) \\
+Windows Registry & \code{HKLM\textbackslash{}SOFTWARE\textbackslash{}Policies\textbackslash{}ClaudeCode} with \code{Settings} REG\_SZ (Group Policy/Intune) \\
+File-based & \code{managed-settings.json} at system paths: \code{/etc/claude-code/} (Linux), \code{/Library/Application Support/ClaudeCode/} (macOS) \\
+\bottomrule
+\end{tabular}
+}
+\end{fullwidth}
+
+\noindent A drop-in directory \code{managed-settings.d/} alongside
+\code{managed-settings.json} supports policy fragments.
+Files merge alphabetically---use numeric prefixes for ordering
+(e.g., \code{10-security.json}, \code{20-models.json}).
+
+\subsection*{Key Managed-Only Settings}
+
+These settings are only available at the managed level:
+
+\begin{description}
+  \item[\code{allowManagedPermissionRulesOnly}] Only managed allow/deny rules apply---users and projects cannot add their own.
+  \item[\code{allowManagedHooksOnly}] Prevent user, project, and plugin hooks entirely.
+  \item[\code{allowManagedMcpServersOnly}] Restrict MCP servers to an admin-defined allowlist.
+  \item[\code{disableBypassPermissionsMode}] Prevent \code{--dangerously-skip-permissions}.
+  \item[\code{availableModels}] Restrict which models users can select.
+  \item[\code{companyAnnouncements}] Display messages to users at startup.
+\end{description}
+
+\begin{minted}{json}
+{
+  "permissions": {
+    "deny": ["Bash(curl *)", "Read(./.env)"],
+    "disableBypassPermissionsMode": "disable"
+  },
+  "availableModels": ["sonnet", "haiku"],
+  "companyAnnouncements": [
+    "Review AI usage guidelines at docs.acme.com/ai"
+  ]
+}
+\end{minted}
+
+\marginnote[Warning]{Server-managed settings are client-side controls.
+For unmanaged devices, use MDM for stronger enforcement.}
+
 % -------------------------------------------------------------------
 \section{Onboarding New Team Members}
 \label{sec:onboarding}

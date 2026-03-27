@@ -481,6 +481,103 @@ message.\sourceurl{https://code.claude.com/docs/en/costs}}
 to ``productive.'' Check the marketplace before building custom skills.}
 
 % -------------------------------------------------------------------
+\section{IDE Integrations}
+\label{sec:ide-integrations}
+
+\marginnote[Official]{VS Code extension: 2M+ installs.
+JetBrains plugin: Beta.\sourceurl{https://code.claude.com/docs/en/vs-code}}
+
+Claude Code runs in three environments: the terminal CLI, the VS Code
+extension, and the JetBrains plugin. All share the same underlying
+engine, CLAUDE.md files, settings, and hooks---but the interaction
+model differs.
+
+\subsection*{VS Code Extension}
+
+\official{The VS Code extension provides a graphical chat panel,
+inline diffs with accept/reject controls, and \code{@}-mention file
+references.\sourceurl{https://code.claude.com/docs/en/vs-code}}
+
+Install from the Extensions view (\code{Cmd+Shift+X}), search
+``Claude Code.'' The extension bundles the CLI---no separate
+installation required. Also works with Cursor.
+
+Key capabilities beyond the CLI:
+
+\begin{itemize}
+  \item \textbf{Graphical chat panel}: Repositionable in sidebar,
+    editor area, or secondary sidebar. Multiple conversations
+    via ``Open in New Tab.''
+  \item \textbf{Inline diffs}: Side-by-side comparison with
+    per-hunk accept/reject controls.
+  \item \textbf{\code{@}-mentions}: Type \code{@} for fuzzy file
+    matching. \code{@file.ts\#5-10} for line ranges.
+    \code{@terminal:name} for terminal output.
+  \item \textbf{Plan mode}: Changes displayed as a markdown document
+    with inline commenting before approval.
+  \item \textbf{Checkpoints}: Hover any message to rewind conversation,
+    code, or both.
+\end{itemize}
+
+\begin{fullwidth}
+{\small
+\begin{tabular}{@{}lp{7cm}@{}}
+\toprule
+\textbf{Shortcut} & \textbf{Action} \\
+\midrule
+\code{Cmd+Esc} / \code{Ctrl+Esc} & Toggle focus between editor and Claude \\
+\code{Cmd+Shift+Esc} & Open Claude in new editor tab \\
+\code{Option+K} / \code{Alt+K} & Insert \code{@}-mention from editor \\
+\bottomrule
+\end{tabular}
+}
+\end{fullwidth}
+
+\margintip{Set \code{initialPermissionMode} in VS Code settings to
+start every conversation in \code{acceptEdits} or \code{plan} mode.}
+
+\subsection*{JetBrains Plugin (Beta)}
+
+\official{The JetBrains plugin supports IntelliJ, PyCharm, WebStorm,
+GoLand, Android Studio, and other JetBrains
+IDEs.\sourceurl{https://code.claude.com/docs/en/jetbrains}}
+
+Install from the JetBrains Marketplace (search ``Claude Code'').
+Unlike VS Code, the JetBrains plugin \emph{requires} the CLI to be
+installed separately. The plugin is terminal-based---Claude runs in
+the IDE's integrated terminal with IDE features layered on top:
+
+\begin{itemize}
+  \item Native JetBrains diff viewer for proposed changes
+  \item Current selection and open file shared as context automatically
+  \item IDE diagnostics (lint errors, type errors) forwarded to Claude
+  \item \code{Cmd+Esc} / \code{Ctrl+Esc} to launch Claude
+\end{itemize}
+
+\subsection*{Choosing Your Environment}
+
+\begin{fullwidth}
+{\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Feature} & \textbf{VS Code} & \textbf{JetBrains} \\
+\midrule
+Interface & Graphical chat panel & Terminal + IDE overlays \\
+CLI bundled & Yes & No (install separately) \\
+Inline diffs & Extension-native & IDE diff viewer \\
+\code{@}-mentions & Full (files, terminals, browser) & Files and selection \\
+Status & Stable & Beta \\
+\bottomrule
+\end{tabular}
+}
+\end{fullwidth}
+
+\convergence{Teams that standardize on one IDE can commit
+extension-specific settings to the project. Teams with mixed
+IDEs should rely on CLAUDE.md and \code{settings.json}---these
+work identically across all three environments.}
+
+% -------------------------------------------------------------------
 \section{Sandboxing: Safe Autonomy}
 \label{sec:sandboxing}
 
