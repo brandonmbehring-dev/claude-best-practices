@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.7] - 2026-03-26
+
+### Added
+- Two-phase compaction subsection in Ch. 5: tool outputs cleared first, then conversation summarized
+- PostCompact hook subsection in Ch. 5 with JSON config example, mirroring PreCompact coverage
+- CLAUDE_AUTOCOMPACT_PCT_OVERRIDE env var documented (convergence tag — undocumented, community-discovered)
+- CLAUDE.md compaction survival clarified: re-read from disk and re-injected fresh after compaction
+- CLAUDE.md sizing guidance (200 lines/file, 500 total) in Ch. 5
+- Two new Quick Reference bullets for compaction mechanisms
+- PostCompact hook glossary entry
+- What's New appendix restructured: v2.6 section added, v2.5 content preserved
+- Max output token limits in Ch. 14 pricing table (Opus 128K, Sonnet 64K, Haiku 64K)
+
+### Fixed
+- Hook events: 24 → 25 (added TaskCreated) in Appendix C and valid-hook-events.txt
+- Auto permission mode: added --enable-auto-mode flag and Team plan prerequisite in Appendix C
+
+### Changed
+- Auto-compaction glossary entry updated to mention two-phase mechanism
+- What's New appendix renamed from "What's New in v2.5" to "What's New" with versioned sections
+- Guide version bumped to 2.7
+
 ## [v2.5] - 2026-03-25
 
 ### Fixed

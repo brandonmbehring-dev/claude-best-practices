@@ -12,6 +12,7 @@ SubagentStop
 PreCompact
 PostCompact
 TeammateIdle
+TaskCreated
 TaskCompleted
 InstructionsLoaded
 ConfigChange

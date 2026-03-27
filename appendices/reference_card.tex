@@ -157,9 +157,9 @@ terminal.\sourceurl{https://code.claude.com/docs/en/interactive-mode}}
 \end{tabular}
 \end{fullwidth}
 
-\section{Hook Events (24 Total)}
+\section{Hook Events (25 Total)}
 
-\marginnote[Official]{Event list verified 2026-03-25. Matchers are specific
+\marginnote[Official]{Event list verified 2026-03-26. Matchers are specific
 enum values, not arbitrary regex.\sourceurl{https://code.claude.com/docs/en/hooks}}
 
 \begin{fullwidth}
@@ -180,10 +180,11 @@ enum values, not arbitrary regex.\sourceurl{https://code.claude.com/docs/en/hook
 \code{ElicitationResult} & MCP server name & User responds to dialog \\
 \code{SubagentStart} & Agent type/name & Init agent config \\
 \code{SubagentStop} & Agent type/name & Process agent results \\
+\code{TaskCreated} & (no matcher) & Post-creation automation \\
+\code{TaskCompleted} & (no matcher) & Post-task automation \\
 \code{Stop} & (no matcher) & Run cleanup \\
 \code{StopFailure} & \code{rate\_limit}, \code{authentication\_failed}, \code{billing\_error}, \code{server\_error}, \code{max\_output\_tokens}, \code{unknown} & Handle session failures \\
 \code{TeammateIdle} & (no matcher) & Notify when agent idles \\
-\code{TaskCompleted} & (no matcher) & Post-task automation \\
 \code{ConfigChange} & \code{user\_settings}, \code{project\_settings}, \code{local\_settings}, \code{policy\_settings}, \code{skills} & React to config changes \\
 \code{CwdChanged} & (no matcher) & Respond to dir change \\
 \code{FileChanged} & Filename basename & React to file changes \\
@@ -221,7 +222,7 @@ enum values, not arbitrary regex.\sourceurl{https://code.claude.com/docs/en/hook
 \code{default} & Prompts for permission on first use of each tool \\
 \code{acceptEdits} & Auto-accepts file edit permissions for the session \\
 \code{plan} & Claude can analyze but not modify files or run commands \\
-\code{auto} & Auto-approves with background safety classifier (research preview) \\
+\code{auto} & Auto-approves with background safety classifier. Requires \code{--enable-auto-mode} flag and Team plan or higher (research preview) \\
 \code{dontAsk} & Auto-denies tools unless pre-approved via \code{/permissions} or allow rules \\
 \code{bypassPermissions} & Skips permission prompts. Use only in isolated environments \\
 \bottomrule

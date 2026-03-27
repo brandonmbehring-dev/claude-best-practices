@@ -100,6 +100,12 @@ Do not wait for auto-compaction---by that point, quality has already suffered.
 For 1M windows, think in absolute tokens: 600K tokens of noise is worse
 than 120K regardless of the percentage.}\index{context!auto-compaction}
 
+\convergence{The environment variable \code{CLAUDE\_AUTOCOMPACT\_PCT\_OVERRIDE}
+can lower the auto-compaction trigger (e.g., set to \code{70} to compact earlier).
+It cannot raise the threshold above the default---values above $\sim$83\%
+are silently clamped. This variable is undocumented; it may change
+without notice.}\index{context!auto-compaction!threshold override}
+
 % -------------------------------------------------------------------
 \section{The Full Context Toolkit}
 \label{sec:context-toolkit}
@@ -303,6 +309,90 @@ Use it to serialize critical state to disk before compaction discards detail:
 
 \margintip{Keep PreCompact hooks fast---they run synchronously
 during compaction. A simple file copy or log append is ideal.}
+
+\subsection{Two-Phase Compaction}
+\label{subsec:two-phase-compaction}
+
+\official{Auto-compaction proceeds in two phases: it clears older tool
+outputs first, then summarizes the conversation if
+needed.\sourceurl{https://code.claude.com/docs/en/how-claude-code-works}}
+\index{compaction!two-phase}\index{microcompaction|see{compaction, two-phase}}
+
+The first phase is cheap: large tool results (file reads, command output,
+search results) are replaced with compact references.
+These outputs are the fastest-growing context consumers---a single
+\code{Read} of a 500-line file adds $\sim$2{,}000 tokens, and a
+debugging session may accumulate dozens of them.
+Clearing stale tool outputs recovers substantial space without losing
+any of your conversation history or decisions.
+
+\marginnote[Official]{CLAUDE.md fully survives compaction.
+After compaction, Claude re-reads CLAUDE.md from disk
+and re-injects it fresh.\sourceurl{https://code.claude.com/docs/en/memory}}
+
+Only if the first phase is insufficient does auto-compaction
+proceed to the second phase: summarizing the conversation itself.
+This is where instructions from early in the session can be lost.
+The implication: \emph{anything you want to survive compaction
+should be in CLAUDE.md, not in conversation.}
+
+\marginnote[Official]{Keep each CLAUDE.md file under 200 lines.
+Total across all CLAUDE.md files: under
+500 lines.\sourceurl{https://code.claude.com/docs/en/best-practices}}
+
+\noindent\textbf{Sizing your CLAUDE.md files.}\index{CLAUDE.md!sizing}
+Anthropic recommends keeping each individual CLAUDE.md file under
+200 lines, with the combined total across all five possible
+files (global, project, project-local, enterprise, user) staying
+below approximately 500 lines. CLAUDE.md is re-injected after every
+compaction, so oversized files consume a fixed percentage of your
+context budget on every cycle. If you exceed these limits, extract
+domain-specific guidance into \code{.claude/rules/} files with
+\code{paths:} frontmatter so they load only when relevant.
+
+\begin{whybox}[Why Two Phases Matter]
+The two-phase design means auto-compaction is less destructive than
+many practitioners assume. If your session is full of tool outputs
+(the common case during debugging or exploration), the first phase
+alone may free 30--50\% of context without touching your conversation.
+If you proactively \code{/compact} before hitting the auto-trigger,
+you can often stay in phase~1 territory indefinitely.
+\end{whybox}
+
+\subsection{PostCompact Hook for State Restoration}
+\label{subsec:postcompact-hook}
+
+\official{The \code{PostCompact} hook fires after compaction completes.
+Matchers: \code{manual} (user-triggered) or \code{auto}
+(system-triggered). Like PreCompact, it cannot block
+compaction.\sourceurl{https://code.claude.com/docs/en/hooks}}
+\index{compaction!PostCompact hook}
+
+Use it to restore state that a PreCompact hook saved, or to inject
+reminders into the freshly compacted context:
+
+\begin{minted}{json}
+{
+  "hooks": {
+    "PostCompact": [{
+      "matcher": "auto",
+      "hooks": [{
+        "type": "command",
+        "command": ".claude/hooks/post-compact-restore.sh"
+      }]
+    }]
+  }
+}
+\end{minted}
+
+\margintip{Pair PreCompact (save) with PostCompact (restore)
+for automatic state checkpointing across compaction boundaries.}
+
+\practitioner{A common PostCompact pattern: log the compaction event
+with a timestamp and trigger type (\code{manual} or \code{auto})
+to a file like \code{\textasciitilde/.claude/compaction.log}.
+Over time, this log reveals how often auto-compaction fires
+and whether your sessions are hitting the threshold too early.}
 
 \subsection{Decision Framework for 1M}
 
@@ -534,6 +624,8 @@ see \cref{ch:thinking-partner}.}
   \item \code{/context} to visualize usage, \code{/rewind} to undo missteps
   \item Two-failure rule: \code{/clear} + better prompt beats a third correction
   \item \code{/compact <focus>} for surgical pre-compaction; PreCompact hook for state backup
+  \item Auto-compaction clears tool outputs first, then summarizes conversation (\cref{subsec:two-phase-compaction})
+  \item Pair PreCompact + PostCompact hooks for automatic state checkpointing
   \item For 1M windows: think in absolute tokens, not percentages (\cref{sec:1m-strategy})
   \item CURRENT\_WORK.md for cross-session context at project root
   \item Auto-memory for cross-session patterns

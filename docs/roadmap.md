@@ -1,33 +1,77 @@
 # Roadmap — Claude Best Practices Guide
 
-**Current version:** v2.6 (2026-03-25, 118 pages)
-**Status:** All 14 issues resolved. v2.6 complete.
+**Current version:** v2.7 (2026-03-26)
+**Next planned:** v2.8
 
 ---
 
+## v2.7: Compaction Deep Dive + Stale Fixes — COMPLETE
+
+- Two-phase compaction subsection (Ch. 5)
+- PostCompact hook with JSON config (Ch. 5)
+- CLAUDE.md sizing guidance: 200 lines/file, ~500 total (Ch. 5)
+- CLAUDE_AUTOCOMPACT_PCT_OVERRIDE env var (Ch. 5)
+- TaskCreated hook event added (Appendix C + valid-hook-events.txt)
+- Hook count corrected: 24 → 25
+- Auto permission mode: added --enable-auto-mode flag + Team plan prerequisite (Appendix C)
+- Max output tokens added to pricing table: Opus 128K, Sonnet 64K, Haiku 64K (Ch. 14)
+- What's New appendix restructured with v2.7 section
+
+## v2.8: Reference Card + Feature Gaps — PLANNED
+
+### Reference card updates (curated + footnote)
+
+New commands (~8):
+- `/copy [N]`, `/chrome`, `/keybindings`, `/terminal-setup`
+- `/reload-plugins`, `/release-notes`, `/remote-env`, `/install-slack-app`
+
+New CLI flags (~8):
+- `--bare`, `--name`, `--max-turns`, `--max-budget-usd`
+- `--system-prompt`, `--append-system-prompt`, `--json-schema`, `--enable-auto-mode`
+
+Other:
+- Footnote linking to official docs for complete command list
+- Note `/review` deprecation → code-review plugin
+
+### New prose sections (~1.5 pages)
+
+| Section | Chapter | Scope |
+|---------|---------|-------|
+| `--bare` flag (scripted/SDK usage) | Ch. 12 (Automation) | ~0.5 page |
+| Model comparison table (output limits, context, cutoffs) | Ch. 4 (Prompting) | ~0.5 page |
+| Auto-mode prerequisites and behavior | Ch. 3 (First Session) | ~0.5 page |
+
+### Deferred to v2.9+
+
+- Chrome integration (`/chrome` + `--chrome` flag)
+- Channels (`--channels`, research preview)
+- `--json-schema` structured output (prose section)
+- Remaining account/marketing commands (~7)
+
 ## v2.6: Content Improvements — COMPLETE
 
-| # | Item | Status | Issue |
-|---|------|--------|-------|
-| 1 | Ch05b renumbering | **Closed — won't fix** (cascading rename, cosmetic) | #1 |
-| 2 | Pricing tables with date qualifier | **Done** | #2 |
-| 3 | Property-based testing example (Hypothesis) | **Done** | #3 |
-| 4 | MCP `claude mcp add` concrete example | **Done** | #4 |
-| 5 | Ch02:61 convergence sourceurl | **Done** | #5 |
-| 6 | Hierarchical index (~114 entries) | **Done** | #6 |
-| 7 | Glossary appendix (~30 terms) | **Done** | #7 |
-| 8 | "What's New in v2.5" reader-facing appendix | **Done** | #8 |
-| 9 | Rich HTML citation dashboard | **Done** (`make citations`) | #9 |
-| 10 | URL check expanded to 40 URLs | **Done** (`make check-urls`) | #10 |
+| # | Item | Status |
+|---|------|--------|
+| 1 | Ch05b renumbering | **Closed — won't fix** |
+| 2 | Pricing tables with date qualifier | **Done** |
+| 3 | Property-based testing example (Hypothesis) | **Done** |
+| 4 | MCP `claude mcp add` concrete example | **Done** |
+| 5 | Ch02:61 convergence sourceurl | **Done** |
+| 6 | Hierarchical index (~114 entries) | **Done** |
+| 7 | Glossary appendix (~30 terms) | **Done** |
+| 8 | "What's New" reader-facing appendix | **Done** |
+| 9 | Rich HTML citation dashboard | **Done** |
+| 10 | URL check expanded to 40 URLs | **Done** |
 
 ## Ongoing Maintenance
 
-| # | Item | Cadence | Issue | Notes |
-|---|------|---------|-------|-------|
-| 11 | Model release refresh (pricing, model names) | On release | #11 (closed) | ch04, ch12, ch14 model tables |
-| 12 | Hook events delta check | Monthly | #12 (closed) | `make validate-hooks` vs live schema |
-| 13 | Agent Teams graduation | On release | #13 (closed) | Remove experimental flag in ch09 |
-| 14 | `/review` plugin coverage | When stable | #14 (closed) | Deprecated command → plugin ecosystem |
+| Item | Cadence | Notes |
+|------|---------|-------|
+| Model release refresh (pricing, model names) | On release | ch04, ch12, ch14 model tables |
+| Hook events delta check | Monthly | `make validate-hooks` vs live schema |
+| Agent Teams graduation | On release | Remove experimental flag in ch09 |
+| `/review` plugin evolution | When stable | Deprecated → code-review plugin |
+| Quarterly pricing verification | Quarterly | Verify ch14 table against platform.claude.com |
 
 ## Build Targets
 
@@ -42,4 +86,4 @@ make citations-check  # Citation dashboard with live URL verification
 
 ---
 
-*Updated 2026-03-25. See CHANGELOG.md for version history.*
+*Updated 2026-03-26. See CHANGELOG.md for version history.*

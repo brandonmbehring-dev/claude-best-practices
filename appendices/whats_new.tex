@@ -1,11 +1,48 @@
-% Appendix: What's New in v2.5
-\chapter{What's New in v2.5}
+% Appendix: What's New
+\chapter{What's New}
 \label{app:whats-new}
 
-This appendix summarizes the major changes from v2.3 (February 2026) to v2.5
-(March 2026) for readers upgrading from previous editions.
+This appendix summarizes the major changes between editions
+for readers upgrading from previous versions.
 
-\section*{New Chapters and Sections}
+\section*{v2.7 (March 2026)}
+
+\begin{description}
+  \item[Two-Phase Compaction (\cref{ch:context})]
+    New subsection explaining how auto-compaction works internally:
+    tool outputs are cleared first (cheap, low info loss), then
+    conversation is summarized only if needed. Also documents that
+    CLAUDE.md fully survives compaction---re-read from disk and
+    re-injected fresh.
+
+  \item[PostCompact Hook (\cref{ch:context})]
+    New subsection with JSON configuration example mirroring the
+    existing PreCompact coverage. Includes the PreCompact/PostCompact
+    pairing pattern for automatic state checkpointing across compaction.
+
+  \item[Auto-compaction threshold override (\cref{ch:context})]
+    Documents the \code{CLAUDE\_AUTOCOMPACT\_PCT\_OVERRIDE} environment
+    variable. Tagged as convergence (undocumented, community-discovered).
+    Can lower but not raise above $\sim$83\%.
+
+  \item[CLAUDE.md sizing guidance (\cref{ch:context})]
+    Anthropic recommends under 200 lines per CLAUDE.md file and
+    under $\sim$500 lines total across all five hierarchy levels.
+
+  \item[Hook events: 24 $\rightarrow$ 25 (\cref{app:reference})]
+    Added TaskCreated event. Auto permission mode now documents
+    the \code{--enable-auto-mode} flag and Team plan prerequisite.
+
+  \item[Max output tokens (\cref{ch:enterprise})]
+    Pricing table now includes max output limits: Opus~4.6 128K tokens,
+    Sonnet~4.6 and Haiku~4.5 64K tokens each.
+\end{description}
+
+\section*{v2.5 (March 25, 2026)}
+
+Changes from v2.3 (February 2026) to v2.5.
+
+\subsection*{New Chapters and Sections}
 
 \begin{description}
   \item[1M Context Window Strategy (\cref{ch:context})]
@@ -52,7 +89,7 @@ This appendix summarizes the major changes from v2.3 (February 2026) to v2.5
     and discount combinations. Includes staleness qualifier.
 \end{description}
 
-\section*{Corrected Claims}
+\subsection*{Corrected Claims}
 
 \begin{description}
   \item[Hook events: 21 $\rightarrow$ 24]
@@ -96,7 +133,7 @@ This appendix summarizes the major changes from v2.3 (February 2026) to v2.5
     updated to current locations.
 \end{description}
 
-\section*{Expanded Content}
+\subsection*{Expanded Content}
 
 \begin{description}
   \item[Code intelligence plugins (\cref{ch:extending})]

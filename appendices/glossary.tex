@@ -16,7 +16,8 @@ Chapter references point to the primary discussion of each term.
     and team lead orchestration. (\cref{ch:agents})
 
   \item[Auto-compaction]
-    Automatic context summarization triggered at $\sim$83\% of the context window.
+    Automatic context management triggered at $\sim$83\% of the context window.
+    Proceeds in two phases: clears tool outputs first, then summarizes conversation.
     (\cref{ch:context})
 
   \item[Auto mode]
@@ -107,6 +108,11 @@ Chapter references point to the primary discussion of each term.
   \item[Practitioner]
     Practice discovered through usage, not documentation.
     Tagged {\color{WarmGreen}\textbf{[Practitioner]}} in this handbook. (\cref{ch:principles})
+
+  \item[PostCompact hook]
+    Fires after compaction completes (matchers: \code{manual}, \code{auto}).
+    Used for state restoration, logging, or cleanup. Pair with PreCompact
+    for automatic checkpointing. (\cref{ch:context})
 
   \item[PreCompact hook]
     Fires before compaction (matchers: \code{manual}, \code{auto}).
