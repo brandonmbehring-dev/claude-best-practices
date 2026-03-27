@@ -328,7 +328,7 @@ Set them in your shell profile, CI workflow, or the \code{env} block in
 \code{ANTHROPIC\_DEFAULT\_HAIKU\_MODEL} & Pin Haiku version \\
 \midrule
 \multicolumn{2}{@{}l}{\textit{Context \& Compaction}} \\
-\code{CLAUDE\_AUTOCOMPACT\_PCT\_OVERRIDE} & Auto-compact trigger (1--100, default $\sim$95\%) \\
+\code{CLAUDE\_AUTOCOMPACT\_PCT\_OVERRIDE} & Auto-compact trigger (1--100). Lower values compact earlier. Cannot raise above system default. \\
 \code{CLAUDE\_CODE\_AUTO\_COMPACT\_WINDOW} & Decouple compact window from context window \\
 \code{CLAUDE\_CODE\_DISABLE\_1M\_CONTEXT} & Disable 1M context (use smaller window) \\
 \midrule

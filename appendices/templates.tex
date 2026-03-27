@@ -85,7 +85,8 @@ Each template includes WHY comments explaining the purpose of each section.
   "permissions": {
     "allow": [
       "Read", "Grep", "Glob",
-      "Write(**)", "Edit(**)",
+      "Write(src/**)", "Write(tests/**)",
+      "Edit(src/**)", "Edit(tests/**)",
       "Bash(pytest *)", "Bash(mypy *)", "Bash(ruff *)",
       "Bash(git status)", "Bash(git diff *)",
       "Bash(git log *)", "Bash(git add *)"

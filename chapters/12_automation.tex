@@ -449,10 +449,16 @@ docs.\sourceurl{https://code.claude.com/docs/en/remote-control}}
 
 % -------------------------------------------------------------------
 \begin{keyinsight}
-Automation with Claude follows the same principle as automation without it:
-build the pipeline for the common case, handle exceptions manually.
-The difference is that Claude can handle a much wider ``common case''
-than traditional scripts, reducing the exception rate dramatically.
+Traditional automation breaks on unexpected input---a file with an
+unusual encoding, a function signature it was not designed for.
+Claude-powered automation bends: it reads the unusual file, adapts
+its approach, and continues. This means the boundary between
+``common case'' (automated) and ``exception'' (manual) shifts
+dramatically. Tasks that required human judgment in a bash pipeline---
+like deciding how to refactor a function with complex dependencies---
+become part of the automated path. Design your pipelines with this
+wider boundary in mind: the trust gates (\cref{sec:automation-strategy})
+are the new exception handling.
 \end{keyinsight}
 
 % -------------------------------------------------------------------
