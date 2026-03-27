@@ -27,6 +27,7 @@ platform, plan, or environment.
 \code{/resume [session]} & Resume a conversation by ID or name. Alias: \code{/continue} \\
 \code{/branch [name]} & Branch the current conversation at this point. Alias: \code{/fork} \\
 \code{/export [filename]} & Export the current conversation as plain text \\
+\code{/copy [N]} & Copy Nth-latest response to clipboard. Interactive picker for code blocks \\
 \midrule
 \multicolumn{2}{@{}l}{\textit{Model \& Reasoning}} \\
 \code{/model [model]} & Select or change the AI model \\
@@ -49,6 +50,11 @@ platform, plan, or environment.
 \code{/vim} & Toggle between Vim and Normal editing modes \\
 \code{/theme} & Change the color theme \\
 \code{/color [color]} & Set prompt bar color for the current session \\
+\code{/chrome} & Configure Claude in Chrome browser integration \\
+\code{/keybindings} & Open or create keybindings configuration file \\
+\code{/terminal-setup} & Configure terminal keybindings (Shift+Enter, etc.) \\
+\code{/reload-plugins} & Reload active plugins without restarting \\
+\code{/release-notes} & View the full changelog \\
 \midrule
 \multicolumn{2}{@{}l}{\textit{Development \& Review}} \\
 \code{/diff} & Interactive diff viewer (uncommitted changes + per-turn diffs) \\
@@ -61,6 +67,8 @@ platform, plan, or environment.
 \code{/remote-control} & Make session available for remote control from claude.ai \\
 \code{/install-github-app} & Set up Claude GitHub Actions for a repository \\
 \code{/desktop} & Continue session in the Desktop app (macOS/Windows) \\
+\code{/remote-env} & Configure default remote environment for web sessions \\
+\code{/install-slack-app} & Install Claude Slack app (opens OAuth flow) \\
 \midrule
 \multicolumn{2}{@{}l}{\textit{Account \& Info}} \\
 \code{/cost} & Show token usage statistics (API users) \\
@@ -80,6 +88,13 @@ platform, plan, or environment.
 \footnotetext{Fast mode is a research preview. Same Opus 4.6 model, \$30/\$150 MTok pricing,
 falls back to standard on rate limit. Requires extra usage enabled.
 See \url{https://code.claude.com/docs/en/fast-mode}.}
+
+\marginnote[Official]{For the complete list of $\sim$50 built-in commands,
+see \url{https://code.claude.com/docs/en/commands}.}
+
+\noindent\textbf{Deprecated}: \code{/review} has been replaced by the
+\code{code-review} plugin. Install with:
+\code{claude plugin install code-review@claude-plugins-official}.
 
 \section{Bundled Skills}
 
@@ -125,6 +140,14 @@ workflows that Claude executes.
 \code{--permission-mode} & Set permission mode for the session \\
 \code{--output-style} & Override output style \\
 \code{--add-dir <path>} & Add additional working directories \\
+\code{--bare} & Minimal mode: skip hooks, skills, plugins, MCP, memory, CLAUDE.md \\
+\code{--name / -n} & Set session display name (shown in \code{/resume} picker) \\
+\code{--max-turns} & Limit agentic turns (print mode only) \\
+\code{--max-budget-usd} & Maximum API spend before stopping (print mode only) \\
+\code{--system-prompt} & Replace entire system prompt with custom text \\
+\code{--append-system-prompt} & Append to default system prompt \\
+\code{--json-schema} & Validated JSON output matching schema (print mode only) \\
+\code{--enable-auto-mode} & Unlock auto mode in Shift+Tab cycle (Team plan+) \\
 \bottomrule
 \end{tabular}
 \end{fullwidth}

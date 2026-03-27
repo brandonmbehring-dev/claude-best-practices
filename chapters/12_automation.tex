@@ -93,6 +93,30 @@ This flag should \textbf{only} be used in environments you fully control
 (CI runners, Docker containers). Never expose it in user-facing scripts.
 \end{warnbox}
 
+\subsection{Bare Mode for Scripted Calls}
+\label{subsec:bare-mode}
+
+\official{The \code{--bare} flag skips auto-discovery of hooks, skills,
+plugins, MCP servers, auto memory, and CLAUDE.md so scripted calls
+start faster.\sourceurl{https://code.claude.com/docs/en/cli-reference}}
+\index{bare mode}\index{headless mode!bare mode}
+
+In bare mode, Claude has access to only Bash, file read, and file edit
+tools. This makes it ideal for CI/CD pipelines, SDK-style automation,
+and \code{-p} calls where startup speed matters more than full context.
+
+\begin{minted}{bash}
+# ~14% faster to API request than a standard session
+claude --bare -p "explain this function" < src/main.py
+\end{minted}
+
+\margintip{Use \code{--bare} when you don't need hooks, skills, or MCP.
+It sets \code{CLAUDE\_CODE\_SIMPLE} internally.}
+
+\practitioner{Bare mode pairs naturally with \code{--json-schema} for
+structured output and \code{--max-turns} for bounded execution---the
+three flags together define a predictable, fast automation primitive.}
+
 % -------------------------------------------------------------------
 \section{Claude Agent SDK}
 \label{sec:agent-sdk}

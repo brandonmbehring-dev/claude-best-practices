@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.8] - 2026-03-27
+
+### Added
+- 8 commands added to Appendix C reference card: /copy, /chrome, /keybindings, /terminal-setup, /reload-plugins, /release-notes, /remote-env, /install-slack-app
+- 8 CLI flags added to Appendix C: --bare, --name, --max-turns, --max-budget-usd, --system-prompt, --append-system-prompt, --json-schema, --enable-auto-mode
+- Bare Mode subsection in Ch. 12 (Automation): --bare flag for scripted calls, ~14% faster startup
+- Model Capabilities Reference table in Ch. 4 (Prompting): max output, context, cutoffs, thinking mode
+- Auto-mode margin note in Ch. 3 (First Session): --enable-auto-mode prerequisite and Team plan requirement
+- Footnote linking to complete command list at code.claude.com/docs/en/commands
+- /review deprecation note with code-review plugin install command
+
+### Changed
+- Guide version bumped to 2.8
+
 ## [v2.7] - 2026-03-26
 
 ### Added

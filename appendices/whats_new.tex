@@ -5,6 +5,30 @@
 This appendix summarizes the major changes between editions
 for readers upgrading from previous versions.
 
+\section*{v2.8 (March 2026)}
+
+\begin{description}
+  \item[Reference Card Expansion (\cref{app:reference})]
+    Added 8 built-in commands and 8 CLI flags verified against official docs.
+    Notable additions: \code{--bare} (minimal scripted mode), \code{--json-schema}
+    (structured output), \code{--max-budget-usd} (cost control), and
+    \code{--enable-auto-mode} (Team plan auto-approval).
+    Footnote links to complete command list. \code{/review} noted as deprecated.
+
+  \item[Bare Mode (\cref{ch:automation})]
+    New subsection documenting \code{--bare} for CI/CD and SDK automation.
+    Skips hooks, skills, plugins, MCP, memory, and CLAUDE.md.
+    $\sim$14\% faster to API request.
+
+  \item[Model Capabilities Reference (\cref{ch:prompting})]
+    New table with max output tokens, context windows, knowledge cutoffs,
+    and thinking modes. Complements the pricing table in \cref{ch:enterprise}.
+
+  \item[Auto Mode Prerequisite (\cref{ch:first-session})]
+    Margin note clarifying that auto permission mode requires
+    \code{--enable-auto-mode} flag and a Team plan or higher.
+\end{description}
+
 \section*{v2.7 (March 2026)}
 
 \begin{description}
