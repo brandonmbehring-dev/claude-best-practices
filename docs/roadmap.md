@@ -17,12 +17,30 @@
 - Max output tokens added to pricing table: Opus 128K, Sonnet 64K, Haiku 64K (Ch. 14)
 - What's New appendix restructured with v2.7 section
 
-## v2.9: Env Vars, CLI Flags, Code Review Plugin — COMPLETE
+## v2.9: Feature Docs + Practitioner Strategy — COMPLETE
 
+### v2.9a: Feature documentation
 - Environment variables reference: 26 key vars across 7 categories (Appendix C)
-- CLI flags: +13 flags added to reference card (--agent, --agents, --mcp-config, --plugin-dir, --effort, --chrome, --remote, --teleport, --strict-mcp-config, --tools, --fallback-model, --dangerously-skip-permissions)
-- Code-review plugin: expanded from 3-line deprecation notice to full architecture doc (4-agent parallel review with confidence scoring)
-- 124 pages
+- CLI flags: +13 flags added to reference card
+- Code-review plugin: expanded to full architecture doc (4-agent parallel review)
+- IDE integration: VS Code extension + JetBrains plugin (Ch. 7)
+- Managed settings expansion: delivery mechanisms, drop-in dirs, managed-only settings (Ch. 13)
+
+### v2.9b: Practitioner strategy sections (+543 lines, 8 sections)
+- Ch. 4: Controlling Scope — file-level constraints, discovery vs action, plan mode
+- Ch. 5: Context Curation for Large Codebases — concentric rings strategy
+- Ch. 5: The Compaction Protocol — before/during/after steps with verification
+- Ch. 5a: Getting Genuine Comparisons — 3 anti-sycophancy techniques
+- Ch. 6: Domain Correctness — the missing validation layer, domain invariant tests
+- Ch. 7: Choosing the Right Mechanism — command/skill/hook/MCP decision framework
+- Ch. 7: Debugging Hooks, Skills, MCP — I/O contract, PATH issues, timeouts
+- Ch. 9: Designing Effective Agent Tasks — 3 properties, when parallel helps
+- Ch. 11: Four Failure Layers — systematic diagnosis (prompt→CLAUDE.md→codebase→model)
+- Ch. 11: Testing Your CLAUDE.md — smoke tests + adversarial tests
+- Ch. 12: Choosing Your Automation Mode — 5-mode decision framework
+- Ch. 12: Trust Gates — evidence-based promotion for interactive→automated migration
+
+138 pages.
 
 ## v2.8: Reference Card + Feature Gaps — COMPLETE
 
@@ -99,4 +117,4 @@ make citations-check  # Citation dashboard with live URL verification
 
 ---
 
-*Updated 2026-03-26. See CHANGELOG.md for version history.*
+*Updated 2026-03-27. See CHANGELOG.md for version history.*
