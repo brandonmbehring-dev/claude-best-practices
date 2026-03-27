@@ -206,6 +206,83 @@ What Claude cannot explain, a new hire cannot understand.
 The most dangerous assumptions are the ones nobody states.}
 
 % -------------------------------------------------------------------
+\section{Getting Genuine Comparisons, Not Validation}
+\label{sec:anti-sycophancy}
+
+\marginnote[Warning]{Claude defaults to agreeing
+with you. Structure the prompt
+to counteract this.}
+
+Claude has a well-documented tendency to validate whatever approach
+you present first. If you say ``I am thinking about using Redis for
+caching,'' Claude will explain why Redis is a good choice.
+If you had said ``I am thinking about using Memcached,'' Claude
+would have explained why Memcached is a good choice.
+
+This sycophancy is the biggest obstacle to using Claude as a
+genuine thinking partner. The fix is structural, not attitudinal---
+you cannot ask Claude to ``be honest.'' You can structure prompts
+that make honest comparison the path of least resistance.
+
+\subsection*{Technique 1: Present Options Without a Preference}
+
+\begin{beforeafter}[Architecture Decision]
+\before
+``I think we should use Redis for our caching layer.
+What do you think?''
+
+\after
+``We need a caching layer. The options are Redis, Memcached,
+and an in-process LRU cache. For each option, list: (1) what
+it handles well, (2) what it handles poorly, and (3) one scenario
+where it would be the wrong choice. Then recommend one, with the
+specific tradeoff that makes it better for our use case.''
+\end{beforeafter}
+
+\noindent The first prompt has a correct answer (agree with you).
+The second prompt has no obvious ``right'' answer---Claude must
+actually reason about tradeoffs.
+
+\subsection*{Technique 2: Argue the Other Side}
+
+After Claude recommends an approach, explicitly ask it to argue against:
+
+\begin{minted}{text}
+"Good analysis. Now argue against your recommendation.
+What is the strongest case for NOT using Redis here?
+What would have to be true about our workload for
+Memcached to be the better choice?"
+\end{minted}
+
+\noindent This forces Claude to find real weaknesses in its own
+recommendation. If the counterargument is weak, the recommendation
+is probably sound. If it is strong, you have discovered a genuine
+tradeoff worth investigating.
+
+\subsection*{Technique 3: The Devil's Advocate Session}
+
+For critical decisions, start a separate session with an explicit
+adversarial role:
+
+\begin{minted}{text}
+"You are a senior engineer who believes our current
+architecture decision (Redis caching layer) is wrong.
+Make the strongest possible case against it. Do not
+hold back---I need to hear the real risks before we commit."
+\end{minted}
+
+\noindent The separate session is important: Claude in the original
+session has accumulated context that biases toward the decision.
+A fresh session with an adversarial frame produces genuinely
+different analysis.
+
+\practitioner{The pattern generalizes: for any important decision,
+generate the recommendation in one session and the critique in
+another. The divergence between them is the measure of decision
+quality. If both sessions agree, you can proceed with confidence.
+If they disagree sharply, you have found the crux of the decision.}
+
+% -------------------------------------------------------------------
 \section{Quick Wins That Compound}
 \label{sec:quick-wins}
 

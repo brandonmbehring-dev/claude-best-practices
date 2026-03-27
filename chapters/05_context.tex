@@ -420,6 +420,150 @@ writing durable artifacts (\code{CURRENT\_WORK.md}, plan docs, git commits)
 it does not replace it.}
 
 % -------------------------------------------------------------------
+\section{Context Curation for Large Codebases}
+\label{sec:context-curation}
+
+\marginnote[Tip]{Claude does not need to see your entire codebase.
+It needs to see the \emph{right} parts.
+Curation is the skill.}
+
+In a 200K-line codebase, Claude cannot read everything.
+The practitioner's daily challenge is not ``how do I manage context''
+but \emph{``which parts of the codebase does Claude need to see
+for this specific task?''}
+
+\subsection*{The Concentric Rings Strategy}
+
+Start narrow and expand only when Claude needs more:
+
+\begin{enumerate}
+  \item \textbf{Ring 1: The file you are changing} ($\sim$200--2{,}000 tokens).
+    Claude reads it automatically. This alone is sufficient for
+    simple edits and bug fixes.
+
+  \item \textbf{Ring 2: Direct dependencies} ($\sim$2{,}000--10{,}000 tokens).
+    Use \code{@path/to/interface.ts} to show the types, contracts,
+    or APIs that your file depends on. Claude needs these to make
+    changes that compile and pass type checks.
+
+  \item \textbf{Ring 3: Usage sites} ($\sim$5{,}000--20{,}000 tokens).
+    When changing a function signature, Claude needs to see callers.
+    ``Grep for all callers of \code{processOrder()} and show me the results''
+    is more efficient than loading every file.
+
+  \item \textbf{Ring 4: Architectural context} ($\sim$1{,}000--5{,}000 tokens).
+    For design decisions, Claude needs to understand the system shape.
+    A well-written CLAUDE.md section on architecture
+    (``we use hexagonal architecture, ports are in \code{src/ports/}'')
+    conveys this in 500 tokens instead of 50{,}000.
+\end{enumerate}
+
+\begin{keyinsight}
+The most common mistake with large codebases is \emph{under-curation},
+not over-curation. Practitioners load a file, ask for a change, and are
+surprised when Claude breaks the interface contract it never saw.
+The fix is not loading the entire codebase---it is loading Ring~2
+(the direct dependencies) before asking for the change.
+\end{keyinsight}
+
+\subsection*{How to Know Claude Has Enough Context}
+
+Three signals that Claude needs more:
+
+\begin{itemize}
+  \item \textbf{Invented names.} Claude fabricates a function or
+    type that does not exist. It is guessing because it has not
+    seen the real API.
+  \item \textbf{Wrong patterns.} Claude uses a pattern from public
+    libraries instead of your internal conventions. It has not seen
+    your codebase's idioms.
+  \item \textbf{Confident but wrong.} Claude produces code that
+    compiles but violates a constraint (thread safety, schema version,
+    backwards compatibility) it was never told about.
+\end{itemize}
+
+\noindent In each case, the fix is the same: show Claude the missing
+context (\code{@file}, CLAUDE.md rule, or a brief explanation),
+then retry. Do not correct the output---correct the input.
+
+\subsection*{Practical Techniques}
+
+\begin{description}
+  \item[Start with the test.] ``Read \code{tests/test\_auth.py} and then
+    modify \code{src/auth.py} to fix the failing test.'' The test file
+    provides Ring~2 context naturally.
+  \item[Use CLAUDE.md for architecture.] A 30-line ``Architecture''
+    section in CLAUDE.md replaces thousands of tokens of code reading.
+    Describe the layers, the conventions, and the non-obvious constraints.
+  \item[Let Claude explore.] ``Find all files related to payment
+    processing'' lets Claude use Grep/Glob efficiently. It reads what
+    it needs rather than you pre-loading everything.
+  \item[Use \code{--add-dir} for cross-repo context.] When your change
+    spans two repositories, \code{claude --add-dir ../other-repo}
+    gives Claude access without context duplication.
+\end{description}
+
+% -------------------------------------------------------------------
+\section{The Compaction Protocol}
+\label{sec:compaction-protocol}
+
+\marginnote[Tip]{Compaction is not ``press button, hope for best.''
+It is a protocol with specific inputs and verification steps.}
+
+You are at 60\% context mid-task. Auto-compaction has not triggered
+but quality is starting to slip. What exactly do you do?
+
+\subsection*{Before Compacting}
+
+\begin{enumerate}
+  \item \textbf{Write down what matters.} In 2--3 sentences, state:
+    what you are working on, what decisions were made, and what
+    remains to be done. This becomes your \code{/compact} focus argument.
+  \item \textbf{Commit or save.} Any code changes that are ``done enough''
+    should be committed or saved to a file. Compaction cannot lose
+    what is already on disk.
+  \item \textbf{Check for thinking blocks.} If you used extended thinking
+    heavily, those blocks resist compaction
+    (p.\,\pageref{warn:thinking-compaction}).
+    Consider \code{/clear} instead.
+\end{enumerate}
+
+\subsection*{The Compact Command}
+
+\begin{minted}{text}
+/compact Preserve: auth refactoring decisions, test results for
+  login flow. Discard: earlier exploration of caching approaches,
+  failed regex attempts.
+\end{minted}
+
+\noindent Be specific about what to keep \emph{and} what to discard.
+A bare \code{/compact} with no argument lets Claude decide what is
+important---which may not match your priorities.
+
+\subsection*{After Compacting: Verification}
+
+\begin{enumerate}
+  \item \textbf{Ask a recall question.} ``What architectural decisions
+    did we make about the auth flow?'' If Claude cannot answer, the
+    compaction lost critical context. Inject it again from your notes
+    or CLAUDE.md.
+  \item \textbf{Check the token counter.} Good compaction should
+    reduce context by 30--50\%. If it barely moved, most of the
+    context is in compaction-resistant structures (thinking blocks,
+    CLAUDE.md, system prompt). \code{/clear} may be the better option.
+  \item \textbf{Resume with a reorienting prompt.} ``We are refactoring
+    \code{src/auth/}. The next step is to update the session middleware.''
+    This anchors Claude on the current task after the context shift.
+\end{enumerate}
+
+\begin{warnbox}[Do Not Compact and Immediately Ask a Complex Question]
+Compaction resets Claude's ``working memory'' even though the summary
+preserves facts. Give Claude a simple orienting task first (read a file,
+confirm a decision) before asking for complex reasoning. This lets
+the compacted context settle into the attention pattern.
+\end{warnbox}
+
+% -------------------------------------------------------------------
 \section{Session Management}
 \label{sec:sessions}
 

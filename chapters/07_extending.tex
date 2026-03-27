@@ -404,6 +404,58 @@ Use it for desktop alerts during long-running tasks:
 \code{osascript -e 'display notification \"...\"'}.
 On Windows WSL, use \code{powershell.exe} with toast notifications.}
 
+\subsection{Debugging Hooks, Skills, and MCP Servers}
+\label{subsec:debugging-extensions}
+
+\marginnote[Tip]{Extensions fail silently by default.
+Build logging into every hook from the start.}
+
+When an extension does not work and the error is opaque, work through
+this checklist:
+
+\begin{description}
+  \item[Check if it loaded.]
+    Run \code{/hooks} to see merged hook configuration.
+    Run \code{/skills} to see available skills.
+    Run \code{/mcp} to see connected MCP servers.
+    If your extension is missing, the issue is configuration---not logic.
+
+  \item[Check the I/O contract.]
+    Command hooks receive JSON on stdin and must return JSON on stdout.
+    Exit code 0 = proceed, exit code 2 = block the action.
+    Any other exit code or malformed JSON is treated as ``proceed''
+    (fail-open). Test your hook standalone:
+\begin{minted}{bash}
+echo '{"tool":"Bash","input":{"command":"ls"}}' \
+  | bash .claude/hooks/my-hook.sh
+\end{minted}
+
+  \item[Check permissions.]
+    Hook scripts need execute permission (\code{chmod +x}).
+    MCP servers may need network access that sandboxing blocks.
+
+  \item[Add logging.]
+    Hooks run in the background with no visible output.
+    Add \code{>> /tmp/hook-debug.log 2>\&1} to your hook command
+    during development. Remove after debugging.
+
+  \item[Check timeouts.]
+    Command hooks default to 10 minutes.
+    HTTP hooks default to 30 seconds.
+    MCP server startup uses \code{MCP\_TIMEOUT} (default varies).
+    A slow hook may time out silently.
+
+  \item[Use \code{/debug}.]
+    The \code{/debug} skill reads Claude's internal debug log
+    and explains what happened. Use it when hooks block
+    unexpectedly or MCP connections fail.
+\end{description}
+
+\practitioner{The most common hook failure: the script works when
+you run it manually but fails in Claude because the PATH is different.
+Hook commands run in a minimal shell environment. Use absolute paths
+for executables, or source your profile explicitly.}
+
 % -------------------------------------------------------------------
 \section{MCP: External Tool Integration}
 \label{sec:mcp}

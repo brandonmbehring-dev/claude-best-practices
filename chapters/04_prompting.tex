@@ -137,6 +137,68 @@ pytest tests/ -v 2>&1 | claude -p "Summarize failures"
 \end{minted}
 
 % -------------------------------------------------------------------
+\section{Controlling Scope}
+\label{sec:scope-control}
+
+\marginnote[Tip]{The most common daily annoyance:
+Claude modifies files you did not ask
+it to touch.}
+
+Claude's default behavior is helpful: it reads broadly, notices
+related issues, and fixes them. But this helpfulness becomes scope
+creep when it modifies a file you were not working on, refactors
+a function you did not mention, or ``improves'' code that was
+intentionally written that way.
+
+\subsection*{The Scope Spectrum}
+
+\begin{description}
+  \item[Too restrictive:] ``Only modify line 42 of \code{auth.py}.''\\
+    Claude cannot fix related issues that the change requires.
+  \item[Too permissive:] ``Fix the auth system.''\\
+    Claude may rewrite half the codebase.
+  \item[Right scope:] ``Fix the session expiry bug in
+    \code{src/auth/session.py}. You may also modify
+    \code{src/auth/middleware.py} if the fix requires it.
+    Do not touch other files without asking.''
+\end{description}
+
+\subsection*{Three Techniques for Scope Control}
+
+\begin{enumerate}
+  \item \textbf{Name the files.} Explicitly list which files Claude
+    may modify. ``Modify \code{src/auth/session.py} and its tests.
+    Do not modify other files.'' This is the simplest and most
+    effective technique.
+
+  \item \textbf{Separate discovery from action.} First ask Claude to
+    \emph{analyze} without changing anything: ``Read
+    \code{src/payments/} and tell me what needs to change to support
+    refunds. Do not make changes yet.'' Review the analysis, then
+    approve specific changes.
+
+  \item \textbf{Use plan mode.} \code{Shift+Tab} to \code{plan} mode
+    lets Claude describe proposed changes without executing them.
+    Review the plan, adjust scope, then switch to a mode that allows
+    edits. This is especially valuable for unfamiliar codebases.
+\end{enumerate}
+
+\practitioner{When Claude makes an unsolicited change, do not just
+undo it---add a scope constraint to the next prompt. The pattern:
+``Good fix for the session bug. But you also changed
+\code{user\_model.py}---please revert that. For the rest of this
+session, only modify files I explicitly name.'' Claude learns
+the constraint for the remainder of the session.}
+
+\begin{keyinsight}
+Scope creep is not a model deficiency---it is a prompting gap.
+Claude modifies extra files because the prompt did not say not to.
+The fix is always in the prompt (name the files, separate discovery
+from action, use plan mode), never in hoping Claude will guess
+your boundaries.
+\end{keyinsight}
+
+% -------------------------------------------------------------------
 \section{Extended Thinking}
 \label{sec:thinking}
 

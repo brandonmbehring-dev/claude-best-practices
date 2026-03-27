@@ -287,6 +287,103 @@ infrastructure. That is the subject of Part~IV.
 session, and configuration state. Use \code{/status} for version and account info.}
 
 % -------------------------------------------------------------------
+\section{Systematic Diagnosis: The Four Failure Layers}
+\label{sec:diagnosis}
+
+\marginnote[Tip]{When Claude keeps failing,
+diagnose the layer---not the symptom.
+Fixing the wrong layer wastes time.}
+
+Claude keeps making the same mistake across sessions.
+Before blaming the model, work through the four layers in order:
+
+\begin{enumerate}
+  \item \textbf{Layer 1: The prompt.}
+    Is your request ambiguous? Does it assume context Claude does not have?
+    \emph{Test:} Rephrase the request with explicit constraints and
+    an example of what ``correct'' looks like. If Claude succeeds,
+    the problem was prompt specificity.
+
+  \item \textbf{Layer 2: CLAUDE.md.}
+    Is there a conflicting rule? A rule that is too vague to enforce?
+    A rule that Claude interprets differently than you intended?
+    \emph{Test:} Temporarily remove your CLAUDE.md (\code{mv .claude/CLAUDE.md
+    .claude/CLAUDE.md.bak}), then retry. If the problem disappears,
+    a rule is interfering. Add rules back incrementally to isolate
+    the conflict.
+
+  \item \textbf{Layer 3: The codebase.}
+    Does the existing code teach Claude the wrong patterns?
+    If your codebase has 50 functions using pattern A and you want
+    pattern B, Claude will default to A regardless of instructions.
+    \emph{Test:} Ask Claude \emph{why} it chose its approach.
+    If it cites existing code as the reason, the codebase is the
+    teacher and your instruction is the exception.
+    Fix the instruction to be explicit: ``Do NOT follow the pattern
+    in \code{src/legacy/}. Use the pattern shown in \code{src/v2/} instead.''
+
+  \item \textbf{Layer 4: The model.}
+    Genuine model limitations exist---certain reasoning patterns,
+    mathematical computations, or domain-specific conventions that
+    the model gets wrong consistently.
+    \emph{Test:} Try the same task with extended thinking (\code{/effort max}).
+    If it still fails, try with a different model (\code{/model sonnet}).
+    If all models fail the same way, accept the limitation and
+    design a workaround (verification step, hook, or manual review).
+\end{enumerate}
+
+\practitioner{In practice, 80\% of persistent failures are Layer~1
+(prompt) or Layer~2 (CLAUDE.md). Practitioners jump to Layer~4
+(``the model is wrong'') before checking whether their instructions
+are unambiguous and conflict-free. The layered diagnosis forces you
+to rule out the cheap fixes before concluding the model is at fault.}
+
+% -------------------------------------------------------------------
+\section{Testing Your CLAUDE.md}
+\label{sec:testing-claude-md}
+
+\marginnote[Tip]{An untested CLAUDE.md is an assumption,
+not a standard.}
+
+You added a rule to CLAUDE.md. How do you know it works?
+
+\subsection*{The Smoke Test}
+
+After adding or changing a rule:
+
+\begin{enumerate}
+  \item Start a fresh session (\code{/clear}).
+  \item Ask Claude to do the thing the rule governs.
+    Do not mention the rule---just describe the task.
+  \item Check whether Claude follows the rule without being told.
+\end{enumerate}
+
+\noindent If Claude follows it: the rule works.
+If Claude ignores it: the rule is either too vague, buried among
+competing rules, or contradicted by codebase patterns (Layer~3).
+
+\subsection*{The Adversarial Test}
+
+For critical rules (security, compliance, data handling):
+
+\begin{enumerate}
+  \item Ask Claude to do something the rule prohibits.
+    ``Write a function that reads from \code{.env} and logs
+    the contents.''
+  \item Check whether Claude refuses or flags the violation.
+  \item If Claude complies without hesitation, the deny rule
+    is not working. Check: is it in \code{settings.json} (enforced
+    by the harness) or in CLAUDE.md (advisory, Claude may ignore)?
+\end{enumerate}
+
+\practitioner{Deny rules in \code{settings.json} are enforced
+by the harness---Claude cannot bypass them. Rules in CLAUDE.md are
+\emph{advisory}---Claude follows them because it is told to,
+not because it is prevented from violating them.
+For anything security-critical, use \code{settings.json} deny rules
+or hooks, not CLAUDE.md.}
+
+% -------------------------------------------------------------------
 \begin{trybox}
 Audit your most active ML project:
 \begin{enumerate}

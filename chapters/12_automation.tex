@@ -74,6 +74,43 @@ run manually. When it works, it migrates:
 \noindent Each step adds reliability and removes manual intervention.
 The mistake is jumping to step 5 before proving the concept at step 1.
 
+\subsection*{Trust Gates Between Stages}
+
+\marginnote[Tip]{Do not promote a pipeline stage
+until the current stage has succeeded
+N times without intervention.}
+
+Each promotion in the progression should be gated on evidence
+that the current stage works reliably:
+
+\begin{description}
+  \item[Manual $\rightarrow$ Scripted] Gate: the prompt has produced
+    correct results on 5+ files without modification. If you are still
+    editing the prompt after each run, it is not ready to script.
+
+  \item[Scripted $\rightarrow$ CI] Gate: the script has run
+    end-to-end 3+ times with no manual intervention. Output validation
+    is automated (not ``I eyeballed the diff''). Tool scoping
+    (\code{--allowedTools}) is explicit.
+
+  \item[CI $\rightarrow$ Scheduled] Gate: CI runs have produced
+    correct results for 2+ weeks. Failure handling is tested
+    (you know what happens when Claude hits a rate limit or an
+    unexpected file). Outputs are PRs, not direct commits.
+
+  \item[Any stage $\rightarrow$ Agent SDK] Gate: the bash script
+    has grown to include conditionals, error handling, or retry logic
+    that bash handles poorly. The prompt is stable. If you are still
+    iterating on the prompt, stay in bash---it is faster to edit.
+\end{description}
+
+\practitioner{The trust gate pattern prevents the most common
+automation failure: a prompt that works 90\% of the time deployed
+to CI where it fails silently 10\% of the time. The 10\% failure
+rate is invisible in manual runs (you catch and fix it) but
+compounds in automation (10 failures per 100 PRs, each requiring
+manual cleanup).}
+
 \subsection*{Handling Failures in Unattended Pipelines}
 
 \practitioner{Unattended pipelines need failure modes designed in advance.

@@ -86,6 +86,80 @@ def test_feature_builder_invariants(values):
 Layers 3--4 are the baseline for production.
 Layers 5--6 are for critical systems.}
 
+\subsection{The Missing Layer: Domain Correctness}
+\label{subsec:domain-correctness}
+
+\marginnote[Warning]{Claude's most dangerous failure:
+code that passes all tests but is
+semantically wrong.}
+
+The 6-layer model catches structural errors---type mismatches,
+null handling, regression failures. But it does not catch
+\emph{domain-correctness} failures: code that is syntactically
+valid, passes all tests, and produces the wrong answer.
+
+Examples from practice:
+
+\begin{itemize}
+  \item \textbf{Data leakage.} A feature engineering function uses
+    future values during training. Tests pass because the function
+    is deterministic. The model achieves unrealistic accuracy.
+  \item \textbf{Wrong aggregation.} A revenue calculation sums
+    instead of averaging across time periods. Tests pass because
+    the function produces a number. The number is wrong.
+  \item \textbf{Survivorship bias.} A cohort analysis excludes
+    records that were deleted. Tests pass because the query runs.
+    The results are misleading.
+  \item \textbf{Silent unit mismatch.} A function mixes daily and
+    monthly rates. Tests pass because both are floats.
+    The financial model is off by 30$\times$.
+\end{itemize}
+
+\noindent These failures share a pattern: structural tests verify that
+the code \emph{runs}, but not that it \emph{means} what you intended.
+
+\subsection*{Domain Invariant Tests}
+
+The fix is a class of tests that encode domain knowledge,
+not just interface contracts:
+
+\begin{minted}{python}
+def test_no_future_leakage():
+    """Features at time t must use only data from t-1 or earlier."""
+    df = make_time_series(n=100)
+    features = build_features(df, as_of=50)
+    # No feature value should depend on rows 51-100
+    assert features.index.max() <= 50
+
+def test_revenue_units():
+    """Monthly revenue * 12 should approximate annual revenue."""
+    monthly = compute_monthly_revenue(test_data)
+    annual = compute_annual_revenue(test_data)
+    # Within 5% tolerance (seasonal variation)
+    assert abs(monthly.sum() * 12 - annual.sum()) / annual.sum() < 0.05
+
+def test_cohort_completeness():
+    """Cohort analysis must account for all original records."""
+    original_count = len(raw_data)
+    cohort_counts = cohort_analysis(raw_data)
+    assert cohort_counts.sum() == original_count
+\end{minted}
+
+\practitioner{When asking Claude to generate tests, explicitly request
+domain invariant tests in addition to structural tests:
+``Write tests that verify the business logic is correct, not just that
+the code runs. Include: leakage checks, unit consistency,
+and completeness invariants.''}
+
+\begin{keyinsight}
+The 6-layer model is necessary but not sufficient for domains where
+``correct output'' requires judgment. Domain invariant tests encode
+\emph{your} knowledge of what the answer should look like. Claude
+can generate the test structure, but you must specify the invariants---
+because Claude does not know that monthly revenue times twelve should
+approximate annual revenue. You do.
+\end{keyinsight}
+
 % -------------------------------------------------------------------
 \section{Phase-Appropriate Standards}
 \label{sec:phases}
