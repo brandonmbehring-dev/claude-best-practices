@@ -21,18 +21,23 @@ for cross-session persistence.
 Use \code{/clear} between unrelated tasks. Use \code{/compact}
 for selective summarization.\sourceurl{https://code.claude.com/docs/en/best-practices}}
 
-\begin{whybox}[The Non-Linear Cost of Context]\index{context!degradation}
-Context degradation is not gradual---there is a noticeable threshold
-where Claude begins to lose track of earlier instructions.
-Every token of context spent on irrelevant information
-(old errors, abandoned approaches, unrelated tasks)
-is a token unavailable for the task at hand.
+\begin{whybox}[Context Rot Is Real and Measurable]\index{context!degradation}\index{context!context rot}
+Anthropic calls this \textbf{context rot}: as token count grows,
+accuracy and recall degrade. This is not a hard cliff but a
+performance gradient---each additional token of irrelevant information
+dilutes attention on the tokens that matter.\sourceurl{https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents}
 
-The mechanism: as the context window fills, Claude's attention
-distributes across more tokens. Critical instructions
-(your CLAUDE.md rules, the current task description) compete
-for attention with accumulated noise. Past a threshold,
-signal-to-noise drops sharply.
+The practical impact: with a full 1M window, community testing shows
+quality degradation starting as early as 40\% usage, and approximately
+1 in 4 retrievals failing at capacity.
+The effective high-quality range is roughly 200--500K tokens---well
+short of the 1M headline.
+
+The mechanism: Claude's attention distributes across all tokens
+in context. Critical instructions (your CLAUDE.md rules, the current
+task description) compete for attention with accumulated noise.
+Content near the beginning and end of the window is recalled more
+reliably than details buried in the middle.
 \end{whybox}
 
 % --- Context degradation stacked bar diagram ---
@@ -758,6 +763,107 @@ when a decision turns out to be wrong.
 
 \marginnote[Cross-Ref]{For collaborative plan drafting and ADRs,
 see \cref{ch:thinking-partner}.}
+
+% -------------------------------------------------------------------
+\section{Context Budget Planning}
+\label{sec:context-budget}
+
+\marginnote[Tip]{Estimate context needs
+\emph{before} starting. A 5-second
+estimate prevents a 10-minute recovery.}
+
+Before starting a task, estimate whether it fits in your current
+session or needs a fresh one:
+
+\begin{fullwidth}
+{\small
+\begin{tabular}{@{}lrp{6cm}@{}}
+\toprule
+\textbf{Action} & \textbf{Tokens} & \textbf{Notes} \\
+\midrule
+Startup overhead & $\sim$8K & System prompt + CLAUDE.md + env + MCP \\
+Reading a source file & 1,000--3,000 & Largest single consumer per action \\
+Edit cycle (edit + verify) & 500--1,000 & Per file edited \\
+Test suite output & $\sim$1,200 & Filter with hooks to reduce \\
+Search results (grep/glob) & $\sim$600 & Per search \\
+Claude's analysis & 400--800 & Per response \\
+\bottomrule
+\end{tabular}
+}
+\end{fullwidth}
+
+\noindent\textbf{Rule of thumb}: A focused task touching 5--10 files
+consumes 30--50K tokens. A broad investigation can consume 100K+ easily.
+If your task will read more than 20 files, delegate research to
+a subagent (\cref{ch:agents}).
+
+\subsection*{When to Split into Multiple Sessions}
+
+\begin{description}
+  \item[Single session] Task touches $\leq$10 files, requires one
+    coherent chain of reasoning, fits in 50--100K tokens.
+  \item[Multiple sessions] Task has independent phases
+    (architecture $\rightarrow$ implement $\rightarrow$ test $\rightarrow$
+    integrate). Each phase gets a fresh session with a handoff file.
+  \item[Parallel sessions] Tasks are independent (different modules,
+    different repos). Use git worktrees (\cref{sec:worktrees}) for
+    file isolation.
+\end{description}
+
+% -------------------------------------------------------------------
+\section{Horizontal Scaling: Many Sessions, Not Deep Context}
+\label{sec:horizontal-scaling}
+
+\marginnote[Practitioner]{Claude Code's creator runs 10--15
+simultaneous sessions. Horizontal
+scaling beats deep context.}
+
+The instinct is to keep one long session going---adding context,
+compacting, adding more. But 1M tokens of deep context performs
+worse than five 200K-token sessions running in parallel.
+
+\subsection*{The Pattern}
+
+\begin{enumerate}
+  \item \textbf{One session per task.} ``Fix the auth bug'' gets its
+    own session. ``Add the caching layer'' gets another. Each starts
+    fresh with focused context.
+  \item \textbf{Git worktrees for isolation.} \code{claude --worktree}
+    gives each session its own copy of the repository. No file conflicts.
+  \item \textbf{Handoff files for continuity.} When a session produces
+    decisions that the next session needs, write a handoff file:
+    what was decided, what was changed, what remains.
+  \item \textbf{CLAUDE.md as shared memory.} All sessions read the
+    same CLAUDE.md. Project conventions, architecture decisions, and
+    constraints propagate automatically.
+\end{enumerate}
+
+\begin{keyinsight}
+The context window is not a workspace---it is a conversation.
+Conversations degrade over time. The solution is not a bigger window;
+it is shorter, more focused conversations with durable artifacts
+bridging between them. Think of each session as a function call:
+clear inputs (CLAUDE.md + handoff file), focused execution, clear
+outputs (commits + handoff for next session).
+\end{keyinsight}
+
+\subsection*{When to Go Deep vs.\ Wide}
+
+\begin{description}
+  \item[Go deep (single long session)] The task requires continuous
+    reasoning across many interconnected decisions. Splitting would
+    lose critical context. Examples: debugging a subtle race condition,
+    designing a complex API where each endpoint depends on the others.
+  \item[Go wide (multiple short sessions)] The tasks are independent
+    or can be serialized with handoff files. Examples: implementing
+    separate features, reviewing multiple PRs, batch operations
+    across files.
+\end{description}
+
+\practitioner{Default to wide. Most work decomposes into independent
+units better than practitioners expect. The overhead of a handoff
+file (2 minutes to write) is almost always less than the cost of
+context degradation in a 3-hour session.}
 
 % -------------------------------------------------------------------
 \section{Quick Reference}
