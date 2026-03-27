@@ -125,6 +125,86 @@ the only way to preserve prior context.}
 Parallelism trades cost for speed.}
 
 % -------------------------------------------------------------------
+\section{Designing Effective Agent Tasks}
+\label{sec:agent-design}
+
+\marginnote[Tip]{A well-designed agent task is
+self-contained: clear goal,
+bounded scope, verifiable output.}
+
+Knowing \emph{when} to delegate is necessary but not sufficient.
+The quality of the delegation determines the quality of the result.
+
+\subsection*{The Three Properties of a Good Agent Task}
+
+\begin{enumerate}
+  \item \textbf{Self-contained.} The agent must be able to complete
+    the task without asking the parent for clarification. If the agent
+    needs context from your session, either pass it explicitly in the
+    prompt or do the task yourself.
+
+  \item \textbf{Verifiable.} The agent's output must be checkable.
+    ``Review this code'' produces opinions. ``Run the test suite and
+    report failures with file:line references'' produces verifiable facts.
+    Prefer tasks with concrete success criteria.
+
+  \item \textbf{Bounded.} An agent exploring ``everything wrong with
+    this codebase'' will consume its entire context window and return
+    an unfocused report. Constrain scope: ``Review \code{src/auth/}
+    for SQL injection vulnerabilities.''
+\end{enumerate}
+
+\subsection*{When Parallel Execution Helps (and When It Doesn't)}
+
+Parallel agents save wall-clock time only when tasks are
+\emph{truly independent}. The test:
+
+\begin{itemize}
+  \item Can Agent B start without knowing Agent A's result?
+    $\rightarrow$ \textbf{Parallel.}
+  \item Does Agent B's work depend on Agent A's output?
+    $\rightarrow$ \textbf{Sequential.} Run A first, feed results to B.
+  \item Do both agents modify the same files?
+    $\rightarrow$ \textbf{Use worktrees} or make one read-only.
+\end{itemize}
+
+\noindent Parallel execution has overhead: each agent loads its own
+context, reads files independently, and may duplicate exploration.
+For tasks under 2 minutes, the overhead exceeds the savings.
+
+\practitioner{The sweet spot is 2--4 agents on tasks that each take
+5--15 minutes. Below that, sequential is faster. Above 4 agents,
+coordination overhead grows and results quality degrades because
+you cannot review them all carefully.}
+
+\subsection*{Designing Agent Prompts}
+
+\begin{enumerate}
+  \item \textbf{State the role}, not just the task.
+    ``You are a security specialist'' focuses attention differently
+    than ``review this code.''
+  \item \textbf{Specify the output format.}
+    ``Report findings as: file:line | severity | description''
+    produces structured, comparable results across agents.
+  \item \textbf{Tell the agent what to ignore.}
+    ``Do not report style issues---focus only on correctness''
+    prevents noise that obscures real findings.
+  \item \textbf{Restrict tools to what's needed.}
+    A review agent needs \code{Read, Grep, Glob}---not \code{Edit}
+    or \code{Bash}. Fewer tools = fewer distractions.
+\end{enumerate}
+
+\begin{keyinsight}
+The most common delegation failure is vague tasking.
+``Review this PR'' produces generic feedback.
+``Review \code{src/payments/} for: (1) race conditions in concurrent
+checkout, (2) amount calculations with floating-point precision issues,
+(3) missing error handling on payment gateway timeouts'' produces
+actionable findings. Specificity in the prompt determines specificity
+in the output.
+\end{keyinsight}
+
+% -------------------------------------------------------------------
 \section{Git Worktrees: Isolated File Systems}
 \label{sec:worktrees}
 

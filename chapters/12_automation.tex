@@ -14,6 +14,87 @@ enable production automation pipelines that run without human interaction.
 The extension mechanisms from \cref{ch:extending}---especially hooks---provide
 the building blocks. This chapter assembles them into pipelines.
 
+% -------------------------------------------------------------------
+\section{Choosing Your Automation Mode}
+\label{sec:automation-strategy}
+
+\marginnote[Tip]{Match the automation mode to the
+failure cost. Higher stakes = more control.}
+
+Claude Code offers five automation modes, each with different tradeoffs.
+Choosing the wrong one either over-engineers simple tasks or
+under-controls risky ones.
+
+\begin{decisionbox}[Which Automation Mode?]
+\textbf{Need a quick one-off script?}\\
+$\rightarrow$ \textbf{Headless mode} (\code{claude -p}). Fastest to set up.
+Runs a single prompt, returns output. Add \code{--bare} for
+speed, \code{--json-schema} for structured output.
+
+\textbf{Need to process many files with the same operation?}\\
+$\rightarrow$ \textbf{Fan-out pattern}. Shell loop + headless mode.
+You define the units; Claude processes each independently.
+Test on 2--3 files before scaling.
+
+\textbf{Need Claude to figure out what needs changing?}\\
+$\rightarrow$ \textbf{\code{/batch}}. Claude researches the codebase,
+decomposes the work, spawns parallel agents.
+You review the plan before execution.
+
+\textbf{Need programmatic control, custom tools, or error handling?}\\
+$\rightarrow$ \textbf{Agent SDK}. Full Python/TypeScript API.
+Custom tool definitions, hook callbacks, session management.
+Production-grade.
+
+\textbf{Need it to run on a schedule without your machine?}\\
+$\rightarrow$ \textbf{Cloud scheduled tasks} or \textbf{GitHub Actions}.
+Anthropic infrastructure runs the prompt on a cron schedule.
+Each run clones fresh.
+\end{decisionbox}
+
+\subsection*{The Progression}
+
+Most automation starts as a one-off \code{claude -p} call that you
+run manually. When it works, it migrates:
+
+\begin{enumerate}
+  \item \textbf{Manual headless}: \code{claude -p "add type hints to auth.py"} ---
+    you run it, review output, iterate on prompt.
+  \item \textbf{Scripted fan-out}: wrap in a shell loop, add
+    \code{--allowedTools} for safety, \code{--output-format json}
+    for pipeline consumption.
+  \item \textbf{CI integration}: add to GitHub Actions, trigger on PR.
+    Now it runs without you.
+  \item \textbf{Scheduled}: promote to cloud scheduled task for
+    recurring work (daily reviews, weekly audits).
+  \item \textbf{Agent SDK}: when the shell script gets complex enough
+    to need conditionals, retries, or custom tools, rewrite in Python.
+\end{enumerate}
+
+\noindent Each step adds reliability and removes manual intervention.
+The mistake is jumping to step 5 before proving the concept at step 1.
+
+\subsection*{Handling Failures in Unattended Pipelines}
+
+\practitioner{Unattended pipelines need failure modes designed in advance.
+Claude cannot ask you for help when you are not watching.}
+
+\begin{itemize}
+  \item \textbf{Bound execution}: Use \code{--max-turns} and
+    \code{--max-budget-usd} to prevent runaway sessions.
+    A stuck agent consuming tokens for 30 minutes is expensive.
+  \item \textbf{Scope tools}: \code{--allowedTools Read,Edit} prevents
+    an agent from running arbitrary commands. Match tools to
+    the task, not to convenience.
+  \item \textbf{Validate output}: Parse \code{--output-format json}
+    results programmatically. If the output does not match expected
+    structure, fail loudly---do not commit partial results.
+  \item \textbf{Gate before merge}: CI pipelines should produce PRs,
+    not direct commits. A human reviews before merge.
+    The automation eliminates toil, not judgment.
+\end{itemize}
+
+% -------------------------------------------------------------------
 \section{Headless Mode}
 \label{sec:headless}
 

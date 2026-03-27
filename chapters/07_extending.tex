@@ -13,6 +13,92 @@ Claude Code ships with four extension mechanisms---commands, skills, hooks,
 and MCP servers---forming a hierarchy of increasing autonomy.
 Understanding when to use each is the difference between a tool and a workflow.
 
+% -------------------------------------------------------------------
+\section{Choosing the Right Mechanism}
+\label{sec:extension-strategy}
+
+\marginnote[Tip]{Start with the simplest mechanism.
+Promote only when you hit its limits.}
+
+Before documenting each mechanism, here is the strategic question:
+\emph{given a workflow problem, which extension do you reach for?}
+Getting this wrong costs more than the implementation---it costs
+ongoing maintenance on the wrong abstraction.
+
+\subsection*{The Decision Framework}
+
+\begin{decisionbox}[Which Extension Mechanism?]
+\textbf{Is the workflow a single prompt that needs a shortcut?}\\
+$\rightarrow$ \textbf{Command}. A Markdown file that expands into a prompt.
+Zero infrastructure. Examples: \code{/check}, \code{/deploy}, \code{/summarize-pr}.
+
+\textbf{Does it require multi-step orchestration or domain knowledge?}\\
+$\rightarrow$ \textbf{Skill}. A prompt-driven playbook that Claude executes
+with tool access. Can spawn subagents, read files, make decisions.
+Examples: code review workflows, release checklists, research pipelines.
+
+\textbf{Must it happen every time, without exception, regardless of what
+Claude is doing?}\\
+$\rightarrow$ \textbf{Hook}. Deterministic automation on lifecycle events.
+Claude does not decide whether to run it---the harness does.
+Examples: auto-format on save, lint on edit, security scan on commit.
+
+\textbf{Does it need to talk to an external service?}\\
+$\rightarrow$ \textbf{MCP server}. Gives Claude structured access to databases,
+APIs, or tools with schema-defined inputs and outputs.
+Examples: Jira, Postgres, Slack, custom internal tools.
+\end{decisionbox}
+
+\subsection*{Common Mistakes}
+
+\begin{enumerate}
+  \item \textbf{Building a skill when a command suffices.}
+    If the workflow is a fixed sequence with no branching logic,
+    a command is simpler and easier to maintain. Skills earn their
+    complexity when Claude needs to \emph{decide} what to do next.
+
+  \item \textbf{Using a skill when a hook is needed.}
+    Skills are advisory---Claude can ignore or adapt them.
+    If the behavior must be enforced (security scan, formatting),
+    use a hook. Hooks run whether or not Claude remembers to invoke them.
+
+  \item \textbf{Reaching for MCP when a CLI tool exists.}
+    \code{gh}, \code{aws}, \code{gcloud}, \code{psql}---Claude already
+    knows how to use these. MCP is for services without a good CLI,
+    or when you need structured input/output schemas.
+
+  \item \textbf{Encoding team standards in skills instead of hooks.}
+    If ``every PR must pass linting'' is a standard, it belongs in a
+    \code{PreToolUse} hook on \code{Bash(git commit*)}, not in a
+    skill that someone might forget to invoke.
+\end{enumerate}
+
+\subsection*{The Promotion Path}
+
+Extensions naturally evolve:
+
+\begin{enumerate}
+  \item You type the same prompt three times $\rightarrow$ extract it into a \textbf{command}.
+  \item The command needs conditional logic (``if tests fail, do X'')
+    $\rightarrow$ promote to a \textbf{skill}.
+  \item You realize the skill must run on every commit, not just when invoked
+    $\rightarrow$ extract the enforcement part into a \textbf{hook}.
+  \item The hook needs data from an external service
+    $\rightarrow$ add an \textbf{MCP server} and call it from the hook.
+\end{enumerate}
+
+\noindent Each promotion adds capability and maintenance cost.
+The simplest mechanism that solves the problem is the best choice.
+
+\begin{keyinsight}
+The most common failure mode is not choosing the wrong mechanism---it is
+\emph{skipping the command stage entirely}. Most workflows that end up
+as complex skills started as prompts that someone typed repeatedly.
+If you find yourself building a skill on day one, pause and ask:
+would a three-line command file solve this for now?
+\end{keyinsight}
+
+% -------------------------------------------------------------------
 \section{Custom Slash Commands}
 \label{sec:commands}
 
@@ -615,27 +701,11 @@ Claude knows how to use common CLIs. For unfamiliar ones, try:
 Prefer CLIs over MCP for well-known services.}
 
 % -------------------------------------------------------------------
-\section{The Delegation Hierarchy}
+\section{Visual: The Extension Hierarchy}
 \label{sec:delegation-hierarchy}
 
-\begin{decisionbox}[Which Extension Mechanism?]
-\textbf{Command} --- Simple prompt template, inline context.
-Use for: shortcuts, common prompts, decision-point commands.
-
-\textbf{Skill} --- Multi-step workflow with domain knowledge and tool restrictions.
-Use for: repeated procedures, quality dashboards, pre-release checks.
-
-\textbf{Hook} --- Deterministic automation on lifecycle events.
-Use for: non-negotiable standards, auto-formatting, test gates.
-
-\textbf{MCP} --- External service integration.
-Use for: databases, APIs, third-party tools, cross-project knowledge bases.
-
-\textbf{Rule of thumb}: use the simplest mechanism that solves the problem.
-\end{decisionbox}
-
-% -------------------------------------------------------------------
-\section{Visual: The Delegation Hierarchy}
+For the decision framework on when to use each mechanism, see
+\cref{sec:extension-strategy}.
 
 \begin{figure}[H]
 \centering
