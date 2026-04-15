@@ -33,3 +33,8 @@ warmtol_pygments/*.egg-info/
 *.pem
 *credentials*
 *.secret
+
+# Third-party reference material (do not commit)
+Vibe_Engineering_v2_MEAP*.pdf
+manning_vibe_engineering*.zip
+vibe_engineering_extracted/
