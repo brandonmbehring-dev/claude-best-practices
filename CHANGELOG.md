@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v2.9] - 2026-04-18
+
+Final version. This release is documented here retroactively as part of the sunset commit (see [SUNDOWN.md](SUNDOWN.md)). v2.9 work shipped incrementally via commits between `3cb1533` (v2.8 tag) and `962be84` (HEAD); the pivot decision (2026-04-17) landed mid-cycle and this writeup rolls it up at sunset.
+
+### Added
+- Environment variables reference (26 vars across 7 categories) in Appendix C
+- CLI flags reference card expanded (+13 flags)
+- Code-review plugin architecture doc (4-agent parallel review)
+- IDE integration section: VS Code extension + JetBrains plugin (Ch. 7)
+- Managed settings expansion: delivery mechanisms, drop-in dirs, managed-only settings (Ch. 13)
+- 8 practitioner strategy sections across 6 chapters (+543 lines):
+  - Ch. 4: Controlling Scope — file-level constraints, discovery vs action, plan mode
+  - Ch. 5: Context Curation for Large Codebases — concentric rings strategy
+  - Ch. 5: The Compaction Protocol — before/during/after steps with verification
+  - Ch. 5a: Getting Genuine Comparisons — 3 anti-sycophancy techniques
+  - Ch. 6: Domain Correctness — the missing validation layer
+  - Ch. 7: Choosing the Right Mechanism — command/skill/hook/MCP decision framework
+  - Ch. 7: Debugging Hooks, Skills, MCP — I/O contract, PATH issues, timeouts
+  - Ch. 9: Designing Effective Agent Tasks — 3 properties, when parallel helps
+  - Ch. 11: Four Failure Layers — systematic diagnosis (prompt→CLAUDE.md→codebase→model)
+  - Ch. 11: Testing Your CLAUDE.md — smoke tests + adversarial tests
+  - Ch. 12: Choosing Your Automation Mode — 5-mode decision framework
+  - Ch. 12: Trust Gates — evidence-based promotion for interactive→automated migration
+- Context engineering deep dive (rot evidence, budget planning, horizontal scaling)
+- External audit reports + skill ecosystem audit infrastructure
+- Build inventory tool
+
+### Fixed
+- Quality audit pass: 4 factual errors corrected, 2 platitudes removed, 1 security template updated
+
+### Changed
+- Page count: 109 → 138
+- Guide version bumped to 2.9 (final)
+
 ## [v2.8] - 2026-03-27
 
 ### Added

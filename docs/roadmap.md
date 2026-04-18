@@ -1,7 +1,8 @@
 # Roadmap — Claude Best Practices Guide
 
-**Current version:** v2.9 (2026-03-27)
-**Next planned:** v3.0
+**Final version:** v2.9 (2026-03-27)
+**Status:** Closed at v2.9 on 2026-04-18. See [SUNDOWN.md](../SUNDOWN.md) for supersession details.
+**Successor:** [book-template-astro](https://github.com/brandon-behring/book-template-astro) — *Agentic Coding: Principles and Practices*.
 
 ---
 
@@ -117,4 +118,4 @@ make citations-check  # Citation dashboard with live URL verification
 
 ---
 
-*Updated 2026-03-27. See CHANGELOG.md for version history.*
+*Updated 2026-04-18. Roadmap closed at v2.9. See CHANGELOG.md for version history and [SUNDOWN.md](../SUNDOWN.md) for sunset details.*

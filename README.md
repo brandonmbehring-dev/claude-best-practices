@@ -6,6 +6,8 @@
 
 What Anthropic recommends, what practitioners discover, and where they converge.
 
+> **Status (2026-04-18)**: This book is final at v2.9 and in maintenance-only mode. Its successor, *[Agentic Coding: Principles and Practices](https://github.com/brandon-behring/book-template-astro)*, covers the same territory with updated pedagogy (Koller-Friedman) and multi-tool framing. See [SUNDOWN.md](SUNDOWN.md) for migration details.
+
 ## Read the Guide
 
 | Document | Pages | |
@@ -90,9 +92,11 @@ Standalone copy-paste files in `templates/`:
 
 ## Version
 
-v2.3 -- February 2026
+v2.9 -- March 2026 (final)
 
-Content verified against Anthropic documentation as of February 2026.
+Content verified against Anthropic documentation as of March 2026.
+
+**This version is final.** See [SUNDOWN.md](SUNDOWN.md) for the successor project.
 
 ## License
 
